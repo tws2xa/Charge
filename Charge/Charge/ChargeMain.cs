@@ -19,6 +19,8 @@ namespace Charge
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        public static float moveSpeed = 0; //The horizontal run speed of the player.
+
         public ChargeMain()
             : base()
         {
