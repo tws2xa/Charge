@@ -18,7 +18,8 @@ namespace Charge
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-
+        List<Platform> platforms; // Contains all of the platforms
+        List<Enemy> enemies; // Contains all of the enemies
         public static float moveSpeed = 0; //The horizontal run speed of the player.
 
         public ChargeMain()
@@ -37,7 +38,11 @@ namespace Charge
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
+            platforms = new List<Platform>();
+            enemies = new List<Enemy>();
+            Player player = new Player(200, 200, 100, 80);
+            Platform startingPlatform = new Platform(200, 280, 200, 50);
+            platforms.Add(startingPlatform);
             base.Initialize();
         }
 
@@ -49,7 +54,6 @@ namespace Charge
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
             // TODO: use this.Content to load your game content here
         }
 
@@ -84,9 +88,20 @@ namespace Charge
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Add your drawing code here
-
+            spriteBatch.Begin();
+            // Drawing all of the platforms
+            foreach(Platform p in platforms)
+            {
+                // Temporary code for drawing platforms without sprites
+                Texture2D rect = new Texture2D(graphics.GraphicsDevice, p.position.Width, p.position.Height);
+                Color[] data = new Color[p.position.Width * p.position.Height];
+                for (int i = 0; i < data.Length; i++)
+                    data[i] = Color.Black;
+                rect.SetData(data);
+                Vector2 coor = new Vector2(p.position.X, p.position.Y);
+                spriteBatch.Draw(rect, coor, Color.White);
+            }
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }
