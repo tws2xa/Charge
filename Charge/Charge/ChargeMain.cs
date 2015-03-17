@@ -20,7 +20,10 @@ namespace Charge
         SpriteBatch spriteBatch;
         List<Platform> platforms; // Contains all of the platforms
         List<Enemy> enemies; // Contains all of the enemies
-        public static float moveSpeed = 0; //The horizontal run speed of the player.
+        public static float moveSpeed = 2; //The horizontal run speed of the player.
+        readonly int TIER1 = 400, TIER2 = 240, TIER3 = 80; // Different y-values for platforms to appear on
+        Random rand;
+        int time = 0; // The current frame that the game is in
 
         public ChargeMain()
             : base()
@@ -40,9 +43,11 @@ namespace Charge
             // TODO: Add your initialization logic here
             platforms = new List<Platform>();
             enemies = new List<Enemy>();
-            Player player = new Player(200, 200, 100, 80);
-            Platform startingPlatform = new Platform(200, 280, 200, 50);
+            Player player = new Player(200, TIER2 - 80, 100, 80);
+            Platform startingPlatform = new Platform(200, TIER2, 800, 50);
             platforms.Add(startingPlatform);
+            time = 0;
+            rand = new Random();
             base.Initialize();
         }
 
@@ -77,7 +82,27 @@ namespace Charge
                 Exit();
 
             // TODO: Add your update logic here
-
+            time++;
+            // Logic for creating new platforms
+            if(time >= 60 * 3)
+            {
+                int val = (int)(3*rand.NextDouble()); // Determines which tier the new platform should be on
+                int tier;
+                if (val == 0)
+                    tier = TIER1;
+                else if (val == 1)
+                    tier = TIER2;
+                else
+                    tier = TIER3;
+                Platform nextPlatform = new Platform(800, tier, 200, 50);
+                platforms.Add(nextPlatform);
+                time = 0;
+            }
+            foreach(Platform p in platforms)
+            {
+                // delta time is 1 (temporary)
+                p.Update(1);
+            }
             base.Update(gameTime);
         }
 
