@@ -38,7 +38,10 @@
     <Compile Include="Barrier.cs" />
     <Compile Include="ChargeBlast.cs" />
     <Compile Include="ChargeMain.cs" />
+    <Compile Include="Controls.cs" />
     <Compile Include="Enemy.cs" />
+    <Compile Include="GameplayVars.cs" />
+    <Compile Include="LevelGenerationVars.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="PlatformSection.cs" />
     <Compile Include="Player.cs" />
@@ -64,7 +67,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\..\..\..\..\..\..\Program Files %28x86%29\MonoGame\v3.0\Assemblies\WindowsGL\SDL.dll">
+    <Content Include="..\..\..\..\..\..\..\..\..\Program Files %28x86%29\MonoGame\v3.0\Assemblies\WindowsGL\SDL.dll">
       <Link>SDL.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

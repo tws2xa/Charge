@@ -14,17 +14,17 @@ namespace Charge
     //More methods and fields may be added later
     class ChargeBlast : WorldEntity
     {
-        /**
-         * Create the ChargeBlast with position and sprite
-         */
+        /// <summary>
+        /// Create the ChargeBlast with position and sprite
+        /// </summary>
         public ChargeBlast(Rectangle position, Texture2D tex)
         {
             base.init(position, tex);
         }
 
-        /**
-         * Override update so that blast can radiate outwards
-         */
+        /// <summary>
+        /// Override update so that blast can radiate outwards
+        /// </summary>
         public void Update(float deltaTime)
         {
             

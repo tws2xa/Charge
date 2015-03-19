@@ -16,17 +16,17 @@ namespace Charge
     {
         float moveSpeed; //Movement speed
 
-        /**
-         * Create the barrier with position and sprite
-         */
+        /// <summary>
+        /// Create the barrier with position and sprite
+        /// </summary>
         public Barrier(Rectangle position, Texture2D tex)
         {
             base.init(position, tex);
         }
 
-        /**
-         * Override update to allow for correct barrier movememnt.
-         */
+        /// <summary>
+        /// Override update to allow for correct barrier movememnt.
+        /// </summary>
         public void Update(float deltaTime)
         {
 

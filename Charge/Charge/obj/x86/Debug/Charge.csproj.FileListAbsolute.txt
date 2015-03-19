@@ -1,1 +1,10 @@
 C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\obj\x86\Debug\Charge.csprojResolveAssemblyReference.cache
+C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\SDL.dll
+C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Lidgren.Network.dll
+C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\MonoGame.Framework.dll
+C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\OpenTK.dll
+C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Tao.Sdl.dll
+C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\obj\x86\Debug\Charge.exe
+C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\obj\x86\Debug\Charge.pdb
+C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Charge.exe
+C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Charge.pdb

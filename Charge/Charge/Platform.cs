@@ -16,19 +16,19 @@ namespace Charge
 
         List<PlatformSection> sections; //Sections that make up the platform
 
-        /**
-         * Create the platform with position and sprite
-         * The created platform will contain no sections
-         */
+        /// <summary>
+        /// Create the platform with position and sprite
+        /// The created platform will contain no sections
+        /// </summary>
         public Platform(Rectangle position, Texture2D tex)
         {
             base.init(position, tex);
             this.sections = new List<PlatformSection>();
         }
 
-        /**
-         * Create the floor with position, sprite, and list of sections
-         */
+        /// <summary>
+        /// Create the floor with position, sprite, and list of sections
+        /// </summary>
         public Platform(Rectangle position, Texture2D tex, List<PlatformSection> sections)
         {
             base.init(position, tex);

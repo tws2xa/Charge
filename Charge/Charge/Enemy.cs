@@ -16,17 +16,17 @@ namespace Charge
     {
         float moveSpeed; //Movement speed
 
-        /**
-         * Create the enemy with position and sprite
-         */
+        /// <summary>
+        /// Create the enemy with position and sprite
+        /// </summary>
         public Enemy(Rectangle position, Texture2D tex)
         {
             base.init(position, tex);
         }
 
-        /**
-         * Override update to allow for enemy behaviour.
-         */
+        /// <summary>
+        /// Override update to allow for enemy behaviour.
+        /// </summary>
         public void Update(float deltaTime)
         {
 

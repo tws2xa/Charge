@@ -16,17 +16,17 @@ namespace Charge
     {
         float moveSpeed; //Movement speed
 
-        /**
-         * Create the projectile with position and sprite
-         */
+        /// <summary>
+        /// Create the projectile with position and sprite
+        /// </summary>
         public Projectile(Rectangle position, Texture2D tex)
         {
             base.init(position, tex);
         }
 
-        /**
-         * Override update to allow for bullet movement
-         */
+        /// <summary>
+        /// Override update to allow for bullet movement
+        /// </summary>
         public void Update(float deltaTime)
         {
 

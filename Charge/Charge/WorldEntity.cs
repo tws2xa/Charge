@@ -19,35 +19,35 @@ namespace Charge
         //Needed for inheritence
         public WorldEntity() { }
 
-        /**
-         * Creates a standard world entity
-         * With the given position and sprite
-         */
+        /// <summary>
+        /// Creates a standard world entity
+        /// With the given position and sprite
+        /// </summary>
         public WorldEntity(Rectangle position, Texture2D tex)
         {
             init(position, tex);
         }
 
-        /**
-         * Sets up the WorldEntity
-         * With the given position and sprite
-         */
+        /// <summary>
+        /// Sets up the WorldEntity
+        /// With the given position and sprite
+        /// </summary>
         public void init(Rectangle position, Texture2D tex) {
             this.position = position;
             this.tex = tex;
         }
 
-        /**
-         * Draws the object's texture at the object's position
-         */
+        /// <summary>
+        /// Draws the object's texture at the object's position
+        /// </summary>
         public void Draw(SpriteBatch spriteBatch) {
             spriteBatch.Draw(tex, position, Color.White);
         }
 
-        /**
-         * Move in the opposite direction of the player speed
-         * Thus creating the illusion that the player is moving
-         */
+        /// <summary>
+        /// Move in the opposite direction of the player speed
+        /// Thus creating the illusion that the player is moving
+        /// </summary>
         public void Update(float deltaTime)
         {
             this.position.X -= Convert.ToInt32(ChargeMain.moveSpeed * deltaTime);

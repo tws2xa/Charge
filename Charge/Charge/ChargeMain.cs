@@ -43,8 +43,8 @@ namespace Charge
             // TODO: Add your initialization logic here
             platforms = new List<Platform>();
             enemies = new List<Enemy>();
-            Player player = new Player(200, TIER2 - 80, 100, 80);
-            Platform startingPlatform = new Platform(200, TIER2, 800, 50);
+            Player player = new Player(new Rectangle(200, TIER2 - 80, 100, 80), null);
+            Platform startingPlatform = new Platform(new Rectangle(200, TIER2, 800, 50), null);
             platforms.Add(startingPlatform);
             time = 0;
             rand = new Random();
@@ -94,7 +94,7 @@ namespace Charge
                     tier = TIER2;
                 else
                     tier = TIER3;
-                Platform nextPlatform = new Platform(800, tier, 200, 50);
+                Platform nextPlatform = new Platform(new Rectangle(800, tier, 200, 50), null);
                 platforms.Add(nextPlatform);
                 time = 0;
             }
