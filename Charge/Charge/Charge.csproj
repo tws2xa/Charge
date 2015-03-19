@@ -35,12 +35,12 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Battery.cs" />
-    <Compile Include="Beam.cs" />
+    <Compile Include="Barrier.cs" />
     <Compile Include="ChargeBlast.cs" />
     <Compile Include="ChargeMain.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="Platform.cs" />
+    <Compile Include="PlatformSection.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Projectile.cs" />

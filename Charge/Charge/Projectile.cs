@@ -14,9 +14,23 @@ namespace Charge
     //More methods and fields may be added later
     class Projectile : WorldEntity
     {
-        public Projectile(int x, int y, int width, int height)
+        float moveSpeed; //Movement speed
+
+        /**
+         * Create the projectile with position and sprite
+         */
+        public Projectile(Rectangle position, Texture2D tex)
         {
-            this.position = new Rectangle(x, y, width, height);
+            base.init(position, tex);
         }
+
+        /**
+         * Override update to allow for bullet movement
+         */
+        public void Update(float deltaTime)
+        {
+
+        }
+
     }
 }

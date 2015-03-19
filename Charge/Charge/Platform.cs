@@ -13,9 +13,26 @@ namespace Charge
 {
     class Platform : WorldEntity
     {
-        public Platform(int x, int y, int width, int height)
+
+        List<PlatformSection> sections; //Sections that make up the platform
+
+        /**
+         * Create the platform with position and sprite
+         * The created platform will contain no sections
+         */
+        public Platform(Rectangle position, Texture2D tex)
         {
-            this.position = new Rectangle(x, y, width, height);
+            base.init(position, tex);
+            this.sections = new List<PlatformSection>();
+        }
+
+        /**
+         * Create the floor with position, sprite, and list of sections
+         */
+        public Platform(Rectangle position, Texture2D tex, List<PlatformSection> sections)
+        {
+            base.init(position, tex);
+            this.sections = sections;
         }
     }
 }

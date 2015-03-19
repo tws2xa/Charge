@@ -14,9 +14,20 @@ namespace Charge
     //More methods and fields may be added later
     class Player : WorldEntity
     {
-        public Player(int x, int y, int width, int height)
+        /**
+         * Create the player with position and sprite
+         */
+        public Player(Rectangle position, Texture2D tex)
         {
-            this.position = new Rectangle(x, y, width, height);
+            base.init(position, tex);
+        }
+
+        /**
+         * Change update to allow for player movement
+         */
+        public void Update(float deltaTime)
+        {
+
         }
     }
 }
