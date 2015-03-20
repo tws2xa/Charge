@@ -40,7 +40,7 @@ namespace Charge
         /// </summary>
         public void Draw(SpriteBatch spriteBatch)
         {
-            int curScroll = (int)Math.Round(scrollPos); //Drawing must use an int, so we round scrollpos
+            int curScroll = Convert.ToInt32(Math.Round(scrollPos)); //Drawing must use an int, so we round scrollpos
 
             Rectangle sourceRect1 = new Rectangle(curScroll, 0, bkgImg.Width - curScroll, bkgImg.Height);
             Rectangle sourceRect2 = new Rectangle(0, 0, curScroll, bkgImg.Height);

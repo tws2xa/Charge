@@ -13,7 +13,7 @@ namespace Charge
         public static int PlatformHeight = 50;
         public static int MaxGroundPieces;
         public static int MinGroundPieces;
-        public static int SegmentWidth;
+        public static int SegmentWidth = PlatformHeight;
         public static int MinNumSegments;
         public static int MaxNumSegments;
         public static int MinBetweenSpace;

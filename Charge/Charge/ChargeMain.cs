@@ -113,7 +113,10 @@ namespace Charge
             background = new Background(BackgroundTex);
 
             //Long barrier to catch player at the beginning of the game
-            Platform startPlat = new Platform(new Rectangle(100, LevelGenerationVars.Tier3Height, GameplayVars.WinWidth - 100, LevelGenerationVars.PlatformHeight), PlatformCenterTex);
+            int startPlatWidth = GameplayVars.WinWidth - 100;
+            startPlatWidth -= (startPlatWidth % LevelGenerationVars.SegmentWidth); //Make it evenly split into segments
+            Platform startPlat = new Platform(new Rectangle(100, LevelGenerationVars.Tier3Height, startPlatWidth, LevelGenerationVars.PlatformHeight), 0,
+                PlatformLeftTex, PlatformCenterTex, PlatformRightTex);
             platforms.Add(startPlat);
         }
 
@@ -157,6 +160,11 @@ namespace Charge
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            //Check for exit button press
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
+
+            //Delta time in seconds
             float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
 
             background.Update(deltaTime); //Update the background scroll
@@ -238,8 +246,7 @@ namespace Charge
         /// </summary>
         public void ProcessInput()
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+
         }
 
         /// <summary>
@@ -275,7 +282,6 @@ namespace Charge
             {
                 Platform entity = platforms[i];
                 entity.Update(deltaTime);
-                
                 //Check if it should be deleted
                 if (entity.destroyMe)
                 {

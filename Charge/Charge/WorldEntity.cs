@@ -13,7 +13,7 @@ namespace Charge
 {
     class WorldEntity
     {
-        Texture2D tex; //Sprite for the object
+        public Texture2D tex; //Sprite for the object
         public Rectangle position; //Object's position in the world
         public bool destroyMe; //Should the object be destroyed
 
@@ -53,6 +53,8 @@ namespace Charge
         public virtual void Update(float deltaTime)
         {
             this.position.X -= Convert.ToInt32(ChargeMain.getPlayerSpeed() * deltaTime);
+
+            PerformScreenBoundsCheck();
         }
 
         /// <summary>
@@ -69,10 +71,10 @@ namespace Charge
         /// Checks if the entity is off the left side of the screen
         /// </summary>
         /// <returns>True if the entity is off of the left side of the screen</returns>
-        public Boolean CheckOffLeftSideOfScreen()
+        public bool CheckOffLeftSideOfScreen()
         {
             //Buffer size 10 just in case
-            return (position.Left < -10);
+            return (position.Right < -10);
         }
     }
 }

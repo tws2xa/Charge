@@ -33,7 +33,7 @@ namespace Charge
         {
             if (grounded)
                 return;
-            position.Y -= (int)(GameplayVars.Gravity * deltaTime);
+            position.Y -= Convert.ToInt32((GameplayVars.Gravity * deltaTime));
         }
     }
 }
