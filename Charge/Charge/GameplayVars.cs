@@ -9,7 +9,7 @@ namespace Charge
     {
         public static int WinWidth = 1000;
         public static int WinHeight = 600;
-        public static int PlayerStartX = 100;
+        public static int PlayerStartX = WinWidth/3;
         public static int BackBarrierStartX = -50;
         public static int FrontBarrierStartY = WinHeight + 50;
         public static float Gravity;

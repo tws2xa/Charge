@@ -30,6 +30,7 @@ namespace Charge
         Background background; //The scrolling backdrop
 
         int score; //Player score
+        int curLevel; //The current level
         float tempScore; //Keeps track of fractional score increases
         float globalCooldown; //The cooldown on powerups
         Random rand; //Used for generating random variables
@@ -38,9 +39,7 @@ namespace Charge
         float barrierSpeed; //Speed of barriers
 
         //The right most platforms in each tier
-        Platform rightMostTier1;
-        Platform rightMostTier2;
-        Platform rightMostTier3;
+        Platform[] rightMostInTiers;
 
         //Textures
         Texture2D BackgroundTex;
@@ -79,9 +78,10 @@ namespace Charge
             walls = new List<WorldEntity>(); //All walls in the game
             batteries = new List<WorldEntity>(); //All batteries in the game
 
-            rightMostTier1 = null;
-            rightMostTier2 = null;
-            rightMostTier3 = null;
+            rightMostInTiers = new Platform[3];
+            rightMostInTiers[0] = null;
+            rightMostInTiers[1] = null;
+            rightMostInTiers[2] = null;
 
             //Initialize starting values for all numeric variables
             InitVars();
@@ -97,6 +97,7 @@ namespace Charge
         public void InitVars()
         {
             score = 0;
+            curLevel = 0;
             globalCooldown = 0;
             playerSpeed = GameplayVars.PlayerStartSpeed;
             barrierSpeed = GameplayVars.BarrierStartSpeed;
@@ -115,16 +116,38 @@ namespace Charge
             batteries.Clear();
 
             //Create the initial objects
-            player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 50, 20, 40), PlayerTex); //The player character
+            player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 110, 50, 100), PlayerTex); //The player character
             backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 20, 500), BarrierTex); //The death barrier behind the player
             frontBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 20, 500), BarrierTex); //The death barrier in front of the player
             background = new Background(BackgroundTex);
 
             //Long barrier to catch player at the beginning of the game
-            int startPlatWidth = GameplayVars.WinWidth - 100;
+            int startPlatWidth = GameplayVars.WinWidth - GameplayVars.PlayerStartX/3;
             startPlatWidth -= (startPlatWidth % LevelGenerationVars.SegmentWidth); //Make it evenly split into segments
-            Platform startPlat = new Platform(new Rectangle(100, LevelGenerationVars.Tier3Height, startPlatWidth, LevelGenerationVars.PlatformHeight), 0,
+            Platform startPlat = new Platform(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier3Height, startPlatWidth, LevelGenerationVars.PlatformHeight),
                 PlatformLeftTex, PlatformCenterTex, PlatformRightTex);
+
+            //Spawn a random platform in each of the upper two tiers
+            int tier1X = rand.Next(0, GameplayVars.WinWidth);
+            int tier1Width = LevelGenerationVars.SegmentWidth * rand.Next(LevelGenerationVars.MinNumSegments, LevelGenerationVars.MaxNumSegments);
+
+            int tier2X = rand.Next(0, GameplayVars.WinWidth);
+            int tier2Width = LevelGenerationVars.SegmentWidth * rand.Next(LevelGenerationVars.MinNumSegments, LevelGenerationVars.MaxNumSegments);
+
+            Platform tier1 = new Platform(new Rectangle(tier1X, LevelGenerationVars.Tier1Height, tier1Width, LevelGenerationVars.PlatformHeight),
+                PlatformLeftTex, PlatformCenterTex, PlatformRightTex);
+            Platform tier2 = new Platform(new Rectangle(tier2X, LevelGenerationVars.Tier2Height, tier2Width, LevelGenerationVars.PlatformHeight),
+                PlatformLeftTex, PlatformCenterTex, PlatformRightTex);
+
+            //Since they're currently the only platform in their tier,
+            //Set the newly created platforms as the right most in each of their tiers.
+            rightMostInTiers[0] = tier1;
+            rightMostInTiers[1] = tier2;
+            rightMostInTiers[2] = startPlat;
+
+            //Add them to the platform list
+            platforms.Add(tier1);
+            platforms.Add(tier2);
             platforms.Add(startPlat);
         }
 
@@ -294,6 +317,14 @@ namespace Charge
                 if (entity.destroyMe)
                 {
                     platforms.Remove(entity);
+                    
+                    //Check if it was the right most platform in a tier
+                    //If so, set the right most platform to null
+                    for (int j = 0; j < rightMostInTiers.Length; j++)
+                    {
+                        if (entity == rightMostInTiers[j]) rightMostInTiers[j] = null;
+                    }
+
                     entity = null;
                     i--;
                 }
@@ -377,6 +408,99 @@ namespace Charge
         /// Generates new level content
         /// </summary>
         public void HandleLevelGeneration()
+        {
+
+            //Update min and max spacing
+            LevelGenerationVars.MinNumSegments = Convert.ToInt32(Math.Round(playerSpeed * LevelGenerationVars.SpeedToMinSpaceMultipler));
+            LevelGenerationVars.MaxNumSegments = Convert.ToInt32(Math.Round(playerSpeed * LevelGenerationVars.SpeedToMaxSpaceMultipler));
+
+            //Check if it should create a new platform for each tier
+            for(int i=0; i<rightMostInTiers.Length; i++) {
+                Platform rightMost = rightMostInTiers[i];
+                if (ShouldSpawnPlatform(rightMost))
+                {
+                    //Find the new platforms's spawn height
+                    int height = LevelGenerationVars.Tier1Height;
+                    if (i == 1) height = LevelGenerationVars.Tier2Height;
+                    if (i == 2) height = LevelGenerationVars.Tier3Height;
+                    
+                    //Make the new platform
+                    Platform nextPlat = GenerateNewPlatform(rightMost, height);
+                    
+                    //Update the right most platform in the tier
+                    //(Which is now the just created platform)
+                    rightMostInTiers[i] = nextPlat;
+
+                    //Add to the list of ground pieces
+                    platforms.Add(nextPlat);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks if it should spawn a new platform in the tier
+        /// of the given platform
+        /// </summary>
+        /// <param name="rightMostInTier">The current, right most platform in the tier</param>
+        /// <returns>True if a new platform should be created</returns>
+        private bool ShouldSpawnPlatform(Platform rightMostInTier)
+        {
+            //Do not exceeed the maximum number of ground pieces
+            if (platforms.Count > LevelGenerationVars.MaxGroundPieces) return false;
+
+            //If the row is empty, make a new platform
+            if (rightMostInTier == null) return true;
+
+            //If the row is about to exceed the maximum between distance, make a new platform
+            if (rightMostInTier.position.Right <= (GameplayVars.WinWidth - LevelGenerationVars.MaxBetweenSpace)) return true;
+            
+            //Randomly spawn
+            return (rand.NextDouble() < LevelGenerationVars.PlatformSpawnFreq);
+        }
+
+        /// <summary>
+        /// Generates a new platform following the given platform
+        /// At the given tier height
+        /// </summary>
+        /// <param name="rightMost">Right most platform of the tier in which to add the platform</param>
+        /// <param name="tierHeight">The height of the tier</param>
+        /// <returns>The newly generated platform</returns>
+        private Platform GenerateNewPlatform(Platform rightMost, int tierHeight)
+        {
+            //Must spawn off the right side of the screen (at a minimum)
+            int minX = GameplayVars.WinWidth;
+            
+            //Make sure it's at least the minimum distance from the previous platform in the tier
+            if (rightMost != null &&
+                minX < (rightMost.position.Right + LevelGenerationVars.MinBetweenSpace))
+            {
+                minX = rightMost.position.Right + LevelGenerationVars.MinBetweenSpace;
+            }
+
+            //Can't go over the maximum space between platforms
+            int maxX = minX + LevelGenerationVars.MaxBetweenSpace;
+            if (rightMost != null)
+            {
+                maxX = rightMost.position.Right + LevelGenerationVars.MaxBetweenSpace;
+            }
+
+            int spawnX = -1;
+
+            if (minX > maxX) spawnX = minX; //If the minimum is less than the maximum, just spawn at the minimum.
+            else spawnX = rand.Next(minX, maxX); //Randomly decide on new location.
+
+            //Calculate random size
+            int width = LevelGenerationVars.SegmentWidth * rand.Next(LevelGenerationVars.MinNumSegments, LevelGenerationVars.MaxNumSegments);
+            
+            Platform newPlatform = new Platform(new Rectangle(spawnX, tierHeight, width, LevelGenerationVars.PlatformHeight),
+                PlatformLeftTex, PlatformCenterTex, PlatformRightTex);
+
+            GeneratePlatformContents(newPlatform);
+
+            return newPlatform;
+        }
+
+        private void GeneratePlatformContents(Platform platform)
         {
 
         }

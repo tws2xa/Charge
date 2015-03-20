@@ -21,7 +21,7 @@ namespace Charge
         /// Create the platform with position and sprite
         /// The created platform will be automatically split into sections
         /// </summary>
-        public Platform(Rectangle position, int levelNum, Texture2D leftCap, Texture2D center, Texture2D rightCap)
+        public Platform(Rectangle position, Texture2D leftCap, Texture2D center, Texture2D rightCap)
         {
             base.init(position, null);
             AlignWidthToSegments();
