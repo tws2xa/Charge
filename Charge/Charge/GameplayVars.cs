@@ -7,12 +7,15 @@ namespace Charge
 {
     static class GameplayVars
     {
+        public static int WinWidth = 800;
+        public static int WinHeight = 500;
         public static int PlayerStartX = 100;
         public static int BackBarrierStartX = -50;
-        public static int FrontBarrierStartY = 500;
+        public static int FrontBarrierStartY = WinHeight + 50;
         public static float Gravity;
         public static float JumpVelocity;
         public static float PlayerStartSpeed;
+        public static float BarrierStartSpeed;
         public static float ChargeDecreaseRate;
         public static float BatteryChargeReplenish;
         public static float BarrierSpeedUpRate;

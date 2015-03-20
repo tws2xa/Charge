@@ -27,8 +27,10 @@ namespace Charge
         List<WorldEntity> batteries; //All batteries in the game
         Barrier backBarrier; //The death barrier behind the player
         Barrier frontBarrier; //The death barrier in front of the player
+        Background background;
 
         int score; //Player score
+        float tempScore; //Keeps track of fractional score increases
         float globalCooldown; //The cooldown on powerups
         Random rand; //Used for generating random variables
 
@@ -50,18 +52,36 @@ namespace Charge
         /// </summary>
         protected override void Initialize()
         {
+            //Set window size
+            graphics.PreferredBackBufferWidth = GameplayVars.WinWidth;
+            graphics.PreferredBackBufferHeight = GameplayVars.WinHeight;
 
             //Init all objects and lists
-            initLevelObjects();
+            InitLevelObjects();
 
+            //Initialize starting values for all numeric variables
+            InitVars();
+
+            //Initialize the other bits and bobbles
             rand = new Random();
             base.Initialize();
         }
 
         /// <summary>
+        /// Sets all numeric variables to their starting values
+        /// </summary>
+        public void InitVars()
+        {
+            score = 0;
+            globalCooldown = 0;
+            playerSpeed = GameplayVars.PlayerStartSpeed;
+            barrierSpeed = GameplayVars.BarrierStartSpeed;
+        }
+
+        /// <summary>
         /// Initialize all objects in the level
         /// </summary>
-        public void initLevelObjects()
+        public void InitLevelObjects()
         {
             player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 50, 20, 40), null); //The player character
             platforms = new List<Platform>(); //All platforms in game
@@ -69,8 +89,9 @@ namespace Charge
             bullets = new List<Projectile>(); //All bullets in game
             walls = new List<WorldEntity>(); //All walls in the game
             batteries = new List<WorldEntity>(); //All batteries in the game
-            Barrier backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 20, 500), null); //The death barrier behind the player
-            Barrier frontBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 20, 500), null); //The death barrier in front of the player
+            backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 20, 500), null); //The death barrier behind the player
+            frontBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 20, 500), null); //The death barrier in front of the player
+            background = new Background();
         }
 
         /// <summary>
@@ -81,6 +102,7 @@ namespace Charge
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
             // TODO: use this.Content to load your game content here
         }
 
@@ -100,13 +122,24 @@ namespace Charge
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            float deltaTime = gameTime.ElapsedGameTime.Milliseconds;
 
-            foreach(Platform p in platforms)
-            {
-                p.Update(gameTime.ElapsedGameTime.Milliseconds);
-            }
+            background.Update(deltaTime); //Update the background scroll
+            
+            ProcessInput(); //Process all input
+            
+            player.Update(deltaTime); //Update the player
+            
+            UpdateWorldEntities(deltaTime); //Update all entities in the world
+
+            CheckCollisions(); //Check for any collisions
+
+            HandleLevelGeneration(); //Generate more level content
+
+            UpdateCooldown(deltaTime); //Update the global cooldown
+
+            UpdateScore(deltaTime); //Update the player score
+            
             base.Update(gameTime);
         }
 
@@ -118,18 +151,49 @@ namespace Charge
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
-            // Drawing all of the platforms
-            foreach(Platform p in platforms)
+
+            //Draw background
+            background.Draw(spriteBatch);
+
+            //Draw platforms
+            foreach (Platform platform in platforms)
             {
-                // Temporary code for drawing platforms without sprites
-                Texture2D rect = new Texture2D(graphics.GraphicsDevice, p.position.Width, p.position.Height);
-                Color[] data = new Color[p.position.Width * p.position.Height];
-                for (int i = 0; i < data.Length; i++)
-                    data[i] = Color.Black;
-                rect.SetData(data);
-                Vector2 coor = new Vector2(p.position.X, p.position.Y);
-                spriteBatch.Draw(rect, coor, Color.White);
+                platform.Draw(spriteBatch);
             }
+
+            //Draw Walls
+            foreach (WorldEntity wall in walls)
+            {
+                wall.Draw(spriteBatch);
+            }
+
+            //Draw Enemies
+            foreach (Enemy enemy in enemies)
+            {
+                enemy.Draw(spriteBatch);
+            }
+
+            //Draw Projectiles
+            foreach (Projectile projectile in bullets)
+            {
+                projectile.Draw(spriteBatch);
+            }
+
+            //Draw Batteries
+            foreach (WorldEntity battery in batteries)
+            {
+                battery.Draw(spriteBatch);
+            }
+
+            //Draw the player
+            player.Draw(spriteBatch);
+            
+            //Draw Barriers
+            frontBarrier.Draw(spriteBatch);
+            backBarrier.Draw(spriteBatch);
+
+            //Draw UI
+
             spriteBatch.End();
             base.Draw(gameTime);
         }
@@ -139,14 +203,71 @@ namespace Charge
         /// </summary>
         public void ProcessInput()
         {
-
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
         }
 
         /// <summary>
-        /// Generates new level content
+        /// Update the global cooldown
         /// </summary>
-        public void HandleLevelGeneration()
+        public void UpdateCooldown(float deltaTime)
         {
+            globalCooldown = Math.Max(0, globalCooldown - deltaTime);
+        }
+
+        /// <summary>
+        /// Update the score
+        /// </summary>
+        public void UpdateScore(float deltaTime)
+        {
+            tempScore += deltaTime * GameplayVars.TimeToScoreCoefficient;
+            //Add to score if tempScore is at least 1
+            if (tempScore > 1)
+            {
+                int addAmt = Convert.ToInt32(Math.Floor(tempScore));
+                score += addAmt;
+                tempScore -= addAmt;
+            }
+        }
+
+        /// <summary>
+        /// Updates all the world entities
+        /// </summary>
+        public void UpdateWorldEntities(float deltaTime)
+        {
+            //Update platforms
+            foreach (Platform platform in platforms)
+            {
+                platform.Update(deltaTime);
+            }
+
+            //Update Batteries
+            foreach (WorldEntity battery in batteries)
+            {
+                battery.Update(deltaTime);
+            }
+
+            //Update Barriers
+            frontBarrier.Update(deltaTime);
+            backBarrier.Update(deltaTime);
+
+            //Update Enemies
+            foreach (Enemy enemy in enemies)
+            {
+                enemy.Update(deltaTime);
+            }
+
+            //Update Walls
+            foreach (WorldEntity wall in walls)
+            {
+                wall.Update(deltaTime);
+            }
+
+            //Update Projectiles
+            foreach (Projectile projectile in bullets)
+            {
+                projectile.Update(deltaTime);
+            }
 
         }
 
@@ -159,9 +280,9 @@ namespace Charge
         }
 
         /// <summary>
-        /// Updates all the world entities
+        /// Generates new level content
         /// </summary>
-        public void UpdateWorldEntities()
+        public void HandleLevelGeneration()
         {
 
         }

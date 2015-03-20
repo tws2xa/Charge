@@ -41,7 +41,7 @@ namespace Charge
         /// Draws the object's texture at the object's position
         /// </summary>
         public virtual void Draw(SpriteBatch spriteBatch) {
-            spriteBatch.Draw(tex, position, Color.White);
+           if(tex != null) spriteBatch.Draw(tex, position, Color.White);
         }
 
         /// <summary>
