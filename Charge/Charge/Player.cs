@@ -17,9 +17,13 @@ namespace Charge
         /// <summary>
         /// Create the player with position and sprite
         /// </summary>
+        float vSpeed;
+        bool grounded;
         public Player(Rectangle position, Texture2D tex)
         {
             base.init(position, tex);
+            vSpeed = 0;
+            grounded = true;
         }
 
         /// <summary>
@@ -27,7 +31,9 @@ namespace Charge
         /// </summary>
         public override void Update(float deltaTime)
         {
-
+            if (grounded)
+                return;
+            position.Y -= (int)(GameplayVars.Gravity * deltaTime);
         }
     }
 }
