@@ -27,15 +27,15 @@ namespace Charge
         List<WorldEntity> batteries; //All batteries in the game
         Barrier backBarrier; //The death barrier behind the player
         Barrier frontBarrier; //The death barrier in front of the player
-        Background background;
+        Background background; //The scrolling backdrop
 
         int score; //Player score
         float tempScore; //Keeps track of fractional score increases
         float globalCooldown; //The cooldown on powerups
         Random rand; //Used for generating random variables
 
-        private static float playerSpeed;
-        float barrierSpeed;
+        private static float playerSpeed; //Current run speed
+        float barrierSpeed; //Speed of barriers
 
 
         //Textures
@@ -106,12 +106,14 @@ namespace Charge
             walls.Clear();
             batteries.Clear();
 
+            //Create the initial objects
             player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 50, 20, 40), PlayerTex); //The player character
             backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 20, 500), BarrierTex); //The death barrier behind the player
             frontBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 20, 500), BarrierTex); //The death barrier in front of the player
             background = new Background(BackgroundTex);
 
-            Platform startPlat = new Platform(new Rectangle(100, LevelGenerationVars.Tier3Height, GameplayVars.WinWidth, LevelGenerationVars.PlatformHeight), PlatformCenterTex);
+            //Long barrier to catch player at the beginning of the game
+            Platform startPlat = new Platform(new Rectangle(100, LevelGenerationVars.Tier3Height, GameplayVars.WinWidth - 100, LevelGenerationVars.PlatformHeight), PlatformCenterTex);
             platforms.Add(startPlat);
         }
 
@@ -269,15 +271,33 @@ namespace Charge
         public void UpdateWorldEntities(float deltaTime)
         {
             //Update platforms
-            foreach (Platform platform in platforms)
+            for (int i = 0; i < platforms.Count; i++)
             {
-                platform.Update(deltaTime);
+                Platform entity = platforms[i];
+                entity.Update(deltaTime);
+                
+                //Check if it should be deleted
+                if (entity.destroyMe)
+                {
+                    platforms.Remove(entity);
+                    entity = null;
+                    i--;
+                }
             }
 
             //Update Batteries
-            foreach (WorldEntity battery in batteries)
+            for (int i = 0; i < batteries.Count; i++)
             {
-                battery.Update(deltaTime);
+                WorldEntity entity = batteries[i];
+                entity.Update(deltaTime);
+
+                //Check if it should be deleted
+                if (entity.destroyMe)
+                {
+                    batteries.Remove(entity);
+                    entity = null;
+                    i--;
+                }
             }
 
             //Update Barriers
@@ -285,21 +305,48 @@ namespace Charge
             backBarrier.Update(deltaTime);
 
             //Update Enemies
-            foreach (Enemy enemy in enemies)
+            for (int i = 0; i < enemies.Count; i++)
             {
-                enemy.Update(deltaTime);
+                Enemy entity = enemies[i];
+                entity.Update(deltaTime);
+
+                //Check if it should be deleted
+                if (entity.destroyMe)
+                {
+                    enemies.Remove(entity);
+                    entity = null;
+                    i--;
+                }
             }
 
             //Update Walls
-            foreach (WorldEntity wall in walls)
+            for (int i = 0; i < walls.Count; i++)
             {
-                wall.Update(deltaTime);
+                WorldEntity entity = walls[i];
+                entity.Update(deltaTime);
+
+                //Check if it should be deleted
+                if (entity.destroyMe)
+                {
+                    walls.Remove(entity);
+                    entity = null;
+                    i--;
+                }
             }
 
             //Update Projectiles
-            foreach (Projectile projectile in bullets)
+            for (int i = 0; i < bullets.Count; i++)
             {
-                projectile.Update(deltaTime);
+                Projectile entity = bullets[i];
+                entity.Update(deltaTime);
+
+                //Check if it should be deleted
+                if (entity.destroyMe)
+                {
+                    bullets.Remove(entity);
+                    entity = null;
+                    i--;
+                }
             }
 
         }
