@@ -14,13 +14,15 @@ namespace Charge
     class Background
     {
 
+        Texture2D bkgImg;
         float scrollPos; //The position of the background's scrolling
 
         /// <summary>
         /// Create the background.
         /// </summary>
-        public Background()
+        public Background(Texture2D bkgImg)
         {
+            this.bkgImg = bkgImg;
             scrollPos = 0;
         }
 
@@ -29,7 +31,8 @@ namespace Charge
         /// </summary>
         public void Update(float deltaTime)
         {
-
+            scrollPos += ChargeMain.getPlayerSpeed() * deltaTime * (1.0f / 5.0f);
+            if (scrollPos > bkgImg.Width) scrollPos = (scrollPos % bkgImg.Width);
         }
 
         /// <summary>
@@ -37,7 +40,16 @@ namespace Charge
         /// </summary>
         public void Draw(SpriteBatch spriteBatch)
         {
+            int curScroll = (int)Math.Round(scrollPos); //Drawing must use an int, so we round scrollpos
 
+            Rectangle sourceRect1 = new Rectangle(curScroll, 0, bkgImg.Width - curScroll, bkgImg.Height);
+            Rectangle sourceRect2 = new Rectangle(0, 0, curScroll, bkgImg.Height);
+
+            Rectangle destRect1 = new Rectangle(0, 0, sourceRect1.Width, GameplayVars.WinHeight);
+            Rectangle destRect2 = new Rectangle(sourceRect1.Width, 0, sourceRect2.Width, GameplayVars.WinHeight);
+
+            spriteBatch.Draw(bkgImg, destRect1, sourceRect1, Color.White);
+            spriteBatch.Draw(bkgImg, destRect2, sourceRect2, Color.White);
         }
     }
 }

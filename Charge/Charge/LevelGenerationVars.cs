@@ -9,7 +9,8 @@ namespace Charge
     {
         public static int Tier1Height;
         public static int Tier2Height;
-        public static int Tier3Height;
+        public static int Tier3Height = 480;
+        public static int PlatformHeight = 50;
         public static int MaxGroundPieces;
         public static int MinGroundPieces;
         public static int SegmentWidth;

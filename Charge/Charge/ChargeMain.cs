@@ -37,6 +37,18 @@ namespace Charge
         private static float playerSpeed;
         float barrierSpeed;
 
+
+        //Textures
+        Texture2D BackgroundTex;
+        Texture2D BarrierTex;
+        Texture2D BatteryTex;
+        Texture2D EnemyTex;
+        Texture2D PlatformCenterTex;
+        Texture2D PlatformLeftTex;
+        Texture2D PlatformRightTex;
+        Texture2D PlayerTex;
+        Texture2D WallTex;
+
         public ChargeMain()
             : base()
         {
@@ -56,8 +68,12 @@ namespace Charge
             graphics.PreferredBackBufferWidth = GameplayVars.WinWidth;
             graphics.PreferredBackBufferHeight = GameplayVars.WinHeight;
 
-            //Init all objects and lists
-            InitLevelObjects();
+            //Initialize all lists
+            platforms = new List<Platform>(); //All platforms in game
+            enemies = new List<Enemy>(); //All enemies in game
+            bullets = new List<Projectile>(); //All bullets in game
+            walls = new List<WorldEntity>(); //All walls in the game
+            batteries = new List<WorldEntity>(); //All batteries in the game
 
             //Initialize starting values for all numeric variables
             InitVars();
@@ -79,19 +95,24 @@ namespace Charge
         }
 
         /// <summary>
-        /// Initialize all objects in the level
+        /// Creates and Positions all objects for the start of the level
         /// </summary>
-        public void InitLevelObjects()
+        public void SetupInitialConfiguration()
         {
-            player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 50, 20, 40), null); //The player character
-            platforms = new List<Platform>(); //All platforms in game
-            enemies = new List<Enemy>(); //All enemies in game
-            bullets = new List<Projectile>(); //All bullets in game
-            walls = new List<WorldEntity>(); //All walls in the game
-            batteries = new List<WorldEntity>(); //All batteries in the game
-            backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 20, 500), null); //The death barrier behind the player
-            frontBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 20, 500), null); //The death barrier in front of the player
-            background = new Background();
+            //Clear all entity lists
+            platforms.Clear();
+            enemies.Clear();
+            bullets.Clear();
+            walls.Clear();
+            batteries.Clear();
+
+            player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 50, 20, 40), PlayerTex); //The player character
+            backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 20, 500), BarrierTex); //The death barrier behind the player
+            frontBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 20, 500), BarrierTex); //The death barrier in front of the player
+            background = new Background(BackgroundTex);
+
+            Platform startPlat = new Platform(new Rectangle(100, LevelGenerationVars.Tier3Height, GameplayVars.WinWidth, LevelGenerationVars.PlatformHeight), PlatformCenterTex);
+            platforms.Add(startPlat);
         }
 
         /// <summary>
@@ -103,7 +124,19 @@ namespace Charge
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            //Load all needed game textures
+            BackgroundTex = this.Content.Load<Texture2D>("Background.png");
+            BarrierTex = this.Content.Load<Texture2D>("Barrier.png");
+            BatteryTex = this.Content.Load<Texture2D>("Battery.png");
+            EnemyTex = this.Content.Load<Texture2D>("Enemy.png");
+            PlatformCenterTex = this.Content.Load<Texture2D>("PlatformCenterPiece.png");
+            PlatformLeftTex = this.Content.Load<Texture2D>("PlatformLeftCap.png");
+            PlatformRightTex = this.Content.Load<Texture2D>("PlatformRightCap.png");
+            PlayerTex = this.Content.Load<Texture2D>("Player.png");
+            WallTex = this.Content.Load<Texture2D>("Wall.png");
+
+            //Init all objects and lists
+            SetupInitialConfiguration();
         }
 
         /// <summary>
@@ -122,7 +155,7 @@ namespace Charge
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            float deltaTime = gameTime.ElapsedGameTime.Milliseconds;
+            float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
 
             background.Update(deltaTime); //Update the background scroll
             

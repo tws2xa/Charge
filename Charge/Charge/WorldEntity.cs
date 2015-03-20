@@ -15,6 +15,7 @@ namespace Charge
     {
         Texture2D tex; //Sprite for the object
         public Rectangle position; //Object's position in the world
+        public bool destroyMe; //Should the object be destroyed
 
         //Needed for inheritence
         public WorldEntity() { }
@@ -35,6 +36,7 @@ namespace Charge
         public void init(Rectangle position, Texture2D tex) {
             this.position = position;
             this.tex = tex;
+            destroyMe = false;
         }
 
         /// <summary>
@@ -53,5 +55,24 @@ namespace Charge
             this.position.X -= Convert.ToInt32(ChargeMain.getPlayerSpeed() * deltaTime);
         }
 
+        /// <summary>
+        /// Checks if the object is off the left side of the screen
+        /// And, if so, flags the object to be destroyed
+        /// </summary>
+        public void PerformScreenBoundsCheck()
+        {
+            if (CheckOffLeftSideOfScreen()) this.destroyMe = true;
+        }
+
+
+        /// <summary>
+        /// Checks if the entity is off the left side of the screen
+        /// </summary>
+        /// <returns>True if the entity is off of the left side of the screen</returns>
+        public Boolean CheckOffLeftSideOfScreen()
+        {
+            //Buffer size 10 just in case
+            return (position.Left < -10);
+        }
     }
 }
