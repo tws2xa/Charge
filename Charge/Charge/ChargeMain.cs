@@ -19,12 +19,21 @@ namespace Charge
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        List<Platform> platforms; // Contains all of the platforms
-        List<Enemy> enemies; // Contains all of the enemies
-        public static float moveSpeed = 2; //The horizontal run speed of the player.
-        readonly int TIER1 = 400, TIER2 = 240, TIER3 = 80; // Different y-values for platforms to appear on
-        Random rand;
-        int time = 0; // The current frame that the game is in
+        Player player; //The player character
+        List<Platform> platforms; //All platforms in game
+        List<Enemy> enemies; //All enemies in game
+        List<Projectile> bullets; //All bullets in game
+        List<WorldEntity> walls; //All walls in the game
+        List<WorldEntity> batteries; //All batteries in the game
+        Barrier backBarrier; //The death barrier behind the player
+        Barrier frontBarrier; //The death barrier in front of the player
+
+        int score; //Player score
+        float globalCooldown; //The cooldown on powerups
+        Random rand; //Used for generating random variables
+
+        private static float playerSpeed;
+        float barrierSpeed;
 
         public ChargeMain()
             : base()
@@ -41,15 +50,27 @@ namespace Charge
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-            platforms = new List<Platform>();
-            enemies = new List<Enemy>();
-            Player player = new Player(new Rectangle(200, TIER2 - 80, 100, 80), null);
-            Platform startingPlatform = new Platform(new Rectangle(200, TIER2, 800, 50), null);
-            platforms.Add(startingPlatform);
-            time = 0;
+
+            //Init all objects and lists
+            initLevelObjects();
+
             rand = new Random();
             base.Initialize();
+        }
+
+        /// <summary>
+        /// Initialize all objects in the level
+        /// </summary>
+        public void initLevelObjects()
+        {
+            player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 50, 20, 40), null); //The player character
+            platforms = new List<Platform>(); //All platforms in game
+            enemies = new List<Enemy>(); //All enemies in game
+            bullets = new List<Projectile>(); //All bullets in game
+            walls = new List<WorldEntity>(); //All walls in the game
+            batteries = new List<WorldEntity>(); //All batteries in the game
+            Barrier backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 20, 500), null); //The death barrier behind the player
+            Barrier frontBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 20, 500), null); //The death barrier in front of the player
         }
 
         /// <summary>
@@ -82,27 +103,9 @@ namespace Charge
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
-            time++;
-            // Logic for creating new platforms
-            if(time >= 60 * 3)
-            {
-                int val = (int)(3*rand.NextDouble()); // Determines which tier the new platform should be on
-                int tier;
-                if (val == 0)
-                    tier = TIER1;
-                else if (val == 1)
-                    tier = TIER2;
-                else
-                    tier = TIER3;
-                Platform nextPlatform = new Platform(new Rectangle(800, tier, 200, 50), null);
-                platforms.Add(nextPlatform);
-                time = 0;
-            }
             foreach(Platform p in platforms)
             {
-                // delta time is 1 (temporary)
-                p.Update(1);
+                p.Update(gameTime.ElapsedGameTime.Milliseconds);
             }
             base.Update(gameTime);
         }
@@ -130,5 +133,48 @@ namespace Charge
             spriteBatch.End();
             base.Draw(gameTime);
         }
+
+        /// <summary>
+        /// Handles reading in all of the input
+        /// </summary>
+        public void ProcessInput()
+        {
+
+        }
+
+        /// <summary>
+        /// Generates new level content
+        /// </summary>
+        public void HandleLevelGeneration()
+        {
+
+        }
+
+        /// <summary>
+        /// Checks all collisions in the game
+        /// </summary>
+        public void CheckCollisions()
+        {
+
+        }
+
+        /// <summary>
+        /// Updates all the world entities
+        /// </summary>
+        public void UpdateWorldEntities()
+        {
+
+        }
+
+        /// <summary>
+        /// Provides the speed of the player (and thus
+        /// the opposite of the speed that the world should scroll).
+        /// </summary>
+        /// <returns>The player's speed</returns>
+        public static float getPlayerSpeed()
+        {
+            return playerSpeed;
+        }
+
     }
 }

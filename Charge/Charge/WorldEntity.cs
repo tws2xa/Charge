@@ -50,7 +50,7 @@ namespace Charge
         /// </summary>
         public virtual void Update(float deltaTime)
         {
-            this.position.X -= Convert.ToInt32(ChargeMain.moveSpeed * deltaTime);
+            this.position.X -= Convert.ToInt32(ChargeMain.getPlayerSpeed() * deltaTime);
         }
 
     }
