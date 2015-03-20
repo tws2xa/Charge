@@ -7,20 +7,20 @@ namespace Charge
 {
     static class LevelGenerationVars
     {
-        public static int Tier1Height;
-        public static int Tier2Height;
+        public static int Tier1Height = 180;
+        public static int Tier2Height = 330;
         public static int Tier3Height = 480;
         public static int PlatformHeight = 50;
-        public static int MaxGroundPieces;
-        public static int MinGroundPieces;
+        public static int MaxGroundPieces = 10;
+        public static int MinGroundPieces = 3;
         public static int SegmentWidth = PlatformHeight;
-        public static int MinNumSegments;
-        public static int MaxNumSegments;
-        public static int MinBetweenSpace;
-        public static int MaxBetweenSpace;
-        public static int MaxNumEnemies;
-        public static float BatteryFrequency;
-        public static float WallFrequency;
-        public static float EnemyFrequency;
+        public static int MinNumSegments = 2;
+        public static int MaxNumSegments = 6;
+        public static int MinBetweenSpace = 75;
+        public static int MaxBetweenSpace = 300;
+        public static int MaxNumEnemies = 3;
+        public static float BatteryFrequency = 0.05f;
+        public static float WallFrequency = 0.005f;
+        public static float EnemyFrequency = 0.001f;
     }
 }

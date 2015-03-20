@@ -37,6 +37,10 @@ namespace Charge
         private static float playerSpeed; //Current run speed
         float barrierSpeed; //Speed of barriers
 
+        //The right most platforms in each tier
+        Platform rightMostTier1;
+        Platform rightMostTier2;
+        Platform rightMostTier3;
 
         //Textures
         Texture2D BackgroundTex;
@@ -74,6 +78,10 @@ namespace Charge
             bullets = new List<Projectile>(); //All bullets in game
             walls = new List<WorldEntity>(); //All walls in the game
             batteries = new List<WorldEntity>(); //All batteries in the game
+
+            rightMostTier1 = null;
+            rightMostTier2 = null;
+            rightMostTier3 = null;
 
             //Initialize starting values for all numeric variables
             InitVars();
