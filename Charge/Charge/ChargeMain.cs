@@ -78,8 +78,7 @@ namespace Charge
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            ProcessPlayerInput();
 
             // TODO: Add your update logic here
             time++;
@@ -129,5 +128,40 @@ namespace Charge
             spriteBatch.End();
             base.Draw(gameTime);
         }
+
+        /// <summary>
+        /// This is called from the update loop to handle player input
+        /// </summary>
+        private void ProcessPlayerInput()
+        {
+            // TODO: We should probably change this to confirm that the player wants to quit
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
+
+            // Player has pressed the jump command (A button on controller, space bar on keyboard)
+            if (GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Space))
+            {
+
+            }
+
+            // Player has pressed the Discharge command (A key or left arrow key on keyboard)
+            if (Keyboard.GetState().IsKeyDown(Keys.A) || Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+
+            }
+
+            // Player has pressed the Shoot command (S key or down arrow key on keyboard)
+            if (Keyboard.GetState().IsKeyDown(Keys.S) || Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+
+            }
+
+            // Player has pressed the Overcharge command (D key or right arrow key on keyboard)
+            if (Keyboard.GetState().IsKeyDown(Keys.D) || Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+
+            }
+        }
+
     }
 }
