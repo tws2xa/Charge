@@ -39,7 +39,6 @@ namespace Charge
             //If off the left side of the screen, clear sections and flag platform for destruction.
             if (destroyMe)
             {
-                Console.WriteLine("Clearing Sections!");
                 sections.Clear();
             }
         }
