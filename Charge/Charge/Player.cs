@@ -25,7 +25,7 @@ namespace Charge
         /// <summary>
         /// Change update to allow for player movement
         /// </summary>
-        public void Update(float deltaTime)
+        public override void Update(float deltaTime)
         {
 
         }

@@ -40,7 +40,7 @@ namespace Charge
         /// <summary>
         /// Draws the object's texture at the object's position
         /// </summary>
-        public void Draw(SpriteBatch spriteBatch) {
+        public virtual void Draw(SpriteBatch spriteBatch) {
             spriteBatch.Draw(tex, position, Color.White);
         }
 
@@ -48,7 +48,7 @@ namespace Charge
         /// Move in the opposite direction of the player speed
         /// Thus creating the illusion that the player is moving
         /// </summary>
-        public void Update(float deltaTime)
+        public virtual void Update(float deltaTime)
         {
             this.position.X -= Convert.ToInt32(ChargeMain.moveSpeed * deltaTime);
         }

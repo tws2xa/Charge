@@ -27,7 +27,7 @@ namespace Charge
         /// <summary>
         /// Override update to allow for bullet movement
         /// </summary>
-        public void Update(float deltaTime)
+        public override void Update(float deltaTime)
         {
 
         }
