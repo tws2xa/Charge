@@ -27,7 +27,7 @@ namespace Charge
         /// <summary>
         /// Override update to allow for enemy behaviour.
         /// </summary>
-        public void Update(float deltaTime)
+        public override void Update(float deltaTime)
         {
 
             base.Update(deltaTime);

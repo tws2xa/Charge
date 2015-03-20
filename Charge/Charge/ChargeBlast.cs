@@ -25,7 +25,7 @@ namespace Charge
         /// <summary>
         /// Override update so that blast can radiate outwards
         /// </summary>
-        public void Update(float deltaTime)
+        public override void Update(float deltaTime)
         {
             
         }

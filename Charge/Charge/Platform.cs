@@ -14,7 +14,8 @@ namespace Charge
     class Platform : WorldEntity
     {
 
-        List<PlatformSection> sections; //Sections that make up the platform
+        //Sections that make up the platform
+        public List<PlatformSection> sections;
 
         /// <summary>
         /// Create the platform with position and sprite
