@@ -18,6 +18,7 @@ namespace Charge
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+
         List<Platform> platforms; // Contains all of the platforms
         List<Enemy> enemies; // Contains all of the enemies
         public static float moveSpeed = 2; //The horizontal run speed of the player.
