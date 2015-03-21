@@ -16,6 +16,9 @@ namespace Charge
     /// </summary>
     public class ChargeMain : Game
     {
+
+        public const bool DEBUG = true;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
@@ -40,6 +43,7 @@ namespace Charge
         //Useful Tools
         Random rand; //Used for generating random variables
         LevelGenerator levelGenerator; //Generates the platforms
+        Controls controls;
 
         //Textures
         Texture2D BackgroundTex;
@@ -78,14 +82,15 @@ namespace Charge
             walls = new List<WorldEntity>(); //All walls in the game
             batteries = new List<WorldEntity>(); //All batteries in the game
 
-            //Initialize the level generator
+            //Initialize tools
+            rand = new Random();
             levelGenerator = new LevelGenerator();
+            controls = new Controls();
 
             //Initialize starting values for all numeric variables
             InitVars();
 
-            //Initialize the other bits and bobbles
-            rand = new Random();
+            //Initialize Monogame Stuff
             base.Initialize();
         }
 
@@ -197,8 +202,10 @@ namespace Charge
             float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
 
             background.Update(deltaTime); //Update the background scroll
-            
-            ProcessInput(); //Process all input
+
+            controls.Update(); //Collect input data
+
+            ProcessInput(); //Process input
             
             player.Update(deltaTime); //Update the player
             
@@ -278,6 +285,19 @@ namespace Charge
         public void ProcessInput()
         {
 
+            //Commands For debugging
+            if (DEBUG)
+            {
+                //Control player speed with up and down arrows/right and left bumper.
+                if (controls.isPressed(Keys.Up, Buttons.RightShoulder))
+                {
+                    playerSpeed += 10;
+                }
+                if (controls.isPressed(Keys.Down, Buttons.LeftShoulder))
+                {
+                    playerSpeed -= 10;
+                }
+            }
         }
 
         /// <summary>
@@ -443,11 +463,14 @@ namespace Charge
                 }
                 else if (roll < LevelGenerationVars.BatterySpawnRollRange + LevelGenerationVars.WallSpawnFrequency)
                 {
-                    //Spawn Wall
+                    //Spawn Wall (takes up two platform spaces)
+                    if (i >= numSections - 1) continue; //Need two sections
+
                     int width = LevelGenerationVars.WallWidth;
                     int height = LevelGenerationVars.WallHeight;
-                    WorldEntity wall = new WorldEntity(new Rectangle(sectionCenter - width / 2, platform.position.Top - height + 3, width, height), WallTex);
+                    WorldEntity wall = new WorldEntity(new Rectangle(platform.sections[i].position.Right - width / 2, platform.position.Top - height + 3, width, height), WallTex);
                     walls.Add(wall);
+                    i++; //Took up an extra section
                 }
                 else if (roll < LevelGenerationVars.BatterySpawnRollRange + LevelGenerationVars.WallSpawnFrequency + LevelGenerationVars.EnemySpawnFrequency)
                 {

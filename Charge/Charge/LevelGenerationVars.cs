@@ -34,8 +34,8 @@ namespace Charge
         public static int MaxEnemiesPerPlatform = 2;
         public static int MaxWallsPerPlatform = 1;
         
-        public static float SpeedToMinSpaceMultipler = (float)MinNumSegments / (float)GameplayVars.PlayerStartSpeed;
-        public static float SpeedToMaxSpaceMultipler = (float)MaxNumSegments / (float)GameplayVars.PlayerStartSpeed;
+        public static float SpeedToMinSpaceMultipler = (float)MinBetweenSpace / (float)GameplayVars.PlayerStartSpeed;
+        public static float SpeedToMaxSpaceMultipler = (float)MaxBetweenSpace / (float)GameplayVars.PlayerStartSpeed;
         public static float PlatformSpawnFreq = 0.05f;
 
         /*
