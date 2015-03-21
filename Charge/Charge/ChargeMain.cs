@@ -119,7 +119,7 @@ namespace Charge
             batteries.Clear();
 
             //Create the initial objects
-            player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 110, 50, 100), PlayerTex); //The player character
+            player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 110, GameplayVars.StartPlayerWidth, GameplayVars.StartPlayerHeight), PlayerTex); //The player character
             backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 20, 500), BarrierTex); //The death barrier behind the player
             frontBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 20, 500), BarrierTex); //The death barrier in front of the player
             background = new Background(BackgroundTex);
@@ -458,7 +458,7 @@ namespace Charge
                     //Spawn Battery
                     int width = LevelGenerationVars.BatteryWidth;
                     int height = LevelGenerationVars.BatteryHeight;
-                    WorldEntity battery = new WorldEntity(new Rectangle(sectionCenter - width / 2, platform.position.Top - height - 10, width, height), BatteryTex);
+                    WorldEntity battery = new WorldEntity(new Rectangle(sectionCenter - width / 2, platform.position.Top - height / 2 - GameplayVars.StartPlayerHeight / 3, width, height), BatteryTex);
                     batteries.Add(battery);
                 }
                 else if (roll < LevelGenerationVars.BatterySpawnRollRange + LevelGenerationVars.WallSpawnFrequency)

@@ -7,16 +7,16 @@ namespace Charge
 {
     static class LevelGenerationVars
     {
-        public static int Tier1Height = 105;
-        public static int Tier2Height = 305;
-        public static int Tier3Height = 505;
+        public static int Tier1Height = 100;
+        public static int Tier2Height = 280;
+        public static int Tier3Height = 460;
 
-        public static int PlatformHeight = 50;
+        public static int PlatformHeight = 40;
         public static int SegmentWidth = PlatformHeight;
         public static int BatteryWidth = 20;
         public static int BatteryHeight = 20;
-        public static int WallWidth = 80;
-        public static int WallHeight = 100;
+        public static int WallWidth = 60;
+        public static int WallHeight = 80;
         public static int EnemyWidth = 40;
         public static int EnemyHeight = 40;
 
