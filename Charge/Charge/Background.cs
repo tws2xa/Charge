@@ -31,7 +31,7 @@ namespace Charge
         /// </summary>
         public void Update(float deltaTime)
         {
-            scrollPos += ChargeMain.getPlayerSpeed() * deltaTime * (1.0f / 5.0f);
+            scrollPos += ChargeMain.GetPlayerSpeed() * deltaTime * (1.0f / 5.0f);
             if (scrollPos > bkgImg.Width) scrollPos = (scrollPos % bkgImg.Width);
         }
 

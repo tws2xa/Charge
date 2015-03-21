@@ -43,6 +43,7 @@
     <Compile Include="Enemy.cs" />
     <Compile Include="GameplayVars.cs" />
     <Compile Include="LevelGenerationVars.cs" />
+    <Compile Include="LevelGenerator.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="PlatformSection.cs" />
     <Compile Include="Player.cs" />
