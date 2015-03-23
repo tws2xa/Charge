@@ -17,7 +17,7 @@ namespace Charge
         public static float Gravity;
         public static float JumpVelocity;
         public static float PlayerStartSpeed = 150;
-        public static float BarrierStartSpeed;
+        public static float BarrierStartSpeed = 150;
         public static float ChargeDecreaseRate;
         public static float BatteryChargeReplenish;
         public static float BarrierSpeedUpRate;
