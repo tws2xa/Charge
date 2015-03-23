@@ -13,8 +13,8 @@ namespace Charge
 
         public static int PlatformHeight = 40;
         public static int SegmentWidth = PlatformHeight;
-        public static int BatteryWidth = 20;
-        public static int BatteryHeight = 20;
+        public static int BatteryWidth = 45;
+        public static int BatteryHeight = 45;
         public static int WallWidth = 60;
         public static int WallHeight = 80;
         public static int EnemyWidth = 40;
