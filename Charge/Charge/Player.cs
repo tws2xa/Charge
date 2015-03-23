@@ -23,7 +23,7 @@ namespace Charge
         {
             base.init(position, tex);
             vSpeed = 0;
-            grounded = true;
+            grounded = false;
         }
 
         /// <summary>
@@ -33,8 +33,9 @@ namespace Charge
         {
             if (grounded)
                 return;
-            vSpeed -= Convert.ToInt32(GameplayVars.Gravity * deltaTime);
-            position.Y -= Convert.ToInt32((vSpeed * deltaTime));
+
+            vSpeed += GameplayVars.Gravity * deltaTime;
+            position.Y += Convert.ToInt32(Math.Round(vSpeed));
         }
     }
 }
