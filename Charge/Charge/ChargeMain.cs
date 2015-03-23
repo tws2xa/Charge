@@ -295,11 +295,16 @@ namespace Charge
 			}
 
 			// Player has pressed the jump command (A button on controller, space bar on keyboard)
-			if (controls.isPressed(Keys.Space, Buttons.A) && player.grounded)
+			if (controls.onPress(Keys.Space, Buttons.A) && (player.jmpNum < GameplayVars.playerNumJmps || player.grounded))
 			{
+                player.jmpNum++;
 				player.vSpeed = GameplayVars.JumpInitialVelocity;
 				player.grounded = false;
-			}
+            } // Cut jump short on button release
+            else if (controls.onRelease(Keys.Space, Buttons.A) && player.vSpeed < 0)
+            {
+                player.vSpeed /= 2;
+            }
 
 			// Player has pressed the Discharge command (A key or left arrow key on keyboard)
 			if (controls.isPressed(Keys.A, Buttons.X) || controls.isPressed(Keys.Left, Buttons.X))
@@ -448,6 +453,22 @@ namespace Charge
         /// </summary>
         public void CheckCollisions()
         {
+            CheckPlayerPlatformCollisions();
+        }
+
+        /// <summary>
+        /// Checks the player against all platforms in the world
+        /// </summary>
+        public void CheckPlayerPlatformCollisions() {
+            player.grounded = false;
+            foreach (Platform plat in platforms)
+            {
+                if (plat.position.Left < player.position.Right * 2)
+                {
+                    bool collided = player.CheckPlatformCollision(plat); //Handles the checking and results of collisions
+                    if (collided) break; //Hit a platform. No need to check any more.
+                }
+            }
 
         }
 
@@ -496,6 +517,10 @@ namespace Charge
             //The number of sections in the platform
             int numSections = platform.sections.Count;
 
+            int numWalls = 0;
+            int numEnemies = 0;
+            int numBatteries = 0;
+
             //Check whether or not to add somthing to each section
             for (int i = 0; i < numSections; i++)
             {
@@ -503,15 +528,17 @@ namespace Charge
 
                 int sectionCenter = platform.sections[i].position.Center.X;
 
-                if (roll < LevelGenerationVars.BatterySpawnRollRange)
+                if (roll < LevelGenerationVars.BatterySpawnRollRange && numBatteries < LevelGenerationVars.MaxBatteriesPerPlatform)
                 {
                     //Spawn Battery
                     int width = LevelGenerationVars.BatteryWidth;
                     int height = LevelGenerationVars.BatteryHeight;
                     WorldEntity battery = new WorldEntity(new Rectangle(sectionCenter - width / 2, platform.position.Top - height / 2 - GameplayVars.StartPlayerHeight / 3, width, height), BatteryTex);
                     batteries.Add(battery);
+                    platform.sections[i].containedObj = PlatformSection.BATTERYSTR;
+                    numBatteries++;
                 }
-                else if (roll < LevelGenerationVars.BatterySpawnRollRange + LevelGenerationVars.WallSpawnFrequency)
+                else if (roll < LevelGenerationVars.BatterySpawnRollRange + LevelGenerationVars.WallSpawnFrequency && numWalls < LevelGenerationVars.MaxWallsPerPlatform)
                 {
                     //Spawn Wall (takes up two platform spaces)
                     if (i >= numSections - 1) continue; //Need two sections
@@ -520,15 +547,20 @@ namespace Charge
                     int height = LevelGenerationVars.WallHeight;
                     WorldEntity wall = new WorldEntity(new Rectangle(platform.sections[i].position.Right - width / 2, platform.position.Top - height + 3, width, height), WallTex);
                     walls.Add(wall);
+                    platform.sections[i].containedObj = PlatformSection.WALLSTR;
+                    platform.sections[i+1].containedObj = PlatformSection.WALLSTR;
+                    numWalls++;
                     i++; //Took up an extra section
                 }
-                else if (roll < LevelGenerationVars.BatterySpawnRollRange + LevelGenerationVars.WallSpawnFrequency + LevelGenerationVars.EnemySpawnFrequency)
+                else if (roll < LevelGenerationVars.BatterySpawnRollRange + LevelGenerationVars.WallSpawnFrequency + LevelGenerationVars.EnemySpawnFrequency
+                    && numEnemies < LevelGenerationVars.MaxEnemiesPerPlatform && enemies.Count < LevelGenerationVars.MaxNumEnemiesTotal)
                 {
                     //Spawn Enemy
                     int width = LevelGenerationVars.EnemyWidth;
                     int height = LevelGenerationVars.EnemyHeight;
-                    Enemy enemy = new Enemy(new Rectangle(sectionCenter - width / 2, platform.position.Top - height, width, height), EnemyTex);
+                    Enemy enemy = new Enemy(new Rectangle(sectionCenter - width / 2, platform.position.Top - height, width, height), EnemyTex, platform);
                     enemies.Add(enemy);
+                    numEnemies++;
                 }
             }
 

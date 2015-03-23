@@ -12,6 +12,12 @@ namespace Charge
 {
     class PlatformSection : WorldEntity
     {
+
+        public string containedObj = null; //Object stored above the section
+
+        public static string WALLSTR = "wall";
+        public static string BATTERYSTR = "battery";
+
         public PlatformSection(Rectangle position, Texture2D tex)
         {
             base.init(position, tex);
