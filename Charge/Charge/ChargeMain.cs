@@ -193,10 +193,6 @@ namespace Charge
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            //Check for exit button press
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
             //Delta time in seconds
             float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
 
@@ -204,9 +200,9 @@ namespace Charge
 
             controls.Update(); //Collect input data
 
-            ProcessInput(); //Process input
-            
-            player.Update(deltaTime); //Update the player
+			ProcessPlayerInput(); //Process input
+
+			player.Update(deltaTime); //Update the player
             
             UpdateWorldEntities(deltaTime); //Update all entities in the world
 
@@ -279,25 +275,52 @@ namespace Charge
         }
 
         /// <summary>
-        /// Handles reading in all of the input
-        /// </summary>
-        public void ProcessInput()
-        {
+		/// This is called from the update loop to handle player input
+		/// </summary>
+		private void ProcessPlayerInput()
+		{
+			// TODO: We should probably change this to confirm that the player wants to quit
+			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+				Exit();
 
-            //Commands For debugging
-            if (DEBUG)
-            {
-                //Control player speed with up and down arrows/right and left bumper.
-                if (controls.isPressed(Keys.Up, Buttons.RightShoulder))
-                {
-                    playerSpeed += 10;
-                }
-                if (controls.isPressed(Keys.Down, Buttons.LeftShoulder))
-                {
-                    playerSpeed -= 10;
-                }
-            }
-        }
+			// Player has pressed the jump command (A button on controller, space bar on keyboard)
+			if (GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Space))
+			{
+
+			}
+
+			// Player has pressed the Discharge command (A key or left arrow key on keyboard)
+			if (Keyboard.GetState().IsKeyDown(Keys.A) || Keyboard.GetState().IsKeyDown(Keys.Left))
+			{
+
+			}
+
+			// Player has pressed the Shoot command (S key or down arrow key on keyboard)
+			if (Keyboard.GetState().IsKeyDown(Keys.S) || Keyboard.GetState().IsKeyDown(Keys.Down))
+			{
+
+			}
+
+			// Player has pressed the Overcharge command (D key or right arrow key on keyboard)
+			if (Keyboard.GetState().IsKeyDown(Keys.D) || Keyboard.GetState().IsKeyDown(Keys.Right))
+			{
+
+			}
+
+			//Commands For debugging
+			if (DEBUG)
+			{
+				//Control player speed with up and down arrows/right and left bumper.
+				if (controls.isPressed(Keys.Up, Buttons.RightShoulder))
+				{
+					playerSpeed += 10;
+				}
+				if (controls.isPressed(Keys.Down, Buttons.LeftShoulder))
+				{
+					playerSpeed -= 10;
+				}
+			}
+		}
 
         /// <summary>
         /// Update the global cooldown
@@ -491,6 +514,7 @@ namespace Charge
         public static float GetPlayerSpeed()
         {
             return playerSpeed;
+>>>>>>> cb88372f0c66276f9f9ec1e4b73637369d662ff3
         }
 
     }

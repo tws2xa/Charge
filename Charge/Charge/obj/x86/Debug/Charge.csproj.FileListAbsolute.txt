@@ -19,14 +19,3 @@ C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Ch
 C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Content\PlatformRightCap.png
 C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Content\Player.png
 C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Content\Wall.png
-C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Content\arial-36.xnb
-C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Content\Background.xnb
-C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Content\Barrier.xnb
-C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Content\Battery.xnb
-C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Content\Enemy.xnb
-C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Content\impact-24.xnb
-C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Content\PlatformCenterPiece.xnb
-C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Content\PlatformLeftCap.xnb
-C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Content\PlatformRightCap.xnb
-C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Content\Player.xnb
-C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Content\Wall.xnb
