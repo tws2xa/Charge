@@ -13,12 +13,13 @@ namespace Charge
     //More methods and fields may be added later
     class Player : WorldEntity
     {
-        /// <summary>
-        /// Create the player with position and sprite
-        /// </summary>
-        float vSpeed;
-        bool grounded;
-        public Player(Rectangle position, Texture2D tex)
+		public float vSpeed;
+		public bool grounded;
+
+		/// <summary>
+		/// Create the player with position and sprite
+		/// </summary>
+		public Player(Rectangle position, Texture2D tex)
         {
             base.init(position, tex);
             vSpeed = 0;

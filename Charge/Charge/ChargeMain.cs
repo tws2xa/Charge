@@ -288,7 +288,7 @@ namespace Charge
 			// Player has pressed the jump command (A button on controller, space bar on keyboard)
 			if (controls.isPressed(Keys.Space, Buttons.A))
 			{
-
+				player.vSpeed = GameplayVars.JumpInitialVelocity;
 			}
 
 			// Player has pressed the Discharge command (A key or left arrow key on keyboard)
@@ -517,6 +517,5 @@ namespace Charge
         {
             return playerSpeed;
         }
-
     }
 }
