@@ -39,6 +39,8 @@ namespace Charge
         private static float playerSpeed; //Current run speed
         public static float barrierSpeed; //Speed of barriers
 
+		float playerChargeLevel; // Current charge
+
         //Useful Tools
         Random rand; //Used for generating random variables
         LevelGenerator levelGenerator; //Generates the platforms
@@ -101,8 +103,11 @@ namespace Charge
             score = 0;
             curLevel = 0;
             globalCooldown = 0;
-            playerSpeed = GameplayVars.PlayerStartSpeed;
-            barrierSpeed = GameplayVars.BarrierStartSpeed;
+
+			playerChargeLevel = GameplayVars.MaxCharge / 2;	// Init the player charge level to half of the max
+			UpdatePlayerSpeed(); // Use the current charge level to set the player speed
+
+			barrierSpeed = GameplayVars.BarrierStartSpeed;
         }
 
         /// <summary>
@@ -208,6 +213,10 @@ namespace Charge
 
             CheckCollisions(); //Check for any collisions
 
+			UpdatePlayerCharge(deltaTime); // Decrements the player charge, given the amount of time that has passed
+
+			UpdatePlayerSpeed(); // Updates the player speed based on the current charge
+
             levelGenerator.Update(deltaTime); //Update level generation info
 
             GenerateLevelContent(); //Generate more level content
@@ -281,39 +290,26 @@ namespace Charge
 		{
 			// TODO: We should probably change this to confirm that the player wants to quit
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-				Exit();
-
-			// Player has pressed the jump command (A button on controller, space bar on keyboard)
-			if (GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Space))
-			{
-
-			}
-
-			// Player has pressed the Discharge command (A key or left arrow key on keyboard)
-			if (Keyboard.GetState().IsKeyDown(Keys.A) || Keyboard.GetState().IsKeyDown(Keys.Left))
-			{
-
-			}
-
-			// Player has pressed the Shoot command (S key or down arrow key on keyboard)
-			if (Keyboard.GetState().IsKeyDown(Keys.S) || Keyboard.GetState().IsKeyDown(Keys.Down))
-		{
-			// TODO: We should probably change this to confirm that the player wants to quit
-			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 			{
 				Exit();
 			}
 
 			// Player has pressed the jump command (A button on controller, space bar on keyboard)
-			if (controls.isPressed(Keys.Space, Buttons.A))
+			if (controls.onPress(Keys.Space, Buttons.A) && (player.jmpNum < GameplayVars.playerNumJmps || player.grounded))
 			{
-
-			}
+                player.jmpNum++;
+				player.vSpeed = GameplayVars.JumpInitialVelocity;
+				player.grounded = false;
+            } // Cut jump short on button release
+            else if (controls.onRelease(Keys.Space, Buttons.A) && player.vSpeed < 0)
+            {
+                player.vSpeed /= 2;
+            }
 
 			// Player has pressed the Discharge command (A key or left arrow key on keyboard)
 			if (controls.isPressed(Keys.A, Buttons.X) || controls.isPressed(Keys.Left, Buttons.X))
 			{
-
+				
 			}
 
 			// Player has pressed the Shoot command (S key or down arrow key on keyboard)
@@ -324,14 +320,6 @@ namespace Charge
 
 			// Player has pressed the Overcharge command (D key or right arrow key on keyboard)
 			if (controls.isPressed(Keys.D, Buttons.B) || controls.isPressed(Keys.D, Buttons.B))
-			{
-
-			}
-
-			}
-
-			// Player has pressed the Overcharge command (D key or right arrow key on keyboard)
-			if (Keyboard.GetState().IsKeyDown(Keys.D) || Keyboard.GetState().IsKeyDown(Keys.Right))
 			{
 
 			}
@@ -465,13 +453,45 @@ namespace Charge
         /// </summary>
         public void CheckCollisions()
         {
-
+            CheckPlayerPlatformCollisions();
         }
 
         /// <summary>
-        /// Generates new level content
+        /// Checks the player against all platforms in the world
         /// </summary>
-        public void GenerateLevelContent()
+        public void CheckPlayerPlatformCollisions() {
+            player.grounded = false;
+            foreach (Platform plat in platforms)
+            {
+                if (plat.position.Left < player.position.Right * 2)
+                {
+                    bool collided = player.CheckPlatformCollision(plat); //Handles the checking and results of collisions
+                    if (collided) break; //Hit a platform. No need to check any more.
+                }
+            }
+
+        }
+
+		/// <summary>
+		/// Updates the player speed based on the current charge level
+		/// </summary>
+		public void UpdatePlayerCharge(float deltaTime)
+		{
+			playerChargeLevel -= GameplayVars.ChargeDecreaseRate * deltaTime;
+		}
+
+		/// <summary>
+		/// Updates the player speed based on the current charge level
+		/// </summary>
+		public void UpdatePlayerSpeed()
+		{
+			playerSpeed = GameplayVars.ChargeToSpeedCoefficient * playerChargeLevel;
+		}
+
+		/// <summary>
+		/// Generates new level content
+		/// </summary>
+		public void GenerateLevelContent()
         {
             //Get the new platforms
             List<Platform> newPlatforms = levelGenerator.GenerateNewPlatforms(platforms.Count, PlatformLeftTex, PlatformCenterTex, PlatformRightTex);
@@ -497,6 +517,10 @@ namespace Charge
             //The number of sections in the platform
             int numSections = platform.sections.Count;
 
+            int numWalls = 0;
+            int numEnemies = 0;
+            int numBatteries = 0;
+
             //Check whether or not to add somthing to each section
             for (int i = 0; i < numSections; i++)
             {
@@ -504,15 +528,17 @@ namespace Charge
 
                 int sectionCenter = platform.sections[i].position.Center.X;
 
-                if (roll < LevelGenerationVars.BatterySpawnRollRange)
+                if (roll < LevelGenerationVars.BatterySpawnRollRange && numBatteries < LevelGenerationVars.MaxBatteriesPerPlatform)
                 {
                     //Spawn Battery
                     int width = LevelGenerationVars.BatteryWidth;
                     int height = LevelGenerationVars.BatteryHeight;
                     WorldEntity battery = new WorldEntity(new Rectangle(sectionCenter - width / 2, platform.position.Top - height / 2 - GameplayVars.StartPlayerHeight / 3, width, height), BatteryTex);
                     batteries.Add(battery);
+                    platform.sections[i].containedObj = PlatformSection.BATTERYSTR;
+                    numBatteries++;
                 }
-                else if (roll < LevelGenerationVars.BatterySpawnRollRange + LevelGenerationVars.WallSpawnFrequency)
+                else if (roll < LevelGenerationVars.BatterySpawnRollRange + LevelGenerationVars.WallSpawnFrequency && numWalls < LevelGenerationVars.MaxWallsPerPlatform)
                 {
                     //Spawn Wall (takes up two platform spaces)
                     if (i >= numSections - 1) continue; //Need two sections
@@ -521,15 +547,20 @@ namespace Charge
                     int height = LevelGenerationVars.WallHeight;
                     WorldEntity wall = new WorldEntity(new Rectangle(platform.sections[i].position.Right - width / 2, platform.position.Top - height + 3, width, height), WallTex);
                     walls.Add(wall);
+                    platform.sections[i].containedObj = PlatformSection.WALLSTR;
+                    platform.sections[i+1].containedObj = PlatformSection.WALLSTR;
+                    numWalls++;
                     i++; //Took up an extra section
                 }
-                else if (roll < LevelGenerationVars.BatterySpawnRollRange + LevelGenerationVars.WallSpawnFrequency + LevelGenerationVars.EnemySpawnFrequency)
+                else if (roll < LevelGenerationVars.BatterySpawnRollRange + LevelGenerationVars.WallSpawnFrequency + LevelGenerationVars.EnemySpawnFrequency
+                    && numEnemies < LevelGenerationVars.MaxEnemiesPerPlatform && enemies.Count < LevelGenerationVars.MaxNumEnemiesTotal)
                 {
                     //Spawn Enemy
                     int width = LevelGenerationVars.EnemyWidth;
                     int height = LevelGenerationVars.EnemyHeight;
-                    Enemy enemy = new Enemy(new Rectangle(sectionCenter - width / 2, platform.position.Top - height, width, height), EnemyTex);
+                    Enemy enemy = new Enemy(new Rectangle(sectionCenter - width / 2, platform.position.Top - height, width, height), EnemyTex, platform);
                     enemies.Add(enemy);
+                    numEnemies++;
                 }
             }
 
@@ -544,6 +575,5 @@ namespace Charge
         {
             return playerSpeed;
         }
-
     }
 }

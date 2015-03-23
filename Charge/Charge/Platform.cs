@@ -106,5 +106,15 @@ namespace Charge
             }
             position.Width = myWidth; //Reset the width to fit segments
         }
+
+        public PlatformSection getSectionAtX(float xPos)
+        {
+            float relX = (xPos - position.X);
+            if (relX < 0 || relX >= position.Width) return null; //Off platform
+
+            int index = Convert.ToInt32(Math.Floor(relX / LevelGenerationVars.SegmentWidth));
+            if (index < 0 || index > sections.Count - 1) return null;
+            return sections[index];
+        }
     }
 }
