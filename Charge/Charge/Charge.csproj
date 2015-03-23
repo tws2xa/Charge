@@ -102,6 +102,17 @@
     </Content>
     <Content Include="Icon.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\Background.xnb" />
+    <None Include="Content\Barrier.xnb" />
+    <None Include="Content\Battery.xnb" />
+    <None Include="Content\Enemy.xnb" />
+    <None Include="Content\PlatformCenterPiece.xnb" />
+    <None Include="Content\PlatformLeftCap.xnb" />
+    <None Include="Content\PlatformRightCap.xnb" />
+    <None Include="Content\Player.xnb" />
+    <None Include="Content\Wall.xnb" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
