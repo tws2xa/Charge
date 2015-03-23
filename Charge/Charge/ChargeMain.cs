@@ -286,9 +286,10 @@ namespace Charge
 			}
 
 			// Player has pressed the jump command (A button on controller, space bar on keyboard)
-			if (controls.isPressed(Keys.Space, Buttons.A))
+			if (controls.isPressed(Keys.Space, Buttons.A) && player.grounded)
 			{
 				player.vSpeed = GameplayVars.JumpInitialVelocity;
+				player.grounded = false;
 			}
 
 			// Player has pressed the Discharge command (A key or left arrow key on keyboard)
