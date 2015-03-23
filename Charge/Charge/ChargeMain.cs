@@ -510,6 +510,7 @@ namespace Charge
                     int height = LevelGenerationVars.BatteryHeight;
                     WorldEntity battery = new WorldEntity(new Rectangle(sectionCenter - width / 2, platform.position.Top - height / 2 - GameplayVars.StartPlayerHeight / 3, width, height), BatteryTex);
                     batteries.Add(battery);
+                    platform.sections[i].containedObj = PlatformSection.BATTERYSTR;
                     numBatteries++;
                 }
                 else if (roll < LevelGenerationVars.BatterySpawnRollRange + LevelGenerationVars.WallSpawnFrequency && numWalls < LevelGenerationVars.MaxWallsPerPlatform)
@@ -521,6 +522,8 @@ namespace Charge
                     int height = LevelGenerationVars.WallHeight;
                     WorldEntity wall = new WorldEntity(new Rectangle(platform.sections[i].position.Right - width / 2, platform.position.Top - height + 3, width, height), WallTex);
                     walls.Add(wall);
+                    platform.sections[i].containedObj = PlatformSection.WALLSTR;
+                    platform.sections[i+1].containedObj = PlatformSection.WALLSTR;
                     numWalls++;
                     i++; //Took up an extra section
                 }
@@ -530,7 +533,7 @@ namespace Charge
                     //Spawn Enemy
                     int width = LevelGenerationVars.EnemyWidth;
                     int height = LevelGenerationVars.EnemyHeight;
-                    Enemy enemy = new Enemy(new Rectangle(sectionCenter - width / 2, platform.position.Top - height, width, height), EnemyTex);
+                    Enemy enemy = new Enemy(new Rectangle(sectionCenter - width / 2, platform.position.Top - height, width, height), EnemyTex, platform);
                     enemies.Add(enemy);
                     numEnemies++;
                 }
