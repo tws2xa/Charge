@@ -286,11 +286,16 @@ namespace Charge
 			}
 
 			// Player has pressed the jump command (A button on controller, space bar on keyboard)
-			if (controls.isPressed(Keys.Space, Buttons.A) && player.grounded)
+			if (controls.onPress(Keys.Space, Buttons.A) && (player.jmpNum < GameplayVars.playerNumJmps || player.grounded))
 			{
+                player.jmpNum++;
 				player.vSpeed = GameplayVars.JumpInitialVelocity;
 				player.grounded = false;
-			}
+            } // Cut jump short on button release
+            else if (controls.onRelease(Keys.Space, Buttons.A) && player.vSpeed < 0)
+            {
+                player.vSpeed /= 2;
+            }
 
 			// Player has pressed the Discharge command (A key or left arrow key on keyboard)
 			if (controls.isPressed(Keys.A, Buttons.X) || controls.isPressed(Keys.Left, Buttons.X))
@@ -439,6 +444,22 @@ namespace Charge
         /// </summary>
         public void CheckCollisions()
         {
+            CheckPlayerPlatformCollisions();
+        }
+
+        /// <summary>
+        /// Checks the player against all platforms in the world
+        /// </summary>
+        public void CheckPlayerPlatformCollisions() {
+            player.grounded = false;
+            foreach (Platform plat in platforms)
+            {
+                if (plat.position.Left < player.position.Right * 2)
+                {
+                    bool collided = player.CheckPlatformCollision(plat); //Handles the checking and results of collisions
+                    if (collided) break; //Hit a platform. No need to check any more.
+                }
+            }
 
         }
 
