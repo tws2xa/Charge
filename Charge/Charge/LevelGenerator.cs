@@ -39,8 +39,8 @@ namespace Charge
         public void Update(float deltaTime)
         {
             //Update min and max spacing for level generation
-            LevelGenerationVars.MinBetweenSpace = Convert.ToInt32(Math.Round(ChargeMain.GetPlayerSpeed() * LevelGenerationVars.SpeedToMinSpaceMultipler));
-            LevelGenerationVars.MaxBetweenSpace = Convert.ToInt32(Math.Round(ChargeMain.GetPlayerSpeed() * LevelGenerationVars.SpeedToMaxSpaceMultipler));
+            //LevelGenerationVars.MinBetweenSpace = Convert.ToInt32(Math.Round(ChargeMain.GetPlayerSpeed() * LevelGenerationVars.SpeedToMinSpaceMultipler));
+            //LevelGenerationVars.MaxBetweenSpace = Convert.ToInt32(Math.Round(ChargeMain.GetPlayerSpeed() * LevelGenerationVars.SpeedToMaxSpaceMultipler));
         }
 
         /// <summary>

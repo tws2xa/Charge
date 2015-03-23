@@ -29,7 +29,7 @@ namespace Charge
         public static int MaxBetweenSpace = 300;
         public static int MinBetweenSpace = 75;
         
-        public static int MaxNumEnemies = 3;
+        public static int MaxNumEnemiesTotal = 3;
         public static int MaxBatteriesPerPlatform = 4;
         public static int MaxEnemiesPerPlatform = 2;
         public static int MaxWallsPerPlatform = 1;

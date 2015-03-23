@@ -492,6 +492,10 @@ namespace Charge
             //The number of sections in the platform
             int numSections = platform.sections.Count;
 
+            int numWalls = 0;
+            int numEnemies = 0;
+            int numBatteries = 0;
+
             //Check whether or not to add somthing to each section
             for (int i = 0; i < numSections; i++)
             {
@@ -499,15 +503,16 @@ namespace Charge
 
                 int sectionCenter = platform.sections[i].position.Center.X;
 
-                if (roll < LevelGenerationVars.BatterySpawnRollRange)
+                if (roll < LevelGenerationVars.BatterySpawnRollRange && numBatteries < LevelGenerationVars.MaxBatteriesPerPlatform)
                 {
                     //Spawn Battery
                     int width = LevelGenerationVars.BatteryWidth;
                     int height = LevelGenerationVars.BatteryHeight;
                     WorldEntity battery = new WorldEntity(new Rectangle(sectionCenter - width / 2, platform.position.Top - height / 2 - GameplayVars.StartPlayerHeight / 3, width, height), BatteryTex);
                     batteries.Add(battery);
+                    numBatteries++;
                 }
-                else if (roll < LevelGenerationVars.BatterySpawnRollRange + LevelGenerationVars.WallSpawnFrequency)
+                else if (roll < LevelGenerationVars.BatterySpawnRollRange + LevelGenerationVars.WallSpawnFrequency && numWalls < LevelGenerationVars.MaxWallsPerPlatform)
                 {
                     //Spawn Wall (takes up two platform spaces)
                     if (i >= numSections - 1) continue; //Need two sections
@@ -516,15 +521,18 @@ namespace Charge
                     int height = LevelGenerationVars.WallHeight;
                     WorldEntity wall = new WorldEntity(new Rectangle(platform.sections[i].position.Right - width / 2, platform.position.Top - height + 3, width, height), WallTex);
                     walls.Add(wall);
+                    numWalls++;
                     i++; //Took up an extra section
                 }
-                else if (roll < LevelGenerationVars.BatterySpawnRollRange + LevelGenerationVars.WallSpawnFrequency + LevelGenerationVars.EnemySpawnFrequency)
+                else if (roll < LevelGenerationVars.BatterySpawnRollRange + LevelGenerationVars.WallSpawnFrequency + LevelGenerationVars.EnemySpawnFrequency
+                    && numEnemies < LevelGenerationVars.MaxEnemiesPerPlatform && enemies.Count < LevelGenerationVars.MaxNumEnemiesTotal)
                 {
                     //Spawn Enemy
                     int width = LevelGenerationVars.EnemyWidth;
                     int height = LevelGenerationVars.EnemyHeight;
                     Enemy enemy = new Enemy(new Rectangle(sectionCenter - width / 2, platform.position.Top - height, width, height), EnemyTex);
                     enemies.Add(enemy);
+                    numEnemies++;
                 }
             }
 
