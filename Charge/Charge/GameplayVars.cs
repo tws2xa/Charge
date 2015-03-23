@@ -18,13 +18,15 @@ namespace Charge
         public static float JumpInitialVelocity = -2; // The y-axis starts at 0 at the top of the screen, so jump should decrease Y
 		public static float PlayerStartSpeed = 150;
         public static float BarrierStartSpeed = 150;
-        public static float ChargeDecreaseRate;
+        public static float ChargeDecreaseRate = 1;
         public static float BatteryChargeReplenish;
         public static float BarrierSpeedUpRate;
-        public static float ChargeToSpeedCoefficient;
+        public static float ChargeToSpeedCoefficient = 0.1f;
         public static float TimeToScoreCoefficient;
         public static float DischargeCooldownTime;
         public static float OverloadCooldownTime;
         public static float ShootCooldownTime;
+
+		public static int MaxCharge = 100;
     }
 }

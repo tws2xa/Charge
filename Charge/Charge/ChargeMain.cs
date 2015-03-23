@@ -39,6 +39,8 @@ namespace Charge
         private static float playerSpeed; //Current run speed
         public static float barrierSpeed; //Speed of barriers
 
+		float playerChargeLevel; // Current charge
+
         //Useful Tools
         Random rand; //Used for generating random variables
         LevelGenerator levelGenerator; //Generates the platforms
@@ -101,8 +103,11 @@ namespace Charge
             score = 0;
             curLevel = 0;
             globalCooldown = 0;
-            playerSpeed = GameplayVars.PlayerStartSpeed;
-            barrierSpeed = GameplayVars.BarrierStartSpeed;
+
+			playerChargeLevel = GameplayVars.MaxCharge / 2;	// Init the player charge level to half of the max
+			UpdatePlayerSpeed(); // Use the current charge level to set the player speed
+
+			barrierSpeed = GameplayVars.BarrierStartSpeed;
         }
 
         /// <summary>
@@ -207,6 +212,10 @@ namespace Charge
             UpdateWorldEntities(deltaTime); //Update all entities in the world
 
             CheckCollisions(); //Check for any collisions
+
+			UpdatePlayerCharge(deltaTime); // Decrements the player charge, given the amount of time that has passed
+
+			UpdatePlayerSpeed(); // Updates the player speed based on the current charge
 
             levelGenerator.Update(deltaTime); //Update level generation info
 
@@ -442,10 +451,26 @@ namespace Charge
 
         }
 
-        /// <summary>
-        /// Generates new level content
-        /// </summary>
-        public void GenerateLevelContent()
+		/// <summary>
+		/// Updates the player speed based on the current charge level
+		/// </summary>
+		public void UpdatePlayerCharge(float deltaTime)
+		{
+			playerChargeLevel -= GameplayVars.ChargeDecreaseRate * deltaTime;
+		}
+
+		/// <summary>
+		/// Updates the player speed based on the current charge level
+		/// </summary>
+		public void UpdatePlayerSpeed()
+		{
+			playerSpeed = GameplayVars.ChargeToSpeedCoefficient * playerChargeLevel;
+		}
+
+		/// <summary>
+		/// Generates new level content
+		/// </summary>
+		public void GenerateLevelContent()
         {
             //Get the new platforms
             List<Platform> newPlatforms = levelGenerator.GenerateNewPlatforms(platforms.Count, PlatformLeftTex, PlatformCenterTex, PlatformRightTex);
