@@ -281,28 +281,30 @@ namespace Charge
 		{
 			// TODO: We should probably change this to confirm that the player wants to quit
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+			{
 				Exit();
+			}
 
 			// Player has pressed the jump command (A button on controller, space bar on keyboard)
-			if (GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Space))
+			if (controls.isPressed(Keys.Space, Buttons.A))
 			{
 
 			}
 
 			// Player has pressed the Discharge command (A key or left arrow key on keyboard)
-			if (Keyboard.GetState().IsKeyDown(Keys.A) || Keyboard.GetState().IsKeyDown(Keys.Left))
+			if (controls.isPressed(Keys.A, Buttons.X) || controls.isPressed(Keys.Left, Buttons.X))
 			{
 
 			}
 
 			// Player has pressed the Shoot command (S key or down arrow key on keyboard)
-			if (Keyboard.GetState().IsKeyDown(Keys.S) || Keyboard.GetState().IsKeyDown(Keys.Down))
-			{
+			if (controls.isPressed(Keys.S, Buttons.Y) || controls.isPressed(Keys.S, Buttons.Y))
+            {
 
 			}
 
 			// Player has pressed the Overcharge command (D key or right arrow key on keyboard)
-			if (Keyboard.GetState().IsKeyDown(Keys.D) || Keyboard.GetState().IsKeyDown(Keys.Right))
+			if (controls.isPressed(Keys.D, Buttons.B) || controls.isPressed(Keys.D, Buttons.B))
 			{
 
 			}
@@ -514,7 +516,6 @@ namespace Charge
         public static float GetPlayerSpeed()
         {
             return playerSpeed;
->>>>>>> cb88372f0c66276f9f9ec1e4b73637369d662ff3
         }
 
     }
