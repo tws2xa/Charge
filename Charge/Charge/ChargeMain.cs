@@ -37,7 +37,7 @@ namespace Charge
         float globalCooldown; //The cooldown on powerups
 
         private static float playerSpeed; //Current run speed
-        float barrierSpeed; //Speed of barriers
+        public static float barrierSpeed; //Speed of barriers
 
         //Useful Tools
         Random rand; //Used for generating random variables

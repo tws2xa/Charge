@@ -28,7 +28,9 @@ namespace Charge
         /// </summary>
         public override void Update(float deltaTime)
         {
-            position.X += Convert.ToInt32(moveSpeed * deltaTime);
+            moveSpeed = ChargeMain.barrierSpeed;
+            position.X += (Convert.ToInt32(moveSpeed * deltaTime));
+            base.Update(deltaTime);
         }
     }
 }
