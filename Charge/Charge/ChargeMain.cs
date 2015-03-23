@@ -6,7 +6,6 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
-using Microsoft.Xna.Framework.GamerServices;
 #endregion
 
 namespace Charge
@@ -120,8 +119,8 @@ namespace Charge
 
             //Create the initial objects
             player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 110, GameplayVars.StartPlayerWidth, GameplayVars.StartPlayerHeight), PlayerTex); //The player character
-            backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 20, 500), BarrierTex); //The death barrier behind the player
-            frontBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 20, 500), BarrierTex); //The death barrier in front of the player
+            backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier behind the player
+            frontBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier in front of the player
             background = new Background(BackgroundTex);
 
             //Long barrier to catch player at the beginning of the game
@@ -194,10 +193,6 @@ namespace Charge
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            //Check for exit button press
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
             //Delta time in seconds
             float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
 
@@ -205,9 +200,9 @@ namespace Charge
 
             controls.Update(); //Collect input data
 
-            ProcessInput(); //Process input
-            
-            player.Update(deltaTime); //Update the player
+			ProcessPlayerInput(); //Process input
+
+			player.Update(deltaTime); //Update the player
             
             UpdateWorldEntities(deltaTime); //Update all entities in the world
 
@@ -231,7 +226,7 @@ namespace Charge
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
 
             //Draw background
             background.Draw(spriteBatch);
@@ -280,25 +275,54 @@ namespace Charge
         }
 
         /// <summary>
-        /// Handles reading in all of the input
-        /// </summary>
-        public void ProcessInput()
-        {
+		/// This is called from the update loop to handle player input
+		/// </summary>
+		private void ProcessPlayerInput()
+		{
+			// TODO: We should probably change this to confirm that the player wants to quit
+			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+			{
+				Exit();
+			}
 
-            //Commands For debugging
-            if (DEBUG)
+			// Player has pressed the jump command (A button on controller, space bar on keyboard)
+			if (controls.isPressed(Keys.Space, Buttons.A))
+			{
+
+			}
+
+			// Player has pressed the Discharge command (A key or left arrow key on keyboard)
+			if (controls.isPressed(Keys.A, Buttons.X) || controls.isPressed(Keys.Left, Buttons.X))
+			{
+
+			}
+
+			// Player has pressed the Shoot command (S key or down arrow key on keyboard)
+			if (controls.isPressed(Keys.S, Buttons.Y) || controls.isPressed(Keys.S, Buttons.Y))
             {
-                //Control player speed with up and down arrows/right and left bumper.
-                if (controls.isPressed(Keys.Up, Buttons.RightShoulder))
-                {
-                    playerSpeed += 10;
-                }
-                if (controls.isPressed(Keys.Down, Buttons.LeftShoulder))
-                {
-                    playerSpeed -= 10;
-                }
-            }
-        }
+
+			}
+
+			// Player has pressed the Overcharge command (D key or right arrow key on keyboard)
+			if (controls.isPressed(Keys.D, Buttons.B) || controls.isPressed(Keys.D, Buttons.B))
+			{
+
+			}
+
+			//Commands For debugging
+			if (DEBUG)
+			{
+				//Control player speed with up and down arrows/right and left bumper.
+				if (controls.isPressed(Keys.Up, Buttons.RightShoulder))
+				{
+					playerSpeed += 10;
+				}
+				if (controls.isPressed(Keys.Down, Buttons.LeftShoulder))
+				{
+					playerSpeed -= 10;
+				}
+			}
+		}
 
         /// <summary>
         /// Update the global cooldown
