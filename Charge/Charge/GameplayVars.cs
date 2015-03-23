@@ -14,7 +14,7 @@ namespace Charge
         public static int PlayerStartX = WinWidth/3;
         public static int BackBarrierStartX = -50;
         public static int FrontBarrierStartY = WinHeight + 50;
-        public static float Gravity;
+        public static float Gravity = 10;
         public static float JumpVelocity;
         public static float PlayerStartSpeed = 150;
         public static float BarrierStartSpeed = 150;
