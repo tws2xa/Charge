@@ -13,8 +13,9 @@ namespace Charge
 {
     class WorldEntity
     {
-        Texture2D tex; //Sprite for the object
+        public Texture2D tex; //Sprite for the object
         public Rectangle position; //Object's position in the world
+        public bool destroyMe; //Should the object be destroyed
 
         //Needed for inheritence
         public WorldEntity() { }
@@ -35,13 +36,14 @@ namespace Charge
         public void init(Rectangle position, Texture2D tex) {
             this.position = position;
             this.tex = tex;
+            destroyMe = false;
         }
 
         /// <summary>
         /// Draws the object's texture at the object's position
         /// </summary>
         public virtual void Draw(SpriteBatch spriteBatch) {
-            spriteBatch.Draw(tex, position, Color.White);
+           if(tex != null) spriteBatch.Draw(tex, position, Color.White);
         }
 
         /// <summary>
@@ -50,8 +52,29 @@ namespace Charge
         /// </summary>
         public virtual void Update(float deltaTime)
         {
-            this.position.X -= Convert.ToInt32(ChargeMain.moveSpeed * deltaTime);
+            this.position.X -= Convert.ToInt32(ChargeMain.GetPlayerSpeed() * deltaTime);
+
+            PerformScreenBoundsCheck();
         }
 
+        /// <summary>
+        /// Checks if the object is off the left side of the screen
+        /// And, if so, flags the object to be destroyed
+        /// </summary>
+        public void PerformScreenBoundsCheck()
+        {
+            if (CheckOffLeftSideOfScreen()) this.destroyMe = true;
+        }
+
+
+        /// <summary>
+        /// Checks if the entity is off the left side of the screen
+        /// </summary>
+        /// <returns>True if the entity is off of the left side of the screen</returns>
+        public bool CheckOffLeftSideOfScreen()
+        {
+            //Buffer size 10 just in case
+            return (position.Right < -10);
+        }
     }
 }

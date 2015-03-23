@@ -14,7 +14,7 @@ namespace Charge
     //More methods and fields may be added later
     class Barrier : WorldEntity
     {
-        float moveSpeed; //Movement speed
+        float moveSpeed = GameplayVars.BarrierStartSpeed; //Movement speed
 
         /// <summary>
         /// Create the barrier with position and sprite
@@ -29,7 +29,7 @@ namespace Charge
         /// </summary>
         public override void Update(float deltaTime)
         {
-
+            position.X += Convert.ToInt32(moveSpeed * deltaTime);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Charge
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-
+            base.Draw(spriteBatch);
         }
     }
 }
