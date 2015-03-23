@@ -19,15 +19,6 @@ C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Ch
 C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Content\PlatformRightCap.png
 C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Content\Player.png
 C:\Users\Thoma_000\Desktop\NoSync School\Game Design\SyncCharge\Charge\Charge\Charge\bin\WindowsGL\Debug\Content\Wall.png
-C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\Background.png
-C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\Barrier.png
-C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\Battery.png
-C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\Enemy.png
-C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\PlatformCenterPiece.png
-C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\PlatformLeftCap.png
-C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\PlatformRightCap.png
-C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\Player.png
-C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\Wall.png
 C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\SDL.dll
 C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Charge.exe
 C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Charge.pdb
@@ -38,3 +29,13 @@ C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Tao.Sdl.d
 C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\obj\x86\Debug\Charge.csprojResolveAssemblyReference.cache
 C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\obj\x86\Debug\Charge.exe
 C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\obj\x86\Debug\Charge.pdb
+C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\Arial-24.spritefont
+C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\Background.xnb
+C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\Barrier.xnb
+C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\Battery.xnb
+C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\Enemy.xnb
+C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\PlatformCenterPiece.xnb
+C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\PlatformLeftCap.xnb
+C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\PlatformRightCap.xnb
+C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\Player.xnb
+C:\Users\Samuel\Source\Repos\Charge2\Charge\Charge\bin\WindowsGL\Debug\Content\Wall.xnb
