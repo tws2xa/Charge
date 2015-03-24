@@ -23,9 +23,9 @@ namespace Charge
         public static float BarrierStartSpeed = 150;
         public static float EnemyMoveSpeed = 1;
         public static float ChargeDecreaseRate = 1;
-        public static float BatteryChargeReplenish;
+        public static float BatteryChargeReplenish = 5;
         public static float BarrierSpeedUpRate;
-        public static float ChargeToSpeedCoefficient = 0.1f;
+        public static float ChargeToSpeedCoefficient = 5.0f;
         public static float TimeToScoreCoefficient;
         public static float DischargeCooldownTime;
         public static float OverloadCooldownTime;

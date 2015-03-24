@@ -454,12 +454,14 @@ namespace Charge
         public void CheckCollisions()
         {
             CheckPlayerPlatformCollisions();
+			CheckPlayerBatteryCollisions();
         }
 
         /// <summary>
         /// Checks the player against all platforms in the world
         /// </summary>
-        public void CheckPlayerPlatformCollisions() {
+        public void CheckPlayerPlatformCollisions()
+		{
             player.grounded = false;
             foreach (Platform plat in platforms)
             {
@@ -469,8 +471,24 @@ namespace Charge
                     if (collided) break; //Hit a platform. No need to check any more.
                 }
             }
-
         }
+
+		/// <summary>
+		/// Checks the player against all batteries in the world
+		/// </summary>
+		public void CheckPlayerBatteryCollisions()
+		{
+			foreach (WorldEntity battery in batteries)
+			{
+				if (player.position.Intersects(battery.position))
+				{
+					playerChargeLevel += GameplayVars.BatteryChargeReplenish;
+
+					battery.destroyMe = true;
+					break;
+				}
+			}
+		}
 
 		/// <summary>
 		/// Updates the player speed based on the current charge level
@@ -478,6 +496,9 @@ namespace Charge
 		public void UpdatePlayerCharge(float deltaTime)
 		{
 			playerChargeLevel -= GameplayVars.ChargeDecreaseRate * deltaTime;
+
+			// Make sure playerChargeLevel is at least 0
+			playerChargeLevel = Math.Max(0, playerChargeLevel);
 		}
 
 		/// <summary>
