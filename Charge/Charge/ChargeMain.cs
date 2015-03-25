@@ -186,17 +186,17 @@ namespace Charge
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             //Load all needed game textures
-            BackgroundTex = this.Content.Load<Texture2D>("Background.png");
-            BarrierTex = this.Content.Load<Texture2D>("Barrier.png");
-            BatteryTex = this.Content.Load<Texture2D>("Battery.png");
-            EnemyTex = this.Content.Load<Texture2D>("Enemy.png");
-            PlatformCenterTex = this.Content.Load<Texture2D>("PlatformCenterPiece.png");
-            PlatformLeftTex = this.Content.Load<Texture2D>("PlatformLeftCap.png");
-            PlatformRightTex = this.Content.Load<Texture2D>("PlatformRightCap.png");
-            PlayerTex = this.Content.Load<Texture2D>("Player.png");
-            WallTex = this.Content.Load<Texture2D>("Wall.png");
-            ChargeBarBackgroundTex = this.Content.Load<Texture2D>("ChargeBar.png");
-			ChargeBarForegroundTex = this.Content.Load<Texture2D>("ChargeBar.png");
+            BackgroundTex = this.Content.Load<Texture2D>("Background");
+            BarrierTex = this.Content.Load<Texture2D>("Barrier");
+            BatteryTex = this.Content.Load<Texture2D>("Battery");
+            EnemyTex = this.Content.Load<Texture2D>("Enemy");
+            PlatformCenterTex = this.Content.Load<Texture2D>("PlatformCenterPiece");
+            PlatformLeftTex = this.Content.Load<Texture2D>("PlatformLeftCap");
+            PlatformRightTex = this.Content.Load<Texture2D>("PlatformRightCap");
+            PlayerTex = this.Content.Load<Texture2D>("Player");
+            WallTex = this.Content.Load<Texture2D>("Wall");
+            ChargeBarBackgroundTex = this.Content.Load<Texture2D>("ChargeBar");
+			ChargeBarForegroundTex = this.Content.Load<Texture2D>("ChargeBar");
 
             //Init all objects and lists
             SetupInitialConfiguration();
