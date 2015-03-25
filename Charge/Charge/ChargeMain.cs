@@ -337,11 +337,11 @@ namespace Charge
 				//Control player speed with up and down arrows/right and left bumper.
 				if (controls.isPressed(Keys.Up, Buttons.RightShoulder))
 				{
-					playerSpeed += 10;
+                    playerChargeLevel += 5;
 				}
 				if (controls.isPressed(Keys.Down, Buttons.LeftShoulder))
 				{
-					playerSpeed -= 10;
+					playerChargeLevel -= 5;
 				}
 			}
 		}

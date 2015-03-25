@@ -53,7 +53,7 @@ namespace Charge
         {
             this.position.X -= Convert.ToInt32(ChargeMain.GetPlayerSpeed() * deltaTime);
 
-            if(!(this is Barrier))
+            if (!(this is Barrier))
                 PerformScreenBoundsCheck();
         }
 
