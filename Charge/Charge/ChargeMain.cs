@@ -505,6 +505,8 @@ namespace Charge
         {
             CheckPlayerPlatformCollisions();
 			CheckPlayerBatteryCollisions();
+            CheckPlayerEnemyCollisions();
+            CheckPlayerBarrierCollisions();
         }
 
         /// <summary>
@@ -539,6 +541,33 @@ namespace Charge
 				}
 			}
 		}
+
+        public void CheckPlayerEnemyCollisions()
+        {
+            foreach (WorldEntity enemy in enemies)
+            {
+                if (player.position.Intersects(enemy.position))
+                {
+                    PlayerDeath();
+                }
+            }
+        }
+
+        public void CheckPlayerBarrierCollisions()
+        {
+            foreach (WorldEntity enemy in enemies)
+            {
+                if (player.position.Intersects(enemy.position))
+                {
+                    PlayerDeath();
+                }
+            }
+        }
+
+        public void PlayerDeath()
+        {
+            player.destroyMe = true;
+        }
 
 		/// <summary>
 		/// Updates the player speed based on the current charge level
