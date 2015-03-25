@@ -144,7 +144,7 @@ namespace Charge
             backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier behind the player
             frontBarrier = new Barrier(new Rectangle(GameplayVars.FrontBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier in front of the player
             background = new Background(BackgroundTex);
-			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 0, graphics.GraphicsDevice.Viewport.Width / 2, 25), ChargeBarBackgroundTex, ChargeBarForegroundTex);
+			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 5, graphics.GraphicsDevice.Viewport.Width / 2, 20), ChargeBarBackgroundTex, ChargeBarForegroundTex);
 
             //Long barrier to catch player at the beginning of the game
             int startPlatWidth = GameplayVars.WinWidth - GameplayVars.PlayerStartX/3;
@@ -195,8 +195,8 @@ namespace Charge
             PlatformRightTex = this.Content.Load<Texture2D>("PlatformRightCap.png");
             PlayerTex = this.Content.Load<Texture2D>("Player.png");
             WallTex = this.Content.Load<Texture2D>("Wall.png");
-			ChargeBarBackgroundTex = this.Content.Load<Texture2D>("Black.png");
-			ChargeBarForegroundTex = this.Content.Load<Texture2D>("Yellow.png");
+            ChargeBarBackgroundTex = this.Content.Load<Texture2D>("ChargeBar.png");
+			ChargeBarForegroundTex = this.Content.Load<Texture2D>("ChargeBar.png");
 
             //Init all objects and lists
             SetupInitialConfiguration();
