@@ -18,8 +18,9 @@ namespace Charge
         /// <summary>
         /// Create the projectile with position and sprite
         /// </summary>
-        public Projectile(Rectangle position, Texture2D tex)
+        public Projectile(Rectangle position, Texture2D tex, float moveSpeed)
         {
+            this.moveSpeed = moveSpeed;
             base.init(position, tex);
         }
 
@@ -28,7 +29,12 @@ namespace Charge
         /// </summary>
         public override void Update(float deltaTime)
         {
+            this.position.X += Convert.ToInt32(moveSpeed);
 
+            if (this.CheckOffLeftSideOfScreen() || this.position.X > GameplayVars.WinWidth + 10)
+            {
+                destroyMe = true;
+            }
         }
 
     }

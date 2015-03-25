@@ -34,7 +34,7 @@ namespace Charge
         Player player; //The player character
         List<Platform> platforms; //All platforms in game
         List<Enemy> enemies; //All enemies in game
-        List<Projectile> bullets; //All bullets in game
+        List<Projectile> projectiles; //All bullets in game
         List<WorldEntity> walls; //All walls in the game
         List<WorldEntity> batteries; //All batteries in the game
         Barrier backBarrier; //The death barrier behind the player
@@ -92,7 +92,7 @@ namespace Charge
             //Initialize all lists
             platforms = new List<Platform>(); //All platforms in game
             enemies = new List<Enemy>(); //All enemies in game
-            bullets = new List<Projectile>(); //All bullets in game
+            projectiles = new List<Projectile>(); //All bullets in game
             walls = new List<WorldEntity>(); //All walls in the game
             batteries = new List<WorldEntity>(); //All batteries in the game
 
@@ -131,7 +131,7 @@ namespace Charge
             //Clear all entity lists
             platforms.Clear();
             enemies.Clear();
-            bullets.Clear();
+            projectiles.Clear();
             walls.Clear();
             batteries.Clear();
 
@@ -284,7 +284,7 @@ namespace Charge
 				}
 
 				//Draw Projectiles
-				foreach (Projectile projectile in bullets)
+				foreach (Projectile projectile in projectiles)
 				{
 					projectile.Draw(spriteBatch);
 				}
@@ -344,19 +344,19 @@ namespace Charge
 				// Player has pressed the Discharge command (A key or left arrow key on keyboard)
 				if (controls.isPressed(Keys.A, Buttons.X) || controls.isPressed(Keys.Left, Buttons.X))
 				{
-
+                    InitiateDischarge();
 				}
 
 				// Player has pressed the Shoot command (S key or down arrow key on keyboard)
 				if (controls.isPressed(Keys.S, Buttons.Y) || controls.isPressed(Keys.S, Buttons.Y))
-				{
-
+                {
+                    InitiateShoot();
 				}
 
 				// Player has pressed the Overcharge command (D key or right arrow key on keyboard)
 				if (controls.isPressed(Keys.D, Buttons.B) || controls.isPressed(Keys.D, Buttons.B))
-				{
-
+                {
+                    InitiateOvercharge();
 				}
 
 				// Player has pressed the Pause command (P key or Start button)
@@ -388,6 +388,71 @@ namespace Charge
 				}
 			}
 		}
+
+
+        /// <summary>
+        /// Launches the overcharge special ability
+        /// </summary>
+        private void InitiateOvercharge()
+        {
+            if (globalCooldown > 0)
+            {
+                return;
+            }
+
+            playerChargeLevel += GameplayVars.OverchargeAmt;
+
+            globalCooldown = GameplayVars.OverchargeCooldownTime;
+        }
+
+
+        /// <summary>
+        /// Launches the shoot special ability
+        /// </summary>
+        private void InitiateShoot()
+        {
+            if (globalCooldown > 0)
+            {
+                return;
+            }
+
+            playerChargeLevel -= GameplayVars.ShootCost;
+
+            int bulletWidth = 15;
+            int bulletHeight = 8;
+            int bulletX = player.position.Right + bulletWidth;
+            int bulletY = player.position.Center.Y - bulletHeight/2 + 5;
+            Projectile bullet = new Projectile(new Rectangle(bulletX, bulletY, bulletWidth, bulletHeight), ChargeBarForegroundTex, GameplayVars.BulletMoveSpeed);
+            projectiles.Add(bullet);
+
+            globalCooldown = GameplayVars.ShootCooldownTime;
+        }
+
+        /// <summary>
+        /// Launches the discharge special ability
+        /// </summary>
+        private void InitiateDischarge()
+        {
+            if (globalCooldown > 0)
+            {
+                return;
+            }
+
+            playerChargeLevel -= GameplayVars.DischargeCost;
+
+            //Remove all enemies in front of player
+            for (int i = 0; i < enemies.Count; i++ )
+            {
+                Enemy enemy = enemies[i];
+                if (enemy.position.Left > player.position.Right)
+                {
+                    enemies.RemoveAt(i);
+                    i--;
+                }
+            }
+
+            globalCooldown = GameplayVars.DischargeCooldownTime;
+        }
 
         /// <summary>
         /// Update the global cooldown
@@ -482,15 +547,15 @@ namespace Charge
             }
 
             //Update Projectiles
-            for (int i = 0; i < bullets.Count; i++)
+            for (int i = 0; i < projectiles.Count; i++)
             {
-                Projectile entity = bullets[i];
+                Projectile entity = projectiles[i];
                 entity.Update(deltaTime);
 
                 //Check if it should be deleted
                 if (entity.destroyMe)
                 {
-                    bullets.Remove(entity);
+                    projectiles.Remove(entity);
                     entity = null;
                     i--;
                 }
