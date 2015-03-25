@@ -22,15 +22,21 @@ namespace Charge
         public static float PlayerStartSpeed = 150;
         public static float BarrierStartSpeed = 190;
         public static float EnemyMoveSpeed = 1;
+        public static float BulletMoveSpeed = 10;
         public static float ChargeDecreaseRate = 1;
         public static float BatteryChargeReplenish = 5;
         public static float BarrierSpeedUpRate;
         public static float ChargeToSpeedCoefficient = 5.0f;
-        public static float TimeToScoreCoefficient = 4.5f;
-        public static float DischargeCooldownTime;
-        public static float OverloadCooldownTime;
-        public static float ShootCooldownTime;
+        public static float TimeToScoreCoefficient;
+        public static float DischargeCooldownTime = 20; //Seconds
+        public static float OverchargeCooldownTime = 20; //Seconds
+        public static float ShootCooldownTime = 5; //Seconds
 
 		public static int ChargeBarCapacity = 100;
+
+        public static float DischargeCost = 50;
+        public static float ShootCost = 10;
+        public static float OverchargeAmt = 50;
+
     }
 }
