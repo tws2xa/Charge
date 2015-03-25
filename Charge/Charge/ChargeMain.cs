@@ -30,6 +30,7 @@ namespace Charge
         Barrier backBarrier; //The death barrier behind the player
         Barrier frontBarrier; //The death barrier in front of the player
         Background background; //The scrolling backdrop
+		ChargeBar chargeBar; // The chargebar
 
         int score; //Player score
         int curLevel; //The current level
@@ -56,6 +57,8 @@ namespace Charge
         Texture2D PlatformRightTex;
         Texture2D PlayerTex;
         Texture2D WallTex;
+		Texture2D ChargeBarBackgroundTex;
+		Texture2D ChargeBarForegroundTex;
 
         public ChargeMain()
             : base()
@@ -104,7 +107,7 @@ namespace Charge
             curLevel = 0;
             globalCooldown = 0;
 
-			playerChargeLevel = GameplayVars.MaxCharge / 2;	// Init the player charge level to half of the max
+			playerChargeLevel = GameplayVars.ChargeBarCapacity / 2;	// Init the player charge level to half of the max
 			UpdatePlayerSpeed(); // Use the current charge level to set the player speed
 
 			barrierSpeed = GameplayVars.BarrierStartSpeed;
@@ -127,6 +130,7 @@ namespace Charge
             backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier behind the player
             frontBarrier = new Barrier(new Rectangle(GameplayVars.FrontBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier in front of the player
             background = new Background(BackgroundTex);
+			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 0, graphics.GraphicsDevice.Viewport.Width / 2, 25), ChargeBarBackgroundTex, ChargeBarForegroundTex);
 
             //Long barrier to catch player at the beginning of the game
             int startPlatWidth = GameplayVars.WinWidth - GameplayVars.PlayerStartX/3;
@@ -177,6 +181,8 @@ namespace Charge
             PlatformRightTex = this.Content.Load<Texture2D>("PlatformRightCap.png");
             PlayerTex = this.Content.Load<Texture2D>("Player.png");
             WallTex = this.Content.Load<Texture2D>("Wall.png");
+			ChargeBarBackgroundTex = this.Content.Load<Texture2D>("Black.png");
+			ChargeBarForegroundTex = this.Content.Load<Texture2D>("Yellow.png");
 
             //Init all objects and lists
             SetupInitialConfiguration();
@@ -236,7 +242,7 @@ namespace Charge
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
-
+			
             //Draw background
             background.Draw(spriteBatch);
 
@@ -277,7 +283,8 @@ namespace Charge
             frontBarrier.Draw(spriteBatch);
             backBarrier.Draw(spriteBatch);
 
-            //Draw UI
+			// Draw UI
+			chargeBar.Draw(spriteBatch, playerChargeLevel);
 
             spriteBatch.End();
             base.Draw(gameTime);
@@ -493,12 +500,17 @@ namespace Charge
 		/// <summary>
 		/// Updates the player speed based on the current charge level
 		/// </summary>
-		public void UpdatePlayerCharge(float deltaTime)
+		public void 
+		UpdatePlayerCharge(float deltaTime)
 		{
 			playerChargeLevel -= GameplayVars.ChargeDecreaseRate * deltaTime;
 
 			// Make sure playerChargeLevel is at least 0
 			playerChargeLevel = Math.Max(0, playerChargeLevel);
+
+			// For now, make sure that playerChargeLevel does not go past the charge bar capacity
+			// This will be removed once we have the different colors and charge levels implemented
+			playerChargeLevel = Math.Min(GameplayVars.ChargeBarCapacity, playerChargeLevel);
 		}
 
 		/// <summary>

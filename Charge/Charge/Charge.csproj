@@ -39,6 +39,7 @@
     <Compile Include="Barrier.cs" />
     <Compile Include="ChargeBlast.cs" />
     <Compile Include="ChargeMain.cs" />
+    <Compile Include="ChargeBar.cs" />
     <Compile Include="Controls.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="GameplayVars.cs" />
@@ -82,6 +83,9 @@
     <Content Include="Content\Battery.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Black.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Enemy.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -98,6 +102,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Wall.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Yellow.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Icon.ico" />

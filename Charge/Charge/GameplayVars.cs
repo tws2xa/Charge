@@ -31,6 +31,6 @@ namespace Charge
         public static float OverloadCooldownTime;
         public static float ShootCooldownTime;
 
-		public static int MaxCharge = 100;
+		public static int ChargeBarCapacity = 100;
     }
 }
