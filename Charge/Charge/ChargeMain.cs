@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
+
 #endregion
 
 namespace Charge
@@ -47,6 +48,7 @@ namespace Charge
         float tempScore; //Keeps track of fractional score increases
         float globalCooldown; //The cooldown on powerups
 
+        private SpriteFont Font; //Sprite Font to draw score
         private static float playerSpeed; //Current run speed
         public static float barrierSpeed; //Speed of barriers
 
@@ -182,10 +184,11 @@ namespace Charge
         /// </summary>
         protected override void LoadContent()
         {
+            
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            //Load all needed game textures
+            //Load all needed game textures and fonts
             BackgroundTex = this.Content.Load<Texture2D>("Background");
             BarrierTex = this.Content.Load<Texture2D>("Barrier");
             BatteryTex = this.Content.Load<Texture2D>("Battery");
@@ -197,6 +200,8 @@ namespace Charge
             WallTex = this.Content.Load<Texture2D>("Wall");
             ChargeBarBackgroundTex = this.Content.Load<Texture2D>("ChargeBar");
 			ChargeBarForegroundTex = this.Content.Load<Texture2D>("ChargeBar");
+            Font = this.Content.Load<SpriteFont>("Arial-24");
+            
 
             //Init all objects and lists
             SetupInitialConfiguration();
@@ -304,6 +309,9 @@ namespace Charge
 
 				// Draw UI
 				chargeBar.Draw(spriteBatch, playerChargeLevel);
+
+                // Draw Score
+                spriteBatch.DrawString(Font, "Score: " + score, new Vector2(750, 500), Color.White);
 
 				// Draw the pause screen on top of all of the game assets
 				if (currentGameState == GameState.Paused)
@@ -506,7 +514,7 @@ namespace Charge
             CheckPlayerPlatformCollisions();
 			CheckPlayerBatteryCollisions();
             CheckPlayerEnemyCollisions();
-            CheckPlayerBarrierCollisions();
+            CheckPlayerWallCollisions();
         }
 
         /// <summary>
@@ -535,7 +543,6 @@ namespace Charge
 				if (player.position.Intersects(battery.position))
 				{
 					playerChargeLevel += GameplayVars.BatteryChargeReplenish;
-
 					battery.destroyMe = true;
 					break;
 				}
@@ -553,11 +560,11 @@ namespace Charge
             }
         }
 
-        public void CheckPlayerBarrierCollisions()
+        public void CheckPlayerWallCollisions()
         {
-            foreach (WorldEntity enemy in enemies)
+            foreach (WorldEntity wall in walls)
             {
-                if (player.position.Intersects(enemy.position))
+                if (player.position.Intersects(wall.position))
                 {
                     PlayerDeath();
                 }
@@ -566,7 +573,7 @@ namespace Charge
 
         public void PlayerDeath()
         {
-            player.destroyMe = true;
+           
         }
 
 		/// <summary>
