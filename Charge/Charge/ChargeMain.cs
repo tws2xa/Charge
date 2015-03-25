@@ -18,6 +18,16 @@ namespace Charge
 
         public const bool DEBUG = true;
 
+		enum GameState
+		{
+			TitleScreen,
+			InGame,
+			Paused,
+			GameOver
+		};
+
+		GameState currentGameState;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
@@ -125,6 +135,10 @@ namespace Charge
             walls.Clear();
             batteries.Clear();
 
+			// Initalize the gamestate
+			// TODO: Should probably initialize this to TitleScreen once that is implemented
+			currentGameState = GameState.InGame;
+
             //Create the initial objects
             player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 110, GameplayVars.StartPlayerWidth, GameplayVars.StartPlayerHeight), PlayerTex); //The player character
             backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier behind the player
@@ -204,32 +218,35 @@ namespace Charge
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            //Delta time in seconds
-            float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
-
-            background.Update(deltaTime); //Update the background scroll
-
-            controls.Update(); //Collect input data
-
+			// This should be done regardless of the GameState
+			controls.Update(); //Collect input data
 			ProcessPlayerInput(); //Process input
 
-			player.Update(deltaTime); //Update the player
-            
-            UpdateWorldEntities(deltaTime); //Update all entities in the world
+			if (currentGameState == GameState.InGame)
+			{
+				//Delta time in seconds
+				float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
 
-            CheckCollisions(); //Check for any collisions
+				background.Update(deltaTime); //Update the background scroll
 
-			UpdatePlayerCharge(deltaTime); // Decrements the player charge, given the amount of time that has passed
+				player.Update(deltaTime); //Update the player
 
-			UpdatePlayerSpeed(); // Updates the player speed based on the current charge
+				UpdateWorldEntities(deltaTime);	//Update all entities in the world
 
-            levelGenerator.Update(deltaTime); //Update level generation info
+				CheckCollisions(); //Check for any collisions
 
-            GenerateLevelContent(); //Generate more level content
+				UpdatePlayerCharge(deltaTime); // Decrements the player charge, given the amount of time that has passed
 
-            UpdateCooldown(deltaTime); //Update the global cooldown
+				UpdatePlayerSpeed(); // Updates the player speed based on the current charge
 
-            UpdateScore(deltaTime); //Update the player score
+				levelGenerator.Update(deltaTime); //Update level generation info
+
+				GenerateLevelContent();	//Generate more level content
+
+				UpdateCooldown(deltaTime); //Update the global cooldown
+
+				UpdateScore(deltaTime);	//Update the player score
+			}
             
             base.Update(gameTime);
         }
@@ -242,49 +259,58 @@ namespace Charge
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
-			
-            //Draw background
-            background.Draw(spriteBatch);
 
-            //Draw platforms
-            foreach (Platform platform in platforms)
-            {
-                platform.Draw(spriteBatch);
-            }
+			if (currentGameState == GameState.InGame || currentGameState == GameState.Paused)
+			{
+				//Draw background
+				background.Draw(spriteBatch);
 
-            //Draw Walls
-            foreach (WorldEntity wall in walls)
-            {
-                wall.Draw(spriteBatch);
-            }
+				//Draw platforms
+				foreach (Platform platform in platforms)
+				{
+					platform.Draw(spriteBatch);
+				}
 
-            //Draw Enemies
-            foreach (Enemy enemy in enemies)
-            {
-                enemy.Draw(spriteBatch);
-            }
+				//Draw Walls
+				foreach (WorldEntity wall in walls)
+				{
+					wall.Draw(spriteBatch);
+				}
 
-            //Draw Projectiles
-            foreach (Projectile projectile in bullets)
-            {
-                projectile.Draw(spriteBatch);
-            }
+				//Draw Enemies
+				foreach (Enemy enemy in enemies)
+				{
+					enemy.Draw(spriteBatch);
+				}
 
-            //Draw Batteries
-            foreach (WorldEntity battery in batteries)
-            {
-                battery.Draw(spriteBatch);
-            }
+				//Draw Projectiles
+				foreach (Projectile projectile in bullets)
+				{
+					projectile.Draw(spriteBatch);
+				}
 
-            //Draw the player
-            player.Draw(spriteBatch);
-            
-            //Draw Barriers
-            frontBarrier.Draw(spriteBatch);
-            backBarrier.Draw(spriteBatch);
+				//Draw Batteries
+				foreach (WorldEntity battery in batteries)
+				{
+					battery.Draw(spriteBatch);
+				}
 
-			// Draw UI
-			chargeBar.Draw(spriteBatch, playerChargeLevel);
+				//Draw the player
+				player.Draw(spriteBatch);
+
+				//Draw Barriers
+				frontBarrier.Draw(spriteBatch);
+				backBarrier.Draw(spriteBatch);
+
+				// Draw UI
+				chargeBar.Draw(spriteBatch, playerChargeLevel);
+
+				// Draw the pause screen on top of all of the game assets
+				if (currentGameState == GameState.Paused)
+				{
+					// TODO: Need to figure out fonts so we can draw the pause strings
+				}
+			}
 
             spriteBatch.End();
             base.Draw(gameTime);
@@ -301,47 +327,64 @@ namespace Charge
 				Exit();
 			}
 
-			// Player has pressed the jump command (A button on controller, space bar on keyboard)
-			if (controls.onPress(Keys.Space, Buttons.A) && (player.jmpNum < GameplayVars.playerNumJmps || player.grounded))
+			if (currentGameState == GameState.InGame)
 			{
-                player.jmpNum++;
-				player.vSpeed = GameplayVars.JumpInitialVelocity;
-				player.grounded = false;
-            } // Cut jump short on button release
-            else if (controls.onRelease(Keys.Space, Buttons.A) && player.vSpeed < 0)
-            {
-                player.vSpeed /= 2;
-            }
-
-			// Player has pressed the Discharge command (A key or left arrow key on keyboard)
-			if (controls.isPressed(Keys.A, Buttons.X) || controls.isPressed(Keys.Left, Buttons.X))
-			{
-				
-			}
-
-			// Player has pressed the Shoot command (S key or down arrow key on keyboard)
-			if (controls.isPressed(Keys.S, Buttons.Y) || controls.isPressed(Keys.S, Buttons.Y))
-            {
-
-			}
-
-			// Player has pressed the Overcharge command (D key or right arrow key on keyboard)
-			if (controls.isPressed(Keys.D, Buttons.B) || controls.isPressed(Keys.D, Buttons.B))
-			{
-
-			}
-
-			//Commands For debugging
-			if (DEBUG)
-			{
-				//Control player speed with up and down arrows/right and left bumper.
-				if (controls.isPressed(Keys.Up, Buttons.RightShoulder))
+				// Player has pressed the jump command (A button on controller, space bar on keyboard)
+				if (controls.onPress(Keys.Space, Buttons.A) && (player.jmpNum < GameplayVars.playerNumJmps || player.grounded))
 				{
-                    playerChargeLevel += 5;
+					player.jmpNum++;
+					player.vSpeed = GameplayVars.JumpInitialVelocity;
+					player.grounded = false;
+				} // Cut jump short on button release
+				else if (controls.onRelease(Keys.Space, Buttons.A) && player.vSpeed < 0)
+				{
+					player.vSpeed /= 2;
 				}
-				if (controls.isPressed(Keys.Down, Buttons.LeftShoulder))
+
+				// Player has pressed the Discharge command (A key or left arrow key on keyboard)
+				if (controls.isPressed(Keys.A, Buttons.X) || controls.isPressed(Keys.Left, Buttons.X))
 				{
-					playerChargeLevel -= 5;
+
+				}
+
+				// Player has pressed the Shoot command (S key or down arrow key on keyboard)
+				if (controls.isPressed(Keys.S, Buttons.Y) || controls.isPressed(Keys.S, Buttons.Y))
+				{
+
+				}
+
+				// Player has pressed the Overcharge command (D key or right arrow key on keyboard)
+				if (controls.isPressed(Keys.D, Buttons.B) || controls.isPressed(Keys.D, Buttons.B))
+				{
+
+				}
+
+				// Player has pressed the Pause command (P key or Start button)
+				if (controls.onPress(Keys.P, Buttons.Start))
+				{
+					currentGameState = GameState.Paused;
+				}
+
+				//Commands For debugging
+				if (DEBUG)
+				{
+					//Control player speed with up and down arrows/right and left bumper.
+					if (controls.isPressed(Keys.Up, Buttons.RightShoulder))
+					{
+						playerChargeLevel += 5;
+					}
+					if (controls.isPressed(Keys.Down, Buttons.LeftShoulder))
+					{
+						playerChargeLevel -= 5;
+					}
+				}
+			}
+			else if (currentGameState == GameState.Paused)
+			{
+				// Player has pressed the Pause command (P key or Start button)
+				if (controls.onPress(Keys.P, Buttons.Start))
+				{
+					currentGameState = GameState.InGame;
 				}
 			}
 		}
