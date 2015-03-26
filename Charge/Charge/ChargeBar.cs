@@ -13,21 +13,23 @@ namespace Charge
 
 		public Rectangle position; //Object's position in the world
 
-		public ChargeBar(Rectangle position, Texture2D tex)
+		public ChargeBar(Rectangle position, Texture2D tex, Color backColor, Color foreColor)
 		{
 			this.position = position;
 
 			this.tex = tex;
 
-			backColor = new Color(50, 50, 50);
-			foreColor = Color.Yellow;
+            this.backColor = backColor;
+            this.foreColor = foreColor;
 		}
 
 		public void Draw(SpriteBatch spriteBatch, float chargeLevel)
 		{
 			spriteBatch.Draw(tex, position, backColor);
 
-			Rectangle chargeRect = new Rectangle(position.Left, position.Top, Convert.ToInt32(chargeLevel / GameplayVars.ChargeBarCapacity * position.Width), position.Height);
+            int chargeRectWidth = Convert.ToInt32((chargeLevel % GameplayVars.ChargeBarCapacity) / GameplayVars.ChargeBarCapacity * position.Width);
+
+            Rectangle chargeRect = new Rectangle(position.Left, position.Top, chargeRectWidth, position.Height);
 			spriteBatch.Draw(tex, chargeRect, foreColor);
 		}
 
