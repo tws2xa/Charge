@@ -9,6 +9,9 @@ namespace Charge
 		public Texture2D backgroundTex; //Sprite for the object
 		public Texture2D foregroundTex; //Sprite for the object
 
+        public Color backColor = new Color(50, 50, 50);
+        public Color foreColor = Color.Yellow;
+
 		public Rectangle position; //Object's position in the world
 
 		public ChargeBar(Rectangle position, Texture2D backgroundTex, Texture2D foregroundTex)
@@ -21,10 +24,10 @@ namespace Charge
 
 		public void Draw(SpriteBatch spriteBatch, float chargeLevel)
 		{
-			spriteBatch.Draw(backgroundTex, position, Color.White);
+			spriteBatch.Draw(backgroundTex, position, backColor);
 
 			Rectangle chargeRect = new Rectangle(position.Left, position.Top, Convert.ToInt32(chargeLevel / GameplayVars.ChargeBarCapacity * position.Width), position.Height);
-			spriteBatch.Draw(foregroundTex, chargeRect, Color.White);
+			spriteBatch.Draw(foregroundTex, chargeRect, foreColor);
 		}
 
 		public void SetForegroundTexture(Texture2D tex)

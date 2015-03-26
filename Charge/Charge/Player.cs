@@ -16,6 +16,7 @@ namespace Charge
 		public float vSpeed;
 		public bool grounded;
         public int jmpNum;
+        public bool isDead;
 
 		/// <summary>
 		/// Create the player with position and sprite
@@ -26,6 +27,7 @@ namespace Charge
             vSpeed = 0;
             jmpNum = 0;
             grounded = false;
+            isDead = false;
         }
 
         /// <summary>
@@ -45,8 +47,7 @@ namespace Charge
                 vSpeed = 0;
             }
 
-
-
+            if (position.Top > GameplayVars.WinWidth + 10) isDead = true;
         }
 
         /// <summary>
