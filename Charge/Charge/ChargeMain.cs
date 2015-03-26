@@ -191,7 +191,7 @@ namespace Charge
             //Load all needed game textures and fonts
             BackgroundTex = this.Content.Load<Texture2D>("Background");
             BarrierTex = this.Content.Load<Texture2D>("Barrier");
-            BatteryTex = this.Content.Load<Texture2D>("Battery");
+            BatteryTex = this.Content.Load<Texture2D>("BatteryGlow");
             EnemyTex = this.Content.Load<Texture2D>("Enemy");
             PlatformCenterTex = this.Content.Load<Texture2D>("PlatformCenterPiece");
             PlatformLeftTex = this.Content.Load<Texture2D>("PlatformLeftCap");
@@ -235,6 +235,8 @@ namespace Charge
 				background.Update(deltaTime); //Update the background scroll
 
 				player.Update(deltaTime); //Update the player
+
+                if (player.isDead) PlayerDeath();
 
 				UpdateWorldEntities(deltaTime);	//Update all entities in the world
 
@@ -581,7 +583,6 @@ namespace Charge
 			CheckPlayerBatteryCollisions();
             CheckPlayerEnemyCollisions();
             CheckPlayerWallCollisions();
-            CheckPlayerBarrierCollisions();
         }
 
         /// <summary>
@@ -638,22 +639,12 @@ namespace Charge
             }
         }
 
-        public void CheckPlayerBarrierCollisions()
-        {
-            if (player.position.Intersects(backBarrier.position))
-            {
-                PlayerDeath();
-            }
-
-            else if (player.position.Intersects(frontBarrier.position))
-            {
-                PlayerDeath();
-            }
-        }
-
+        /// <summary>
+        /// Kills the player
+        /// </summary>
         public void PlayerDeath()
         {
-            
+
         }
 
 		/// <summary>
