@@ -313,13 +313,13 @@ namespace Charge
 				chargeBar.Draw(spriteBatch, playerChargeLevel);
 
                 // Draw Score
-                spriteBatch.DrawString(Font, "Score: " + score, new Vector2(775, 500), Color.White);
-                spriteBatch.DrawString(Font, "Cooldown: " + Convert.ToInt32(globalCooldown), new Vector2(15, 500), Color.White);
+                spriteBatch.DrawString(Font, "Score: " + score, new Vector2(775, 500), Color.WhiteSmoke);
+                spriteBatch.DrawString(Font, "Cooldown: " + Convert.ToInt32(globalCooldown), new Vector2(15, 500), Color.WhiteSmoke);
 
 				// Draw the pause screen on top of all of the game assets
 				if (currentGameState == GameState.Paused)
-				{
-					// TODO: Need to figure out fonts so we can draw the pause strings
+                {
+                    spriteBatch.DrawString(Font, "Paused", new Vector2(15, 15), Color.WhiteSmoke);
 				}
 			}
 
