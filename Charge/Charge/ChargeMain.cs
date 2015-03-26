@@ -69,8 +69,7 @@ namespace Charge
         Texture2D PlatformRightTex;
         Texture2D PlayerTex;
         Texture2D WallTex;
-		Texture2D ChargeBarBackgroundTex;
-		Texture2D ChargeBarForegroundTex;
+		Texture2D ChargeBarTex;
 
         public ChargeMain()
             : base()
@@ -123,6 +122,10 @@ namespace Charge
 			UpdatePlayerSpeed(); // Use the current charge level to set the player speed
 
 			barrierSpeed = GameplayVars.BarrierStartSpeed;
+
+			// Initalize the gamestate
+			// TODO: Should probably initialize this to TitleScreen once that is implemented
+			currentGameState = GameState.InGame;
         }
 
         /// <summary>
@@ -137,16 +140,12 @@ namespace Charge
             walls.Clear();
             batteries.Clear();
 
-			// Initalize the gamestate
-			// TODO: Should probably initialize this to TitleScreen once that is implemented
-			currentGameState = GameState.InGame;
-
             //Create the initial objects
             player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 110, GameplayVars.StartPlayerWidth, GameplayVars.StartPlayerHeight), PlayerTex); //The player character
             backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier behind the player
             frontBarrier = new Barrier(new Rectangle(GameplayVars.FrontBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier in front of the player
             background = new Background(BackgroundTex);
-			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 5, graphics.GraphicsDevice.Viewport.Width / 2, 20), ChargeBarBackgroundTex, ChargeBarForegroundTex);
+			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 5, graphics.GraphicsDevice.Viewport.Width / 2, 25), ChargeBarTex);
 
             //Long barrier to catch player at the beginning of the game
             int startPlatWidth = GameplayVars.WinWidth - GameplayVars.PlayerStartX/3;
@@ -198,10 +197,8 @@ namespace Charge
             PlatformRightTex = this.Content.Load<Texture2D>("PlatformRightCap");
             PlayerTex = this.Content.Load<Texture2D>("Player");
             WallTex = this.Content.Load<Texture2D>("Wall");
-            ChargeBarBackgroundTex = this.Content.Load<Texture2D>("ChargeBar");
-			ChargeBarForegroundTex = this.Content.Load<Texture2D>("ChargeBar");
+            ChargeBarTex= this.Content.Load<Texture2D>("ChargeBar");
             Font = this.Content.Load<SpriteFont>("Arial-24");
-            
 
             //Init all objects and lists
             SetupInitialConfiguration();
@@ -335,7 +332,7 @@ namespace Charge
 
 				// Draw the pause screen on top of all of the game assets
 				if (currentGameState == GameState.Paused)
-                {
+				{
                     spriteBatch.DrawString(Font, "Paused", new Vector2(15, 15), Color.WhiteSmoke);
 				}
 			}
@@ -385,13 +382,13 @@ namespace Charge
 
 				// Player has pressed the Shoot command (S key or down arrow key on keyboard)
 				if (controls.isPressed(Keys.S, Buttons.Y) || controls.isPressed(Keys.S, Buttons.Y))
-                {
+				{
                     InitiateShoot();
 				}
 
 				// Player has pressed the Overcharge command (D key or right arrow key on keyboard)
 				if (controls.isPressed(Keys.D, Buttons.B) || controls.isPressed(Keys.D, Buttons.B))
-                {
+				{
                     InitiateOvercharge();
 				}
 
@@ -434,12 +431,12 @@ namespace Charge
             if (globalCooldown > 0)
             {
                 return;
-            }
+			}
 
             playerChargeLevel += GameplayVars.OverchargeAmt;
 
             globalCooldown = GameplayVars.OverchargeCooldownTime;
-        }
+		}
 
 
         /// <summary>
@@ -458,7 +455,7 @@ namespace Charge
             int bulletHeight = 8;
             int bulletX = player.position.Right + bulletWidth;
             int bulletY = player.position.Center.Y - bulletHeight/2 + 5;
-            Projectile bullet = new Projectile(new Rectangle(bulletX, bulletY, bulletWidth, bulletHeight), ChargeBarForegroundTex, GameplayVars.BulletMoveSpeed);
+            Projectile bullet = new Projectile(new Rectangle(bulletX, bulletY, bulletWidth, bulletHeight), ChargeBarTex, GameplayVars.BulletMoveSpeed);
             projectiles.Add(bullet);
 
             globalCooldown = GameplayVars.ShootCooldownTime;
@@ -686,7 +683,7 @@ namespace Charge
             barrierSpeed = 0;
 
 
-        }
+		}
 
 
 		/// <summary>
@@ -703,6 +700,10 @@ namespace Charge
 			// For now, make sure that playerChargeLevel does not go past the charge bar capacity
 			// This will be removed once we have the different colors and charge levels implemented
 			playerChargeLevel = Math.Min(GameplayVars.ChargeBarCapacity, playerChargeLevel);
+
+			//int chargeBackgroundIndex = Convert.ToInt32(playerChargeLevel / GameplayVars.ChargeBarCapacity) % ChargeBarTextures.Count;
+			//int chargeForegroundIndex = (chargeBackgroundIndex + 1) % ChargeBarTextures.Count;
+			
 		}
 
 		/// <summary>
