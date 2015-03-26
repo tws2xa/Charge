@@ -581,6 +581,7 @@ namespace Charge
 			CheckPlayerBatteryCollisions();
             CheckPlayerEnemyCollisions();
             CheckPlayerWallCollisions();
+            CheckPlayerBarrierCollisions();
         }
 
         /// <summary>
@@ -637,9 +638,22 @@ namespace Charge
             }
         }
 
+        public void CheckPlayerBarrierCollisions()
+        {
+            if (player.position.Intersects(backBarrier.position))
+            {
+                PlayerDeath();
+            }
+
+            else if (player.position.Intersects(frontBarrier.position))
+            {
+                PlayerDeath();
+            }
+        }
+
         public void PlayerDeath()
         {
-           
+            
         }
 
 		/// <summary>
