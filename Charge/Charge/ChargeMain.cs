@@ -231,25 +231,34 @@ namespace Charge
 
 				background.Update(deltaTime); //Update the background scroll
 
-				player.Update(deltaTime); //Update the player
+				
 
-                if (player.isDead) PlayerDeath();
+                if (player.isDead)
+                {
 
-				UpdateWorldEntities(deltaTime);	//Update all entities in the world
+                }
 
-				CheckCollisions(); //Check for any collisions
+                else
+                {
+                    player.Update(deltaTime); //Update the player
 
-				UpdatePlayerCharge(deltaTime); // Decrements the player charge, given the amount of time that has passed
+                    UpdateWorldEntities(deltaTime);	//Update all entities in the world
 
-				UpdatePlayerSpeed(); // Updates the player speed based on the current charge
+                    CheckCollisions(); //Check for any collisions
 
-				levelGenerator.Update(deltaTime); //Update level generation info
+                    UpdatePlayerCharge(deltaTime); // Decrements the player charge, given the amount of time that has passed
 
-				GenerateLevelContent();	//Generate more level content
+                    UpdatePlayerSpeed(); // Updates the player speed based on the current charge
 
-				UpdateCooldown(deltaTime); //Update the global cooldown
+                    levelGenerator.Update(deltaTime); //Update level generation info
 
-				UpdateScore(deltaTime);	//Update the player score
+                    GenerateLevelContent();	//Generate more level content
+
+                    UpdateCooldown(deltaTime); //Update the global cooldown
+
+                    UpdateScore(deltaTime);	//Update the player score
+                }
+				
 			}
             
             base.Update(gameTime);
@@ -310,7 +319,14 @@ namespace Charge
 				chargeBar.Draw(spriteBatch, playerChargeLevel);
 
                 // Draw Score
-                spriteBatch.DrawString(Font, "Score: " + score, new Vector2(775, 500), Color.WhiteSmoke);
+                if (player.isDead)
+                {
+                    spriteBatch.DrawString(Font, "Final Score: " + score, new Vector2(365, 250), Color.WhiteSmoke);
+                    spriteBatch.DrawString(Font, "Press [ENTER] to play again", new Vector2(290, 300), Color.WhiteSmoke);
+                }
+                else
+                    spriteBatch.DrawString(Font, "Score: " + score, new Vector2(775, 500), Color.WhiteSmoke);
+                
                 spriteBatch.DrawString(Font, "Cooldown: " + Convert.ToInt32(globalCooldown), new Vector2(15, 500), Color.WhiteSmoke);
 
 				// Draw the pause screen on top of all of the game assets
@@ -337,6 +353,13 @@ namespace Charge
 
 			if (currentGameState == GameState.InGame)
 			{
+
+                if (controls.onPress(Keys.Enter, Buttons.Start) && player.isDead)
+                {
+                    player.isDead = false;
+                    SetupInitialConfiguration();
+                }
+            
 				// Player has pressed the jump command (A button on controller, space bar on keyboard)
 				if (controls.onPress(Keys.Space, Buttons.A) && (player.jmpNum < GameplayVars.playerNumJmps || player.grounded))
 				{
@@ -415,7 +438,7 @@ namespace Charge
 
 
         /// <summary>
-        /// Launches the shoot special ability
+        /// Launches the shoot special ability  
         /// </summary>
         private void InitiateShoot()
         {
@@ -580,6 +603,7 @@ namespace Charge
 			CheckPlayerBatteryCollisions();
             CheckPlayerEnemyCollisions();
             CheckPlayerWallCollisions();
+            
         }
 
         /// <summary>
@@ -638,11 +662,27 @@ namespace Charge
 
         /// <summary>
         /// Kills the player
+        /// This implementation temporary as I anticipte we will be adding a Title and death screen.
         /// </summary>
         public void PlayerDeath()
         {
+           // freezeWorld();
+            player.isDead = true;
+        }
+        /// <summary>
+        /// Freezes GameplayVars on death before score is displayed.
+        /// </summary>
+        public void freezeWorld()
+        {
+
+            GameplayVars.ChargeToSpeedCoefficient = 0;
+            GameplayVars.ChargeDecreaseRate = 0;
+            GameplayVars.TimeToScoreCoefficient = 0f;          
+            barrierSpeed = 0;
+
 
 		}
+
 
 		/// <summary>
 		/// Updates the player speed based on the current charge level
