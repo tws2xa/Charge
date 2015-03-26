@@ -16,9 +16,10 @@ namespace Charge
     /// </summary>
     public class ChargeMain : Game
     {
-
         public const bool DEBUG = true;
 
+        private static readonly Color[] ChargeLevelColors = { new Color(50, 50, 50), Color.Yellow, Color.Blue, Color.Red, Color.Pink, Color.Green }; // The colors for each charge level
+        
 		enum GameState
 		{
 			TitleScreen,
@@ -145,7 +146,7 @@ namespace Charge
             backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier behind the player
             frontBarrier = new Barrier(new Rectangle(GameplayVars.FrontBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier in front of the player
             background = new Background(BackgroundTex);
-			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 5, graphics.GraphicsDevice.Viewport.Width / 2, 25), ChargeBarTex);
+			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 5, graphics.GraphicsDevice.Viewport.Width / 2, 25), ChargeBarTex, ChargeLevelColors[0], ChargeLevelColors[1]);
 
             //Long barrier to catch player at the beginning of the game
             int startPlatWidth = GameplayVars.WinWidth - GameplayVars.PlayerStartX/3;
@@ -183,7 +184,6 @@ namespace Charge
         /// </summary>
         protected override void LoadContent()
         {
-            
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -603,7 +603,6 @@ namespace Charge
 			CheckPlayerBatteryCollisions();
             CheckPlayerEnemyCollisions();
             CheckPlayerWallCollisions();
-            
         }
 
         /// <summary>
@@ -631,7 +630,7 @@ namespace Charge
 			{
 				if (player.position.Intersects(battery.position))
 				{
-					playerChargeLevel += GameplayVars.BatteryChargeReplenish;
+					    playerChargeLevel += GameplayVars.BatteryChargeReplenish;
 					battery.destroyMe = true;
 					break;
 				}
@@ -687,21 +686,27 @@ namespace Charge
 		/// <summary>
 		/// Updates the player speed based on the current charge level
 		/// </summary>
-		public void 
-		UpdatePlayerCharge(float deltaTime)
+		public void UpdatePlayerCharge(float deltaTime)
 		{
 			playerChargeLevel -= GameplayVars.ChargeDecreaseRate * deltaTime;
 
 			// Make sure playerChargeLevel is at least 0
 			playerChargeLevel = Math.Max(0, playerChargeLevel);
+            
+            // Pick the background color for the charge bar
+            int chargeBackgroundIndex;
+            Color backColor;
 
-			// For now, make sure that playerChargeLevel does not go past the charge bar capacity
-			// This will be removed once we have the different colors and charge levels implemented
-			playerChargeLevel = Math.Min(GameplayVars.ChargeBarCapacity, playerChargeLevel);
+            chargeBackgroundIndex = (Convert.ToInt32(Math.Floor(playerChargeLevel / GameplayVars.ChargeBarCapacity)) % ChargeLevelColors.Length);
+            backColor = ChargeLevelColors[chargeBackgroundIndex];
+            
+            // Pick the foreground color for the charge bar
+			int chargeForegroundIndex = (chargeBackgroundIndex + 1) % ChargeLevelColors.Length;
+            Color foreColor = ChargeLevelColors[chargeForegroundIndex];
 
-			//int chargeBackgroundIndex = Convert.ToInt32(playerChargeLevel / GameplayVars.ChargeBarCapacity) % ChargeBarTextures.Count;
-			//int chargeForegroundIndex = (chargeBackgroundIndex + 1) % ChargeBarTextures.Count;
-			
+            // Set the colors for the charge bar
+            chargeBar.SetBackgroundColor(backColor);
+            chargeBar.SetForegroundColor(foreColor);
 		}
 
 		/// <summary>
