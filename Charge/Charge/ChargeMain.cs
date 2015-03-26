@@ -321,24 +321,34 @@ namespace Charge
                 // Draw Score
                 if (player.isDead)
                 {
-                    spriteBatch.DrawString(Font, "Final Score: " + score, new Vector2(365, 250), Color.WhiteSmoke);
-                    spriteBatch.DrawString(Font, "Press [ENTER] to play again", new Vector2(290, 300), Color.WhiteSmoke);
+                    //spriteBatch.DrawString(Font, "Final Score: " + score, new Vector2(365, 250), Color.WhiteSmoke);
+                    //spriteBatch.DrawString(Font, "Press [ENTER] to play again", new Vector2(290, 300), Color.WhiteSmoke);
+                    DrawStringWithShadow(spriteBatch, "Final Score: " + score, new Vector2(365, 250));
+                    DrawStringWithShadow(spriteBatch, "Press [ENTER] to play again", new Vector2(290, 300));
 
                 }
                 else
-                    spriteBatch.DrawString(Font, "Score: " + score, new Vector2(775, 500), Color.WhiteSmoke);
+                {
+                    DrawStringWithShadow(spriteBatch, "Score: " + score, new Vector2(775, 500));
+                }
                 
-                spriteBatch.DrawString(Font, "Cooldown: " + Convert.ToInt32(globalCooldown), new Vector2(15, 500), Color.WhiteSmoke);
+                DrawStringWithShadow(spriteBatch, "Cooldown: " + Convert.ToInt32(globalCooldown), new Vector2(15, 500));
 
 				// Draw the pause screen on top of all of the game assets
 				if (currentGameState == GameState.Paused)
 				{
-                    spriteBatch.DrawString(Font, "Paused", new Vector2(15, 15), Color.WhiteSmoke);
+                    DrawStringWithShadow(spriteBatch, "Paused", new Vector2(15, 15));
 				}
 			}
 
             spriteBatch.End();
             base.Draw(gameTime);
+        }
+
+        void DrawStringWithShadow(SpriteBatch spriteBatch, String text, Vector2 location)
+        {
+            spriteBatch.DrawString(Font, text, new Vector2(location.X + 2, location.Y + 2), Color.Black);
+            spriteBatch.DrawString(Font, text, location, Color.WhiteSmoke);
         }
 
         /// <summary>
@@ -620,7 +630,7 @@ namespace Charge
 
             if (player.position.Right > frontBarrier.position.Center.X)
             {
-               // PlayerDeath();
+                PlayerDeath();
             }
             if (player.position.Left < backBarrier.position.Center.X)
             {
