@@ -69,7 +69,7 @@ namespace Charge
         Texture2D PlatformRightTex;
         Texture2D PlayerTex;
         Texture2D WallTex;
-		List<Texture2D> ChargeBarTextures; // Holds all of the textures for the different charge levels
+		Texture2D ChargeBarTex;
 
         public ChargeMain()
             : base()
@@ -126,8 +126,6 @@ namespace Charge
 			// Initalize the gamestate
 			// TODO: Should probably initialize this to TitleScreen once that is implemented
 			currentGameState = GameState.InGame;
-
-			ChargeBarTextures = new List<Texture2D>();
         }
 
         /// <summary>
@@ -147,7 +145,7 @@ namespace Charge
             backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier behind the player
             frontBarrier = new Barrier(new Rectangle(GameplayVars.FrontBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier in front of the player
             background = new Background(BackgroundTex);
-			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 5, graphics.GraphicsDevice.Viewport.Width / 2, 25), ChargeBarBackgroundTex, ChargeBarForegroundTex);
+			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 5, graphics.GraphicsDevice.Viewport.Width / 2, 25), ChargeBarTex);
 
             //Long barrier to catch player at the beginning of the game
             int startPlatWidth = GameplayVars.WinWidth - GameplayVars.PlayerStartX/3;
@@ -199,8 +197,7 @@ namespace Charge
             PlatformRightTex = this.Content.Load<Texture2D>("PlatformRightCap");
             PlayerTex = this.Content.Load<Texture2D>("Player");
             WallTex = this.Content.Load<Texture2D>("Wall");
-            ChargeBarBackgroundTex = this.Content.Load<Texture2D>("ChargeBar");
-			ChargeBarForegroundTex = this.Content.Load<Texture2D>("ChargeBar");
+            ChargeBarTex= this.Content.Load<Texture2D>("ChargeBar");
             Font = this.Content.Load<SpriteFont>("Arial-24");
 
             //Init all objects and lists
@@ -433,7 +430,7 @@ namespace Charge
             int bulletHeight = 8;
             int bulletX = player.position.Right + bulletWidth;
             int bulletY = player.position.Center.Y - bulletHeight/2 + 5;
-            Projectile bullet = new Projectile(new Rectangle(bulletX, bulletY, bulletWidth, bulletHeight), ChargeBarForegroundTex, GameplayVars.BulletMoveSpeed);
+            Projectile bullet = new Projectile(new Rectangle(bulletX, bulletY, bulletWidth, bulletHeight), ChargeBarTex, GameplayVars.BulletMoveSpeed);
             projectiles.Add(bullet);
 
             globalCooldown = GameplayVars.ShootCooldownTime;
@@ -660,13 +657,11 @@ namespace Charge
 
 			// For now, make sure that playerChargeLevel does not go past the charge bar capacity
 			// This will be removed once we have the different colors and charge levels implemented
-			//playerChargeLevel = Math.Min(GameplayVars.ChargeBarCapacity, playerChargeLevel);
+			playerChargeLevel = Math.Min(GameplayVars.ChargeBarCapacity, playerChargeLevel);
 
-			int chargeBackgroundIndex = Convert.ToInt32(playerChargeLevel / GameplayVars.ChargeBarCapacity) % ChargeBarTextures.Count;
-			int chargeForegroundIndex = (chargeBackgroundIndex + 1) % ChargeBarTextures.Count;
-
-			chargeBar.SetBackgroundTexture(ChargeBarTextures[chargeBackgroundIndex]);
-			chargeBar.SetForegroundTexture(ChargeBarTextures[chargeForegroundIndex]);
+			//int chargeBackgroundIndex = Convert.ToInt32(playerChargeLevel / GameplayVars.ChargeBarCapacity) % ChargeBarTextures.Count;
+			//int chargeForegroundIndex = (chargeBackgroundIndex + 1) % ChargeBarTextures.Count;
+			
 		}
 
 		/// <summary>

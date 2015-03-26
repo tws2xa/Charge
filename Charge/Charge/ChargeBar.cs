@@ -6,38 +6,39 @@ namespace Charge
 {
 	class ChargeBar
 	{
-		public Texture2D backgroundTex; //Sprite for the object
-		public Texture2D foregroundTex; //Sprite for the object
+		public Texture2D tex;
 
-        public Color backColor = new Color(50, 50, 50);
-        public Color foreColor = Color.Yellow;
+		public Color backColor;
+		public Color foreColor;
 
 		public Rectangle position; //Object's position in the world
 
-		public ChargeBar(Rectangle position, Texture2D backgroundTex, Texture2D foregroundTex)
+		public ChargeBar(Rectangle position, Texture2D tex)
 		{
 			this.position = position;
 
-			this.backgroundTex = backgroundTex;
-			this.foregroundTex = foregroundTex;
+			this.tex = tex;
+
+			backColor = new Color(50, 50, 50);
+			foreColor = Color.Yellow;
 		}
 
 		public void Draw(SpriteBatch spriteBatch, float chargeLevel)
 		{
-			spriteBatch.Draw(backgroundTex, position, backColor);
+			spriteBatch.Draw(tex, position, backColor);
 
 			Rectangle chargeRect = new Rectangle(position.Left, position.Top, Convert.ToInt32(chargeLevel / GameplayVars.ChargeBarCapacity * position.Width), position.Height);
-			spriteBatch.Draw(foregroundTex, chargeRect, foreColor);
+			spriteBatch.Draw(tex, chargeRect, foreColor);
 		}
 
-		public void SetForegroundTexture(Texture2D tex)
+		public void SetForegroundColor(Color c)
 		{
-			foregroundTex = tex;
+			foreColor = c;
 		}
 
-		public void SetBackgroundTexture(Texture2D tex)
+		public void SetBackgroundColor(Color c)
 		{
-			backgroundTex = tex;
+			backColor = c;
 		}
 	}
 }
