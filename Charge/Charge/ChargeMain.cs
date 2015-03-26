@@ -326,6 +326,7 @@ namespace Charge
                 {
                     spriteBatch.DrawString(Font, "Final Score: " + score, new Vector2(365, 250), Color.WhiteSmoke);
                     spriteBatch.DrawString(Font, "Press [ENTER] to play again", new Vector2(290, 300), Color.WhiteSmoke);
+
                 }
                 else
                     spriteBatch.DrawString(Font, "Score: " + score, new Vector2(775, 500), Color.WhiteSmoke);
@@ -360,6 +361,7 @@ namespace Charge
                 if (controls.onPress(Keys.Enter, Buttons.Start) && player.isDead)
                 {
                     player.isDead = false;
+                    score = 0;
                     SetupInitialConfiguration();
                 }
             
