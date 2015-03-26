@@ -26,5 +26,15 @@ namespace Charge
 			Rectangle chargeRect = new Rectangle(position.Left, position.Top, Convert.ToInt32(chargeLevel / GameplayVars.ChargeBarCapacity * position.Width), position.Height);
 			spriteBatch.Draw(foregroundTex, chargeRect, Color.White);
 		}
+
+		public void SetForegroundTexture(Texture2D tex)
+		{
+			foregroundTex = tex;
+		}
+
+		public void SetBackgroundTexture(Texture2D tex)
+		{
+			backgroundTex = tex;
+		}
 	}
 }

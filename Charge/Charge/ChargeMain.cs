@@ -67,8 +67,7 @@ namespace Charge
         Texture2D PlatformRightTex;
         Texture2D PlayerTex;
         Texture2D WallTex;
-		Texture2D ChargeBarBackgroundTex;
-		Texture2D ChargeBarForegroundTex;
+		List<Texture2D> ChargeBarTextures; // Holds all of the textures for the different charge levels
 
         public ChargeMain()
             : base()
@@ -121,7 +120,13 @@ namespace Charge
 			UpdatePlayerSpeed(); // Use the current charge level to set the player speed
 
 			barrierSpeed = GameplayVars.BarrierStartSpeed;
-        }
+
+			// Initalize the gamestate
+			// TODO: Should probably initialize this to TitleScreen once that is implemented
+			currentGameState = GameState.InGame;
+
+			ChargeBarTextures = new List<Texture2D>();
+		}
 
         /// <summary>
         /// Creates and Positions all objects for the start of the level
@@ -135,16 +140,12 @@ namespace Charge
             walls.Clear();
             batteries.Clear();
 
-			// Initalize the gamestate
-			// TODO: Should probably initialize this to TitleScreen once that is implemented
-			currentGameState = GameState.InGame;
-
             //Create the initial objects
             player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 110, GameplayVars.StartPlayerWidth, GameplayVars.StartPlayerHeight), PlayerTex); //The player character
             backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier behind the player
             frontBarrier = new Barrier(new Rectangle(GameplayVars.FrontBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier in front of the player
             background = new Background(BackgroundTex);
-			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 0, graphics.GraphicsDevice.Viewport.Width / 2, 25), ChargeBarBackgroundTex, ChargeBarForegroundTex);
+			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 0, graphics.GraphicsDevice.Viewport.Width / 2, 25), ChargeBarTextures[0], ChargeBarTextures[1]);
 
             //Long barrier to catch player at the beginning of the game
             int startPlatWidth = GameplayVars.WinWidth - GameplayVars.PlayerStartX/3;
@@ -195,8 +196,10 @@ namespace Charge
             PlatformRightTex = this.Content.Load<Texture2D>("PlatformRightCap.png");
             PlayerTex = this.Content.Load<Texture2D>("Player.png");
             WallTex = this.Content.Load<Texture2D>("Wall.png");
-			ChargeBarBackgroundTex = this.Content.Load<Texture2D>("Black.png");
-			ChargeBarForegroundTex = this.Content.Load<Texture2D>("Yellow.png");
+
+			// Load ChargeBar textures
+			ChargeBarTextures.Add(this.Content.Load<Texture2D>("Black.png"));
+			ChargeBarTextures.Add(this.Content.Load<Texture2D>("Yellow.png"));
 
             //Init all objects and lists
             SetupInitialConfiguration();
@@ -553,7 +556,13 @@ namespace Charge
 
 			// For now, make sure that playerChargeLevel does not go past the charge bar capacity
 			// This will be removed once we have the different colors and charge levels implemented
-			playerChargeLevel = Math.Min(GameplayVars.ChargeBarCapacity, playerChargeLevel);
+			//playerChargeLevel = Math.Min(GameplayVars.ChargeBarCapacity, playerChargeLevel);
+
+			int chargeBackgroundIndex = Convert.ToInt32(playerChargeLevel / GameplayVars.ChargeBarCapacity) % ChargeBarTextures.Count;
+			int chargeForegroundIndex = (chargeBackgroundIndex + 1) % ChargeBarTextures.Count;
+
+			chargeBar.SetBackgroundTexture(ChargeBarTextures[chargeBackgroundIndex]);
+			chargeBar.SetForegroundTexture(ChargeBarTextures[chargeForegroundIndex]);
 		}
 
 		/// <summary>
