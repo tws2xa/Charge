@@ -358,7 +358,7 @@ namespace Charge
                 if (controls.onPress(Keys.Enter, Buttons.Start) && player.isDead)
                 {
                     player.isDead = false;
-                    score = 0;
+                    InitVars();
                     SetupInitialConfiguration();
                 }
             
@@ -545,7 +545,9 @@ namespace Charge
                 }
             }
 
-            //Update Barriers
+            //Update Barriers (don't let them move any go faster than the player could ever go)
+            barrierSpeed = Math.Min(barrierSpeed + GameplayVars.BarrierSpeedUpRate * deltaTime, GameplayVars.ChargeBarCapacity * GameplayVars.ChargeToSpeedCoefficient);
+            
             frontBarrier.Update(deltaTime);
             backBarrier.Update(deltaTime);
 
@@ -605,7 +607,37 @@ namespace Charge
 			CheckPlayerBatteryCollisions();
             CheckPlayerEnemyCollisions();
             CheckPlayerWallCollisions();
-            
+            CheckPlayerBarrierCollisions();
+        }
+
+        /// <summary>
+        /// Checks if the player collided with either barrier
+        /// </summary>
+        public void CheckPlayerBarrierCollisions()
+        {
+
+            if (player.position.Right > frontBarrier.position.Center.X)
+            {
+                PlayerDeath();
+            }
+            if (player.position.Left < backBarrier.position.Center.X)
+            {
+                PlayerDeath();
+            }
+
+            //The below method seemed a bit unforgiving, especially due to the "glow" still
+            //Being a part of the rectangle intersect
+            /*
+            if (player.position.Intersects(backBarrier.position))
+            {
+                PlayerDeath();
+            }
+
+            else if (player.position.Intersects(frontBarrier.position))
+            {
+                PlayerDeath();
+            }
+            */
         }
 
         /// <summary>

@@ -25,7 +25,7 @@ namespace Charge
         public static float BulletMoveSpeed = 10;
         public static float ChargeDecreaseRate = 2;
         public static float BatteryChargeReplenish = 5;
-        public static float BarrierSpeedUpRate;
+        public static float BarrierSpeedUpRate = 3.0f;
         public static float ChargeToSpeedCoefficient = 5.0f;
         public static float TimeToScoreCoefficient = 4.5f;
         public static float DischargeCooldownTime = 20; //Seconds
