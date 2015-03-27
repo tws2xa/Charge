@@ -512,9 +512,9 @@ namespace Charge
         {
             if (player.OverchargeActive())
             {
-                if (rand.NextDouble() < 0.15)
+                if (rand.NextDouble() < 0.4)
                 {
-                    int effectWidth = 30;
+                    int effectWidth = 5;
                     int effectHeight = 5;
                     int effectX = player.position.X - effectWidth;
                     int effectY = player.position.Center.Y - effectHeight / 2;

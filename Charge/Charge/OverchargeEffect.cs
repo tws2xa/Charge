@@ -15,7 +15,7 @@ namespace Charge
 
         float opacity; //Fade over time
         float tmpWidth; //Maintain as  a float, since position only uses ints
-        Player player; //Keep track of player's position
+        Player player; //Keep track of player's positions
         
         public OverchargeEffect(Rectangle startPos, Texture2D tex, Player player)
         {
@@ -28,14 +28,14 @@ namespace Charge
 
         public override void Update(float deltaTime)
         {
-            opacity -= 1.0f * deltaTime;
+            opacity -= deltaTime/2.0f;
 
             if (Math.Abs(player.position.Y - position.Y) > player.position.Height)
             {
                 //Fade more quickly when the player moves away
                 //It looked weird when the player was on a different
                 //tier and there were still a bunch of lines below/above him/her
-                opacity -= 3 * deltaTime;
+                opacity -= 2 * deltaTime;
             }
 
             if (this.opacity <= 0)
@@ -44,7 +44,7 @@ namespace Charge
                 this.destroyMe = true;
             }
 
-            tmpWidth += ChargeMain.GetPlayerSpeed() / 2.0f * deltaTime;
+            //tmpWidth += ChargeMain.GetPlayerSpeed() / 2.0f * deltaTime;
             position.Width = Convert.ToInt32(tmpWidth);
 
             base.Update(deltaTime);
