@@ -53,8 +53,6 @@ namespace Charge
         private static float playerSpeed; //Current run speed
         public static float barrierSpeed; //Speed of barriers
 
-		float playerChargeLevel; // Current charge
-
         //Useful Tools
         Random rand; //Used for generating random variables
         LevelGenerator levelGenerator; //Generates the platforms
@@ -119,8 +117,7 @@ namespace Charge
             curLevel = 0;
             globalCooldown = 0;
 
-			playerChargeLevel = GameplayVars.ChargeBarCapacity / 2;	// Init the player charge level to half of the max
-			UpdatePlayerSpeed(); // Use the current charge level to set the player speed
+			//UpdatePlayerSpeed(); // Use the current charge level to set the player speed
 
 			barrierSpeed = GameplayVars.BarrierStartSpeed;
 
@@ -316,7 +313,7 @@ namespace Charge
 				backBarrier.Draw(spriteBatch);
 
 				// Draw UI
-				chargeBar.Draw(spriteBatch, playerChargeLevel);
+				chargeBar.Draw(spriteBatch, player.GetCharge());
 
                 // Draw Score
                 if (player.isDead)
@@ -412,13 +409,13 @@ namespace Charge
 				if (DEBUG)
 				{
 					//Control player speed with up and down arrows/right and left bumper.
-					if (controls.isPressed(Keys.Up, Buttons.RightShoulder))
+					if (controls.isPressed(Keys.D0, Buttons.RightShoulder))
 					{
-						playerChargeLevel += 5;
+						player.IncCharge(5);
 					}
-					if (controls.isPressed(Keys.Down, Buttons.LeftShoulder))
+					if (controls.isPressed(Keys.D9, Buttons.LeftShoulder))
 					{
-						playerChargeLevel -= 5;
+						player.DecCharge(5);
 					}
 				}
 			}
@@ -443,7 +440,7 @@ namespace Charge
                 return;
 			}
 
-            playerChargeLevel += GameplayVars.OverchargeAmt;
+            player.Overcharge();
 
             globalCooldown = GameplayVars.OverchargeCooldownTime;
 		}
@@ -459,7 +456,7 @@ namespace Charge
                 return;
             }
 
-            playerChargeLevel -= GameplayVars.ShootCost;
+            player.DecCharge(GameplayVars.ShootCost);
 
             int bulletWidth = 15;
             int bulletHeight = 8;
@@ -481,7 +478,7 @@ namespace Charge
                 return;
             }
 
-            playerChargeLevel -= GameplayVars.DischargeCost;
+            player.DecCharge(GameplayVars.DischargeCost);
 
             //Remove all enemies in front of player
             for (int i = 0; i < enemies.Count; i++ )
@@ -677,7 +674,7 @@ namespace Charge
 			{
 				if (player.position.Intersects(battery.position))
 				{
-					    playerChargeLevel += GameplayVars.BatteryChargeReplenish;
+					    player.IncCharge(GameplayVars.BatteryChargeReplenish);
 					battery.destroyMe = true;
 					break;
 				}
@@ -701,7 +698,14 @@ namespace Charge
             {
                 if (player.position.Intersects(wall.position))
                 {
-                    PlayerDeath();
+                    if (player.OverchargeActive())
+                    {
+                        wall.destroyMe = true;
+                    }
+                    else
+                    {
+                        PlayerDeath();
+                    }
                 }
             }
         }
@@ -735,16 +739,13 @@ namespace Charge
 		/// </summary>
 		public void UpdatePlayerCharge(float deltaTime)
 		{
-			playerChargeLevel -= GameplayVars.ChargeDecreaseRate * deltaTime;
+			player.DecCharge(GameplayVars.ChargeDecreaseRate * deltaTime);
 
-			// Make sure playerChargeLevel is at least 0
-			playerChargeLevel = Math.Max(0, playerChargeLevel);
-            
             // Pick the background color for the charge bar
             int chargeBackgroundIndex;
             Color backColor;
 
-            chargeBackgroundIndex = (Convert.ToInt32(Math.Floor(playerChargeLevel / GameplayVars.ChargeBarCapacity)) % ChargeLevelColors.Length);
+            chargeBackgroundIndex = (Convert.ToInt32(Math.Floor(player.GetCharge() / GameplayVars.ChargeBarCapacity)) % ChargeLevelColors.Length);
             backColor = ChargeLevelColors[chargeBackgroundIndex];
             
             // Pick the foreground color for the charge bar
@@ -761,7 +762,7 @@ namespace Charge
 		/// </summary>
 		public void UpdatePlayerSpeed()
 		{
-			playerSpeed = GameplayVars.ChargeToSpeedCoefficient * playerChargeLevel;
+			playerSpeed = GameplayVars.ChargeToSpeedCoefficient * player.GetCharge();
 		}
 
 		/// <summary>
