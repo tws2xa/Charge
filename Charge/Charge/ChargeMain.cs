@@ -39,6 +39,7 @@ namespace Charge
         List<Projectile> projectiles; //All bullets in game
         List<WorldEntity> walls; //All walls in the game
         List<WorldEntity> batteries; //All batteries in the game
+        List<WorldEntity> otherEnts; //Other objects, like effects
         Barrier backBarrier; //The death barrier behind the player
         Barrier frontBarrier; //The death barrier in front of the player
         Background background; //The scrolling backdrop
@@ -95,6 +96,7 @@ namespace Charge
             projectiles = new List<Projectile>(); //All bullets in game
             walls = new List<WorldEntity>(); //All walls in the game
             batteries = new List<WorldEntity>(); //All batteries in the game
+            otherEnts = new List<WorldEntity>(); //All other objects needed.
 
             //Initialize tools
             rand = new Random();
@@ -137,6 +139,7 @@ namespace Charge
             projectiles.Clear();
             walls.Clear();
             batteries.Clear();
+            otherEnts.Clear();
 
             //Create the initial objects
             player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 110, GameplayVars.StartPlayerWidth, GameplayVars.StartPlayerHeight), PlayerTex); //The player character
@@ -250,10 +253,12 @@ namespace Charge
                     levelGenerator.Update(deltaTime); //Update level generation info
 
                     GenerateLevelContent();	//Generate more level content
-
+                    
                     UpdateCooldown(deltaTime); //Update the global cooldown
 
                     UpdateScore(deltaTime);	//Update the player score
+                    
+                    UpdateEffects(deltaTime); //Handle effects for things like Overcharge, etc
                 }
 				
 			}
@@ -304,6 +309,14 @@ namespace Charge
 				{
 					battery.Draw(spriteBatch);
 				}
+
+                //Draw Other
+                foreach (WorldEntity ent in otherEnts)
+                {
+                    ent.Draw(spriteBatch);
+                }
+
+
 
 				//Draw the player
 				player.Draw(spriteBatch);
@@ -494,6 +507,32 @@ namespace Charge
             globalCooldown = GameplayVars.DischargeCooldownTime;
         }
 
+
+        public void UpdateEffects(float deltaTime)
+        {
+            if (player.OverchargeActive())
+            {
+                if (rand.NextDouble() < 0.15)
+                {
+                    int effectWidth = 30;
+                    int effectHeight = 5;
+                    int effectX = player.position.X - effectWidth;
+                    int effectY = player.position.Center.Y - effectHeight / 2;
+                    double heightRand = rand.NextDouble();
+                    if (heightRand < 0.3)
+                    {
+                        effectY += player.position.Height / 3;
+                    }
+                    else if (heightRand > 0.7)
+                    {
+                        effectY -= player.position.Height / 3;
+                    }
+                    OverchargeEffect effect = new OverchargeEffect(new Rectangle(effectX, effectY, effectWidth, effectHeight), ChargeBarTex, player);
+                    otherEnts.Add(effect);
+                }
+            }
+        }
+
         /// <summary>
         /// Update the global cooldown
         /// </summary>
@@ -604,6 +643,22 @@ namespace Charge
                     i--;
                 }
             }
+
+            //Update Other
+            for (int i = 0; i < otherEnts.Count; i++)
+            {
+                WorldEntity entity = otherEnts[i];
+                entity.Update(deltaTime);
+
+                //Check if it should be deleted
+                if (entity.destroyMe)
+                {
+                    otherEnts.Remove(entity);
+                    entity = null;
+                    i--;
+                }
+            }
+
 
         }
 
@@ -724,13 +779,10 @@ namespace Charge
         /// </summary>
         public void freezeWorld()
         {
-
             GameplayVars.ChargeToSpeedCoefficient = 0;
             GameplayVars.ChargeDecreaseRate = 0;
             GameplayVars.TimeToScoreCoefficient = 0f;          
             barrierSpeed = 0;
-
-
 		}
 
 
