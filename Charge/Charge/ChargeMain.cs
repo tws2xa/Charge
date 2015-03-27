@@ -39,7 +39,7 @@ namespace Charge
         List<Projectile> projectiles; //All bullets in game
         List<WorldEntity> walls; //All walls in the game
         List<WorldEntity> batteries; //All batteries in the game
-        List<WorldEntity> discharges; // All discharge blasts in the game
+        List<WorldEntity> otherEnts; //Other objects, like effects
         Barrier backBarrier; //The death barrier behind the player
         Barrier frontBarrier; //The death barrier in front of the player
         Background background; //The scrolling backdrop
@@ -53,8 +53,6 @@ namespace Charge
         private SpriteFont Font; //Sprite Font to draw score
         private static float playerSpeed; //Current run speed
         public static float barrierSpeed; //Speed of barriers
-
-		float playerChargeLevel; // Current charge
 
         //Useful Tools
         Random rand; //Used for generating random variables
@@ -99,7 +97,7 @@ namespace Charge
             projectiles = new List<Projectile>(); //All bullets in game
             walls = new List<WorldEntity>(); //All walls in the game
             batteries = new List<WorldEntity>(); //All batteries in the game
-            discharges = new List<WorldEntity>(); // All discharge blasts in the game
+            otherEnts = new List<WorldEntity>(); //All other objects needed.
 
             //Initialize tools
             rand = new Random();
@@ -122,8 +120,7 @@ namespace Charge
             curLevel = 0;
             globalCooldown = 0;
 
-			playerChargeLevel = GameplayVars.ChargeBarCapacity / 2;	// Init the player charge level to half of the max
-			UpdatePlayerSpeed(); // Use the current charge level to set the player speed
+			//UpdatePlayerSpeed(); // Use the current charge level to set the player speed
 
 			barrierSpeed = GameplayVars.BarrierStartSpeed;
 
@@ -143,6 +140,7 @@ namespace Charge
             projectiles.Clear();
             walls.Clear();
             batteries.Clear();
+            otherEnts.Clear();
 
             //Create the initial objects
             player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 110, GameplayVars.StartPlayerWidth, GameplayVars.StartPlayerHeight), PlayerTex); //The player character
@@ -236,8 +234,7 @@ namespace Charge
 
 				background.Update(deltaTime); //Update the background scroll
 
-                UpdateDischargeAnimations(deltaTime); // Update the discharge animations
-
+				
                 if (player.isDead)
                 {
 
@@ -261,6 +258,8 @@ namespace Charge
                     UpdateCooldown(deltaTime); //Update the global cooldown
 
                     UpdateScore(deltaTime);	//Update the player score
+                    
+                    UpdateEffects(deltaTime); //Handle effects for things like Overcharge, etc
                 }
 			}
             
@@ -311,11 +310,13 @@ namespace Charge
 					battery.Draw(spriteBatch);
 				}
 
-                // Draw the discharge blasts
-                foreach (WorldEntity discharge in discharges)
+                //Draw Other
+                foreach (WorldEntity ent in otherEnts)
                 {
-                    discharge.Draw(spriteBatch);
+                    ent.Draw(spriteBatch);
                 }
+
+
 
 				//Draw the player
 				player.Draw(spriteBatch);
@@ -325,7 +326,7 @@ namespace Charge
 				backBarrier.Draw(spriteBatch);
 
 				// Draw UI
-				chargeBar.Draw(spriteBatch, playerChargeLevel);
+				chargeBar.Draw(spriteBatch, player.GetCharge());
 
                 // Draw Score
                 if (player.isDead)
@@ -420,13 +421,13 @@ namespace Charge
 				if (DEBUG)
 				{
 					//Control player speed with up and down arrows/right and left bumper.
-					if (controls.isPressed(Keys.Up, Buttons.RightShoulder))
+					if (controls.isPressed(Keys.D0, Buttons.RightShoulder))
 					{
-						playerChargeLevel += 5;
+						player.IncCharge(5);
 					}
-					if (controls.isPressed(Keys.Down, Buttons.LeftShoulder))
+					if (controls.isPressed(Keys.D9, Buttons.LeftShoulder))
 					{
-						playerChargeLevel -= 5;
+						player.DecCharge(5);
 					}
 				}
 			}
@@ -451,7 +452,7 @@ namespace Charge
                 return;
 			}
 
-            playerChargeLevel += GameplayVars.OverchargeAmt;
+            player.Overcharge();
 
             globalCooldown = GameplayVars.OverchargeCooldownTime;
 		}
@@ -467,7 +468,7 @@ namespace Charge
                 return;
             }
 
-            playerChargeLevel -= GameplayVars.ShootCost;
+            player.DecCharge(GameplayVars.ShootCost);
 
             int bulletWidth = 15;
             int bulletHeight = 8;
@@ -489,7 +490,7 @@ namespace Charge
                 return;
             }
 
-            playerChargeLevel -= GameplayVars.DischargeCost;
+            player.DecCharge(GameplayVars.DischargeCost);
 
             //Remove all enemies in front of player
             for (int i = 0; i < enemies.Count; i++ )
@@ -502,9 +503,33 @@ namespace Charge
                 }
             }
 
-            discharges.Add(new DischargeAnimation(new Rectangle(player.position.Left, player.position.Top, player.position.Width, player.position.Width), DischargeTex));
-
             globalCooldown = GameplayVars.DischargeCooldownTime;
+        }
+
+
+        public void UpdateEffects(float deltaTime)
+        {
+            if (player.OverchargeActive())
+            {
+                if (rand.NextDouble() < 0.4)
+                {
+                    int effectWidth = 5;
+                    int effectHeight = 5;
+                    int effectX = player.position.X - effectWidth;
+                    int effectY = player.position.Center.Y - effectHeight / 2;
+                    double heightRand = rand.NextDouble();
+                    if (heightRand < 0.3)
+                    {
+                        effectY += player.position.Height / 3;
+                    }
+                    else if (heightRand > 0.7)
+                    {
+                        effectY -= player.position.Height / 3;
+                    }
+                    OverchargeEffect effect = new OverchargeEffect(new Rectangle(effectX, effectY, effectWidth, effectHeight), ChargeBarTex, player);
+                    otherEnts.Add(effect);
+                }
+            }
         }
 
         /// <summary>
@@ -527,17 +552,6 @@ namespace Charge
                 int addAmt = Convert.ToInt32(Math.Floor(tempScore));
                 score += addAmt;
                 tempScore -= addAmt;
-            }
-        }
-
-        /// <summary>
-        /// Update the discharge animation
-        /// </summary>
-        public void UpdateDischargeAnimations(float deltaTime)
-        {
-            foreach (WorldEntity discharge in discharges)
-            {
-                discharge.Update(deltaTime);
             }
         }
 
@@ -628,6 +642,23 @@ namespace Charge
                     i--;
                 }
             }
+
+            //Update Other
+            for (int i = 0; i < otherEnts.Count; i++)
+            {
+                WorldEntity entity = otherEnts[i];
+                entity.Update(deltaTime);
+
+                //Check if it should be deleted
+                if (entity.destroyMe)
+                {
+                    otherEnts.Remove(entity);
+                    entity = null;
+                    i--;
+                }
+            }
+
+
         }
 
         /// <summary>
@@ -696,7 +727,7 @@ namespace Charge
 			{
 				if (player.position.Intersects(battery.position))
 				{
-					    playerChargeLevel += GameplayVars.BatteryChargeReplenish;
+					    player.IncCharge(GameplayVars.BatteryChargeReplenish);
 					battery.destroyMe = true;
 					break;
 				}
@@ -720,9 +751,16 @@ namespace Charge
             {
                 if (player.position.Intersects(wall.position))
                 {
+                    if (player.OverchargeActive())
+                    {
+                        wall.destroyMe = true;
+                    }
+                    else
+                    {
                     PlayerDeath();
                 }
             }
+        }
         }
 
         /// <summary>
@@ -751,16 +789,13 @@ namespace Charge
 		/// </summary>
 		public void UpdatePlayerCharge(float deltaTime)
 		{
-			playerChargeLevel -= GameplayVars.ChargeDecreaseRate * deltaTime;
-
-			// Make sure playerChargeLevel is at least 0
-			playerChargeLevel = Math.Max(0, playerChargeLevel);
+			player.DecCharge(GameplayVars.ChargeDecreaseRate * deltaTime);
             
             // Pick the background color for the charge bar
             int chargeBackgroundIndex;
             Color backColor;
 
-            chargeBackgroundIndex = (Convert.ToInt32(Math.Floor(playerChargeLevel / GameplayVars.ChargeBarCapacity)) % ChargeLevelColors.Length);
+            chargeBackgroundIndex = (Convert.ToInt32(Math.Floor(player.GetCharge() / GameplayVars.ChargeBarCapacity)) % ChargeLevelColors.Length);
             backColor = ChargeLevelColors[chargeBackgroundIndex];
             
             // Pick the foreground color for the charge bar
@@ -777,7 +812,7 @@ namespace Charge
 		/// </summary>
 		public void UpdatePlayerSpeed()
 		{
-			playerSpeed = GameplayVars.ChargeToSpeedCoefficient * playerChargeLevel;
+			playerSpeed = GameplayVars.ChargeToSpeedCoefficient * player.GetCharge();
 		}
 
 		/// <summary>
