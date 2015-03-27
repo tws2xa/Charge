@@ -315,9 +315,7 @@ namespace Charge
                 {
                     ent.Draw(spriteBatch);
                 }
-
-
-
+                
 				//Draw the player
 				player.Draw(spriteBatch);
 
@@ -492,16 +490,8 @@ namespace Charge
 
             player.DecCharge(GameplayVars.DischargeCost);
 
-            //Remove all enemies in front of player
-            for (int i = 0; i < enemies.Count; i++ )
-            {
-                Enemy enemy = enemies[i];
-                if (enemy.position.Left > player.position.Right)
-                {
-                    enemies.RemoveAt(i);
-                    i--;
-                }
-            }
+            DischargeAnimation discharge = new DischargeAnimation(new Rectangle(player.position.Left, player.position.Top, player.position.Width, player.position.Width), DischargeTex);
+            otherEnts.Add(discharge);
 
             globalCooldown = GameplayVars.DischargeCooldownTime;
         }
@@ -657,8 +647,6 @@ namespace Charge
                     i--;
                 }
             }
-
-
         }
 
         /// <summary>
@@ -671,6 +659,7 @@ namespace Charge
             CheckPlayerEnemyCollisions();
             CheckPlayerWallCollisions();
             CheckPlayerBarrierCollisions();
+            CheckEnemyDischargeBlastCollisions();
         }
 
         /// <summary>
@@ -757,10 +746,27 @@ namespace Charge
                     }
                     else
                     {
-                    PlayerDeath();
+                        PlayerDeath();
+                    }
                 }
             }
         }
+
+        /// <summary>
+        /// Kill enemies as the discharge blast collides with them
+        /// </summary>
+        public void CheckEnemyDischargeBlastCollisions()
+        {
+            foreach (WorldEntity enemy in enemies)
+            {
+                foreach (WorldEntity effect in otherEnts)
+                {
+                    if (effect is DischargeAnimation && effect.position.Intersects(enemy.position))
+                    {
+                        enemy.destroyMe = true;
+                    }
+                }
+            }
         }
 
         /// <summary>
