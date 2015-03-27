@@ -41,6 +41,7 @@
     <Compile Include="ChargeMain.cs" />
     <Compile Include="ChargeBar.cs" />
     <Compile Include="Controls.cs" />
+    <Compile Include="DischargeAnimation.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="GameplayVars.cs" />
     <Compile Include="LevelGenerationVars.cs" />
@@ -80,6 +81,7 @@
     <Content Include="Content\ChargeBar.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Discharge.png" />
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>

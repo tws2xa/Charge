@@ -39,6 +39,7 @@ namespace Charge
         List<Projectile> projectiles; //All bullets in game
         List<WorldEntity> walls; //All walls in the game
         List<WorldEntity> batteries; //All batteries in the game
+        List<WorldEntity> discharges; // All discharge blasts in the game
         Barrier backBarrier; //The death barrier behind the player
         Barrier frontBarrier; //The death barrier in front of the player
         Background background; //The scrolling backdrop
@@ -71,6 +72,7 @@ namespace Charge
         Texture2D PlayerTex;
         Texture2D WallTex;
 		Texture2D ChargeBarTex;
+        Texture2D DischargeTex;
 
         public ChargeMain()
             : base()
@@ -97,6 +99,7 @@ namespace Charge
             projectiles = new List<Projectile>(); //All bullets in game
             walls = new List<WorldEntity>(); //All walls in the game
             batteries = new List<WorldEntity>(); //All batteries in the game
+            discharges = new List<WorldEntity>(); // All discharge blasts in the game
 
             //Initialize tools
             rand = new Random();
@@ -198,6 +201,8 @@ namespace Charge
             PlayerTex = this.Content.Load<Texture2D>("Player");
             WallTex = this.Content.Load<Texture2D>("Wall");
             ChargeBarTex= this.Content.Load<Texture2D>("ChargeBar");
+            DischargeTex = this.Content.Load<Texture2D>("Discharge");
+
             Font = this.Content.Load<SpriteFont>("Arial-24");
 
             //Init all objects and lists
@@ -231,13 +236,12 @@ namespace Charge
 
 				background.Update(deltaTime); //Update the background scroll
 
-				
+                UpdateDischargeAnimations(deltaTime); // Update the discharge animations
 
                 if (player.isDead)
                 {
 
                 }
-
                 else
                 {
                     player.Update(deltaTime); //Update the player
@@ -258,7 +262,6 @@ namespace Charge
 
                     UpdateScore(deltaTime);	//Update the player score
                 }
-				
 			}
             
             base.Update(gameTime);
@@ -307,6 +310,12 @@ namespace Charge
 				{
 					battery.Draw(spriteBatch);
 				}
+
+                // Draw the discharge blasts
+                foreach (WorldEntity discharge in discharges)
+                {
+                    discharge.Draw(spriteBatch);
+                }
 
 				//Draw the player
 				player.Draw(spriteBatch);
@@ -364,7 +373,6 @@ namespace Charge
 
 			if (currentGameState == GameState.InGame)
 			{
-
                 if (controls.onPress(Keys.Enter, Buttons.Start) && player.isDead)
                 {
                     player.isDead = false;
@@ -494,6 +502,8 @@ namespace Charge
                 }
             }
 
+            discharges.Add(new DischargeAnimation(new Rectangle(player.position.Left, player.position.Top, player.position.Width, player.position.Width), DischargeTex));
+
             globalCooldown = GameplayVars.DischargeCooldownTime;
         }
 
@@ -517,6 +527,17 @@ namespace Charge
                 int addAmt = Convert.ToInt32(Math.Floor(tempScore));
                 score += addAmt;
                 tempScore -= addAmt;
+            }
+        }
+
+        /// <summary>
+        /// Update the discharge animation
+        /// </summary>
+        public void UpdateDischargeAnimations(float deltaTime)
+        {
+            foreach (WorldEntity discharge in discharges)
+            {
+                discharge.Update(deltaTime);
             }
         }
 
@@ -607,7 +628,6 @@ namespace Charge
                     i--;
                 }
             }
-
         }
 
         /// <summary>
@@ -627,7 +647,6 @@ namespace Charge
         /// </summary>
         public void CheckPlayerBarrierCollisions()
         {
-
             if (player.position.Right > frontBarrier.position.Center.X)
             {
                 PlayerDeath();
@@ -720,13 +739,10 @@ namespace Charge
         /// </summary>
         public void freezeWorld()
         {
-
             GameplayVars.ChargeToSpeedCoefficient = 0;
             GameplayVars.ChargeDecreaseRate = 0;
             GameplayVars.TimeToScoreCoefficient = 0f;          
             barrierSpeed = 0;
-
-
 		}
 
 
