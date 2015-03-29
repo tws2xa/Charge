@@ -248,6 +248,13 @@ namespace Charge
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+
+
+            if (!this.IsActive)
+            {
+                PauseGame();
+            }
+
 			// This should be done regardless of the GameState
 			controls.Update(); //Collect input data
 			ProcessPlayerInput(); //Process input
@@ -293,6 +300,14 @@ namespace Charge
 			}
             
             base.Update(gameTime);
+        }
+
+        /// <summary>
+        /// Pauses the game
+        /// </summary>
+        private void PauseGame()
+        {
+            currentGameState = GameState.Paused;
         }
 
         /// <summary>
@@ -457,7 +472,7 @@ namespace Charge
 				// Player has pressed the Pause command (P key or Start button)
 				if (controls.onPress(Keys.P, Buttons.Start))
 				{
-					currentGameState = GameState.Paused;
+                    PauseGame();
 				}
 
 				//Commands For debugging
