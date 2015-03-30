@@ -10,6 +10,9 @@ using Microsoft.Xna.Framework.Storage;
 
 namespace Charge
 {
+
+    enum OverchargeState { OFF, INCREASING, DECREASING };
+
     //More methods and fields may be added later
     class Player : WorldEntity
     {
@@ -17,6 +20,10 @@ namespace Charge
 		public bool grounded;
         public int jmpNum;
         public bool isDead;
+        private float overcharge = 0;
+        private float playerChargeLevel; // Current charge
+
+        OverchargeState overchargeState;
 
 		/// <summary>
 		/// Create the player with position and sprite
@@ -28,6 +35,8 @@ namespace Charge
             jmpNum = 0;
             grounded = false;
             isDead = false;
+
+            SetCharge(GameplayVars.ChargeBarCapacity / 2);	// Init the player charge level to half of the max
         }
 
         /// <summary>
@@ -35,6 +44,26 @@ namespace Charge
         /// </summary>
         public override void Update(float deltaTime)
         {
+
+            if (overchargeState == OverchargeState.INCREASING)
+            {
+                overcharge += GameplayVars.OverchargeIncAmt * deltaTime;
+                if (overcharge >= GameplayVars.OverchargeMax)
+                {
+                    overcharge = GameplayVars.OverchargeMax;
+                    overchargeState = OverchargeState.DECREASING;
+                }
+            }
+            else if (overchargeState == OverchargeState.DECREASING)
+            {
+                overcharge -= GameplayVars.OverchargeDecAmt * deltaTime;
+                if (overcharge <= 0)
+                {
+                    overcharge = 0;
+                    overchargeState = OverchargeState.OFF;
+                }
+            }
+
             if (!grounded)
             {
                 vSpeed += GameplayVars.Gravity * deltaTime;
@@ -82,6 +111,51 @@ namespace Charge
                 return (this.vSpeed >= 0 && Math.Abs(this.position.Bottom - plat.position.Top) <= Math.Abs(this.vSpeed));
             }
             return false;
+        }
+
+        /// <summary>
+        /// Returns the total player charge (includes overcharge)
+        /// </summary>
+        public float GetCharge()
+        {
+            return playerChargeLevel + overcharge;
+        }
+
+        /// <summary>
+        /// Increase player charge by given amount
+        /// </summary>
+        public void IncCharge(float amt)
+        {
+            SetCharge(playerChargeLevel + amt);
+        }
+
+        /// <summary>
+        /// Decrease player charge by given amount
+        /// </summary>
+        public void DecCharge(float amt)
+        {
+            SetCharge(playerChargeLevel - amt);
+        }
+
+        /// <summary>
+        /// Set the player charge to a given amount
+        /// </summary>
+        public void SetCharge(float val)
+        {
+            playerChargeLevel = Math.Max(0, val);
+        }
+
+        /// <summary>
+        /// Handle overcharge charge effects
+        /// </summary>
+        public void Overcharge()
+        {
+            overchargeState = OverchargeState.INCREASING;
+        }
+
+        public bool OverchargeActive()
+        {
+            return !(overchargeState == OverchargeState.OFF);
         }
     }
 }
