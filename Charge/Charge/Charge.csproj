@@ -54,6 +54,7 @@
     <Compile Include="Projectile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpecialAbilityIcon.cs" />
+    <Compile Include="SpecialAbilityIconSet.cs" />
     <Compile Include="WorldEntity.cs" />
   </ItemGroup>
   <ItemGroup>

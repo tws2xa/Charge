@@ -45,9 +45,7 @@ namespace Charge
         Barrier frontBarrier; //The death barrier in front of the player
         Background background; //The scrolling backdrop
 		ChargeBar chargeBar; // The chargebar
-        SpecialAbilityIcon dischargeIcon;
-        SpecialAbilityIcon shootIcon;
-        SpecialAbilityIcon overchargeIcon;
+        SpecialAbilityIconSet specialAbilityIcons; //Discharge, Shoot, and Overcharge icons
 
         int score; //Player score
         List<Int32> highScores; //Top 10 scores
@@ -165,16 +163,9 @@ namespace Charge
 			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 5, graphics.GraphicsDevice.Viewport.Width / 2, 25), ChargeBarTex, ChargeLevelColors[0], ChargeLevelColors[1]);
 
             //Create UI Icons
-            int iconWidth = 50;
-            int iconHeight = 50;
             int iconSpacer = 10;
-            int iconX = iconSpacer;
-            int iconY = GameplayVars.WinHeight - iconHeight - iconSpacer;
-            dischargeIcon = new SpecialAbilityIcon(new Rectangle(iconX, iconY, iconWidth, iconHeight), DischargeIconTex, WhiteTex);
-            iconX += (iconWidth + iconSpacer);
-            shootIcon = new SpecialAbilityIcon(new Rectangle(iconX, iconY, iconWidth, iconHeight), ShootIconTex, WhiteTex);
-            iconX += (iconWidth + iconSpacer);
-            overchargeIcon = new SpecialAbilityIcon(new Rectangle(iconX, iconY, iconWidth, iconHeight), OverchargeIconTex, WhiteTex);
+            int iconY = GameplayVars.WinHeight - SpecialAbilityIconSet.iconHeight - iconSpacer;
+            specialAbilityIcons = new SpecialAbilityIconSet(iconSpacer, iconY, iconSpacer, DischargeIconTex, ShootIconTex, OverchargeIconTex, WhiteTex);
 
             //Long barrier to catch player at the beginning of the game
             int startPlatWidth = GameplayVars.WinWidth - GameplayVars.PlayerStartX/3;
@@ -323,9 +314,7 @@ namespace Charge
                     
                     UpdateEffects(deltaTime); //Handle effects for things like Overcharge, etc
 
-                    dischargeIcon.Update(deltaTime);
-                    shootIcon.Update(deltaTime);
-                    overchargeIcon.Update(deltaTime);
+                    specialAbilityIcons.Update(deltaTime); //Update the UI icons
                 }
 			}
 				
@@ -447,9 +436,7 @@ namespace Charge
         private void DrawUI(SpriteBatch spriteBatch)
         {
             chargeBar.Draw(spriteBatch, player.GetCharge());
-            dischargeIcon.Draw(spriteBatch);
-            shootIcon.Draw(spriteBatch);
-            overchargeIcon.Draw(spriteBatch);
+            specialAbilityIcons.Draw(spriteBatch);
         }
 
         /// <summary>
@@ -791,19 +778,6 @@ namespace Charge
             {
                 PlayerDeath();
             }
-            //The below method seemed a bit unforgiving, especially due to the "glow" still
-            //Being a part of the rectangle intersect
-            /*
-            if (player.position.Intersects(backBarrier.position))
-            {
-                PlayerDeath();
-            }
-
-            else if (player.position.Intersects(frontBarrier.position))
-            {
-                PlayerDeath();
-            }
-            */
         }
 
         /// <summary>
@@ -894,18 +868,18 @@ namespace Charge
             player.isDead = true;
             updateHighScore(score);
         }
+
         /// <summary>
         /// Freezes GameplayVars on death before score is displayed.
         /// </summary>
-        public void freezeWorld()
+        /*public void freezeWorld()
         {
             GameplayVars.ChargeToSpeedCoefficient = 0;
             GameplayVars.ChargeDecreaseRate = 0;
             GameplayVars.TimeToScoreCoefficient = 0f;          
             barrierSpeed = 0;
-		}
-
-
+		}*/
+        
 		/// <summary>
 		/// Updates the player speed based on the current charge level
 		/// </summary>
