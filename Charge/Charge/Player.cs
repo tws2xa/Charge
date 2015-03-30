@@ -47,7 +47,6 @@ namespace Charge
                 vSpeed = 0;
             }
 
-            if (position.Top > GameplayVars.WinWidth + 10) isDead = true;
         }
 
         /// <summary>

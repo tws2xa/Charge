@@ -80,6 +80,7 @@
     <Content Include="Content\ChargeBar.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="HighScores.txt" />
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>

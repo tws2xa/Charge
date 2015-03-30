@@ -1,6 +1,7 @@
 ﻿#region Using Statements
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -45,6 +46,7 @@ namespace Charge
 		ChargeBar chargeBar; // The chargebar
 
         int score; //Player score
+        List<Int32> highScores; //Top 10 scores
         int curLevel; //The current level
         float tempScore; //Keeps track of fractional score increases
         float globalCooldown; //The cooldown on powerups
@@ -59,6 +61,10 @@ namespace Charge
         Random rand; //Used for generating random variables
         LevelGenerator levelGenerator; //Generates the platforms
         Controls controls;
+
+        //For reading and writing files
+        StreamReader streamReader;
+        StreamWriter streamWriter;
 
         //Textures
         Texture2D BackgroundTex;
@@ -176,6 +182,30 @@ namespace Charge
             platforms.Add(tier1);
             platforms.Add(tier2);
             platforms.Add(startPlat);
+
+            //Reading the list of high scores
+            String fileName = "HighScores.txt";
+
+            //Create new text file for high scores
+            if (!File.Exists(fileName))
+            {
+                streamWriter = new StreamWriter("HighScores.txt");
+                for (int i = 0; i < 9; i++)
+                    streamWriter.Write("0 ");
+                streamWriter.Write("0");
+                streamWriter.Close();
+            }
+    
+            //Processing data in the list of scores
+            highScores = new List<Int32>();
+            StreamReader file = new StreamReader("HighScores.txt");
+            String line = file.ReadLine();
+            String[] data = line.Split(' ');
+            foreach (String str in data)
+            {
+                highScores.Add(Convert.ToInt32(str));
+            }
+            file.Close();
         }
 
         /// <summary>
@@ -323,8 +353,22 @@ namespace Charge
                 {
                     //spriteBatch.DrawString(Font, "Final Score: " + score, new Vector2(365, 250), Color.WhiteSmoke);
                     //spriteBatch.DrawString(Font, "Press [ENTER] to play again", new Vector2(290, 300), Color.WhiteSmoke);
-                    DrawStringWithShadow(spriteBatch, "Final Score: " + score, new Vector2(365, 250));
-                    DrawStringWithShadow(spriteBatch, "Press [ENTER] to play again", new Vector2(290, 300));
+                    for (int i = 0; i < 10; i++ )
+                    {
+                        String place;
+                        if (i == 0)
+                            place = "1st";
+                        else if (i == 1)
+                            place = "2nd";
+                        else if (i == 2)
+                            place = "3rd";
+                        else
+                            place = (i + 1) + "th";
+                        DrawStringWithShadow(spriteBatch, place + ": " + highScores[i], new Vector2(405, 75 + 35 * i));
+                    }
+
+                    DrawStringWithShadow(spriteBatch, "Final Score: " + score, new Vector2(365, 450));
+                    DrawStringWithShadow(spriteBatch, "Press [ENTER] to play again", new Vector2(290, 500));
 
                 }
                 else
@@ -637,6 +681,10 @@ namespace Charge
                 PlayerDeath();
             }
 
+            if (player.position.Top > GameplayVars.WinWidth + 10)
+            {
+                PlayerDeath();
+            }
             //The below method seemed a bit unforgiving, especially due to the "glow" still
             //Being a part of the rectangle intersect
             /*
@@ -714,6 +762,7 @@ namespace Charge
         {
            // freezeWorld();
             player.isDead = true;
+            updateHighScore(score);
         }
         /// <summary>
         /// Freezes GameplayVars on death before score is displayed.
@@ -850,6 +899,18 @@ namespace Charge
         public static float GetPlayerSpeed()
         {
             return playerSpeed;
+        }
+
+        public void updateHighScore(int finalScore)
+        {
+            highScores.Add(finalScore);
+            highScores.Sort();
+            highScores.Reverse();
+            streamWriter = new StreamWriter("HighScores.txt");
+            for (int i = 0; i < 9; i++)
+                streamWriter.Write(highScores[i]+" ");
+            streamWriter.Write(highScores[9]);
+            streamWriter.Close();
         }
     }
 }
