@@ -757,6 +757,7 @@ namespace Charge
             CheckPlayerWallCollisions();
             CheckPlayerBarrierCollisions();
             CheckEnemyDischargeBlastCollisions();
+            CheckEnemyProjectileCollisions();
         }
 
         /// <summary>
@@ -850,6 +851,23 @@ namespace Charge
                 foreach (WorldEntity effect in otherEnts)
                 {
                     if (effect is DischargeAnimation && effect.position.Intersects(enemy.position))
+                    {
+                        enemy.destroyMe = true;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Destroy enemies hit by bullets
+        /// </summary>
+        public void CheckEnemyProjectileCollisions()
+        {
+            foreach (WorldEntity projectile in projectiles)
+            {
+                foreach (WorldEntity enemy in enemies)
+                {
+                    if (projectile.position.Intersects(enemy.position))
                     {
                         enemy.destroyMe = true;
                     }
