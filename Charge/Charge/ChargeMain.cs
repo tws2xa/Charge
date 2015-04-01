@@ -394,7 +394,7 @@ namespace Charge
                 {
                     //spriteBatch.DrawString(Font, "Final Score: " + score, new Vector2(365, 250), Color.WhiteSmoke);
                     //spriteBatch.DrawString(Font, "Press [ENTER] to play again", new Vector2(290, 300), Color.WhiteSmoke);
-                    for (int i = 0; i < 10; i++ )
+                    for (int i = 0; i < 9; i++ )
                     {
                         String place;
                         if (i == 0)
@@ -408,8 +408,8 @@ namespace Charge
                         DrawStringWithShadow(spriteBatch, place + ": " + highScores[i], new Vector2(405, 75 + 35 * i));
                     }
 
-                    DrawStringWithShadow(spriteBatch, "Final Score: " + score, new Vector2(365, 450));
-                    DrawStringWithShadow(spriteBatch, "Press [ENTER] to play again", new Vector2(290, 500));
+                    DrawStringWithShadow(spriteBatch, "Final Score: " + score, new Vector2(330, 450));
+                    DrawStringWithShadow(spriteBatch, "Press [ENTER] to play again", new Vector2(240, 500));
 
                 }
                 else
@@ -871,6 +871,7 @@ namespace Charge
                     if (projectile.position.Intersects(enemy.position))
                     {
                         enemy.destroyMe = true;
+                        projectile.destroyMe = true;
                     }
                 }
             }
