@@ -37,9 +37,11 @@ namespace Charge
         public static float DischargeCost = 50;
         public static float ShootCost = 10;
         public static float OverchargeMax = 50;
+        public static float OverchargePermanentAdd = BatteryChargeReplenish*2;
 
         public static float OverchargeIncAmt = OverchargeMax * 3.0f; //Should take about 1/3 seconds to reach max speed
-        public static float OverchargeDecAmt = OverchargeMax / 3.0f; //Should take about 3 seconds to reach normality again
+        public static float OverchargePermanentAddAmt = OverchargePermanentAdd * 3.0f;
+        public static float OverchargeDecAmt = OverchargeMax / 5.0f; //Should take about 5 seconds to reach normality again
 
     }
 }

@@ -167,7 +167,7 @@ namespace Charge
             int iconY = GameplayVars.WinHeight - SpecialAbilityIconSet.iconHeight - iconSpacer;
             specialAbilityIcons = new SpecialAbilityIconSet(iconSpacer, iconY, iconSpacer, DischargeIconTex, ShootIconTex, OverchargeIconTex, WhiteTex);
 
-            //Long barrier to catch player at the beginning of the game
+            //Long floor to catch player at the beginning of the game
             int startPlatWidth = GameplayVars.WinWidth - GameplayVars.PlayerStartX/3;
             startPlatWidth -= (startPlatWidth % LevelGenerationVars.SegmentWidth); //Make it evenly split into segments
             Platform startPlat = new Platform(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier3Height, startPlatWidth, LevelGenerationVars.PlatformHeight),
@@ -207,7 +207,7 @@ namespace Charge
                     streamWriter.Write("0 ");
                 streamWriter.Write("0");
                 streamWriter.Close();
-        }
+            }
 
             //Processing data in the list of scores
             highScores = new List<Int32>();
@@ -951,7 +951,12 @@ namespace Charge
 
                 int sectionCenter = platform.sections[i].position.Center.X;
 
-                if (roll < LevelGenerationVars.BatterySpawnRollRange && numBatteries < LevelGenerationVars.MaxBatteriesPerPlatform)
+                int batteryRollRange = LevelGenerationVars.BatterySpawnRollRange;
+                float playerBarrierSpeedDiff = GetPlayerSpeed() - barrierSpeed;
+                float multiplier = playerBarrierSpeedDiff / barrierSpeed;
+                batteryRollRange -= Convert.ToInt32(LevelGenerationVars.MaxBatteryVariation * multiplier);
+                
+                if (roll < batteryRollRange && numBatteries < LevelGenerationVars.MaxBatteriesPerPlatform)
                 {
                     //Spawn Battery
                     int width = LevelGenerationVars.BatteryWidth;
@@ -961,7 +966,7 @@ namespace Charge
                     platform.sections[i].containedObj = PlatformSection.BATTERYSTR;
                     numBatteries++;
                 }
-                else if (roll < LevelGenerationVars.BatterySpawnRollRange + LevelGenerationVars.WallSpawnFrequency && numWalls < LevelGenerationVars.MaxWallsPerPlatform)
+                else if (roll < batteryRollRange + LevelGenerationVars.WallSpawnFrequency && numWalls < LevelGenerationVars.MaxWallsPerPlatform)
                 {
                     //Spawn Wall (takes up two platform spaces)
                     if (i >= numSections - 1) continue; //Need two sections
@@ -975,7 +980,7 @@ namespace Charge
                     numWalls++;
                     i++; //Took up an extra section
                 }
-                else if (roll < LevelGenerationVars.BatterySpawnRollRange + LevelGenerationVars.WallSpawnFrequency + LevelGenerationVars.EnemySpawnFrequency
+                else if (roll < batteryRollRange + LevelGenerationVars.WallSpawnFrequency + LevelGenerationVars.EnemySpawnFrequency
                     && numEnemies < LevelGenerationVars.MaxEnemiesPerPlatform && enemies.Count < LevelGenerationVars.MaxNumEnemiesTotal)
                 {
                     //Spawn Enemy

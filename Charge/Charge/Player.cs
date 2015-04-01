@@ -48,6 +48,7 @@ namespace Charge
             if (overchargeState == OverchargeState.INCREASING)
             {
                 overcharge += GameplayVars.OverchargeIncAmt * deltaTime;
+                IncCharge(GameplayVars.OverchargePermanentAddAmt * deltaTime);
                 if (overcharge >= GameplayVars.OverchargeMax)
                 {
                     overcharge = GameplayVars.OverchargeMax;

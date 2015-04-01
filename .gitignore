@@ -195,3 +195,4 @@ FakesAssemblies/
 # Visual Studio 6 workspace options file
 *.opt
 Charge/Charge/obj/x86/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+Charge/Charge/Content/Thumbs.db

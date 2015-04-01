@@ -49,6 +49,7 @@ namespace Charge
         public static int BatterySpawnRollRange = 125;
         public static int WallSpawnFrequency = 12;
         public static int EnemySpawnFrequency = 8;
+        public static int MaxBatteryVariation = BatterySpawnRollRange / 3;
 
     }
 }
