@@ -25,6 +25,7 @@ namespace Charge
 		enum GameState
 		{
 			TitleScreen,
+            OptionsScreen,
 			InGame,
 			Paused,
 			GameOver
@@ -248,7 +249,7 @@ namespace Charge
             OverchargeIconTex = this.Content.Load<Texture2D>("OverchargeIcon");
             WhiteTex = this.Content.Load<Texture2D>("White");
 
-            Font = this.Content.Load<SpriteFont>("Arial-24");
+            Font = this.Content.Load<SpriteFont>("OCR-A-Extended-24");
 
             //Init all objects and lists
             SetupInitialConfiguration();
@@ -413,7 +414,7 @@ namespace Charge
                 }
                 else
                 {
-                    DrawStringWithShadow(spriteBatch, "Score: " + score, new Vector2(775, 500));
+                    DrawStringWithShadow(spriteBatch, "Score:" + score, new Vector2(750, 500));
                 }
                 
                 //DrawStringWithShadow(spriteBatch, "Cooldown: " + Convert.ToInt32(globalCooldown), new Vector2(15, 500));
