@@ -20,7 +20,7 @@ namespace Charge
         public const bool DEBUG = true;
 
         private static readonly Color[] ChargeBarLevelColors = { new Color(50, 50, 50), new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.Pink }; // The bar colors for each charge level
-        private static readonly Color[] PlatformLevelColors = { new Color(50, 50, 50), new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.Pink }; // The platform colors for each charge level
+        private static readonly Color[] PlatformLevelColors = { Color.White, new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.Pink }; // The platform colors for each charge level
 
 		enum GameState
 		{
@@ -51,7 +51,6 @@ namespace Charge
 
         int score; //Player score
         List<Int32> highScores; //Top 10 scores
-        int curLevel; //The current level
         float tempScore; //Keeps track of fractional score increases
         private static float globalCooldown; //The cooldown on powerups
         private static float totalGlobalCooldown; //The max from which the cooldown is decreasing
@@ -131,7 +130,6 @@ namespace Charge
         public void InitVars()
         {
             score = 0;
-            curLevel = 0;
             globalCooldown = 0;
             totalGlobalCooldown = 0;
 
@@ -241,7 +239,7 @@ namespace Charge
             PlatformLeftTex = this.Content.Load<Texture2D>("WhitePlatformLeftCap");
             PlatformRightTex = this.Content.Load<Texture2D>("WhitePlatformRightCap");
             PlayerTex = this.Content.Load<Texture2D>("Player");
-            WallTex = this.Content.Load<Texture2D>("Wall");
+            WallTex = this.Content.Load<Texture2D>("RedWall");
             ChargeBarTex= this.Content.Load<Texture2D>("ChargeBar");
             DischargeTex = this.Content.Load<Texture2D>("Discharge");
             DischargeIconTex = this.Content.Load<Texture2D>("DischargeIcon");
@@ -343,16 +341,16 @@ namespace Charge
 				//Draw background
 				background.Draw(spriteBatch);
 
+                //Draw Walls
+                foreach (WorldEntity wall in walls)
+                {
+                    wall.Draw(spriteBatch);
+                }
+
 				//Draw platforms
 				foreach (Platform platform in platforms)
 				{
 					platform.Draw(spriteBatch);
-				}
-
-				//Draw Walls
-				foreach (WorldEntity wall in walls)
-				{
-					wall.Draw(spriteBatch);
 				}
 
 				//Draw Enemies
@@ -922,7 +920,11 @@ namespace Charge
 
         public Color GetCurrentPlatformColor()
         {
-            return PlatformLevelColors[GetForegroundColorIndex()];
+            float barrierChargeEquivalent = barrierSpeed / GameplayVars.ChargeToSpeedCoefficient;
+            int index = Convert.ToInt32(Math.Floor(barrierChargeEquivalent / GameplayVars.ChargeBarCapacity));
+            index += 1;
+            index %= PlatformLevelColors.Length;
+            return PlatformLevelColors[index];
         }
 
         public int GetBackgroundColorIndex()
