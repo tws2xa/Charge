@@ -19,8 +19,9 @@ namespace Charge
     {
         public const bool DEBUG = true;
 
-        private static readonly Color[] ChargeLevelColors = { new Color(50, 50, 50), Color.Yellow, Color.Blue, Color.Red, Color.Pink, Color.Green }; // The colors for each charge level
-        
+        private static readonly Color[] ChargeBarLevelColors = { new Color(50, 50, 50), new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.Pink }; // The bar colors for each charge level
+        private static readonly Color[] PlatformLevelColors = { new Color(50, 50, 50), new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.Pink }; // The platform colors for each charge level
+
 		enum GameState
 		{
 			TitleScreen,
@@ -160,7 +161,7 @@ namespace Charge
             backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier behind the player
             frontBarrier = new Barrier(new Rectangle(GameplayVars.FrontBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier in front of the player
             background = new Background(BackgroundTex);
-			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 5, graphics.GraphicsDevice.Viewport.Width / 2, 25), ChargeBarTex, ChargeLevelColors[0], ChargeLevelColors[1]);
+			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 5, graphics.GraphicsDevice.Viewport.Width / 2, 25), ChargeBarTex, ChargeBarLevelColors[0], ChargeBarLevelColors[1]);
 
             //Create UI Icons
             int iconSpacer = 10;
@@ -171,7 +172,7 @@ namespace Charge
             int startPlatWidth = GameplayVars.WinWidth - GameplayVars.PlayerStartX/3;
             startPlatWidth -= (startPlatWidth % LevelGenerationVars.SegmentWidth); //Make it evenly split into segments
             Platform startPlat = new Platform(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier3Height, startPlatWidth, LevelGenerationVars.PlatformHeight),
-                PlatformLeftTex, PlatformCenterTex, PlatformRightTex);
+                PlatformLeftTex, PlatformCenterTex, PlatformRightTex, GetCurrentPlatformColor());
 
             //Spawn a random platform in each of the upper two tiers
             int tier1X = rand.Next(0, GameplayVars.WinWidth);
@@ -181,9 +182,9 @@ namespace Charge
             int tier2Width = LevelGenerationVars.SegmentWidth * rand.Next(LevelGenerationVars.MinNumSegments, LevelGenerationVars.MaxNumSegments);
 
             Platform tier1 = new Platform(new Rectangle(tier1X, LevelGenerationVars.Tier1Height, tier1Width, LevelGenerationVars.PlatformHeight),
-                PlatformLeftTex, PlatformCenterTex, PlatformRightTex);
+                PlatformLeftTex, PlatformCenterTex, PlatformRightTex, GetCurrentPlatformColor());
             Platform tier2 = new Platform(new Rectangle(tier2X, LevelGenerationVars.Tier2Height, tier2Width, LevelGenerationVars.PlatformHeight),
-                PlatformLeftTex, PlatformCenterTex, PlatformRightTex);
+                PlatformLeftTex, PlatformCenterTex, PlatformRightTex, GetCurrentPlatformColor());
 
             //Since they're currently the only platform in their tier,
             //Set the newly created platforms as the right most in each of their tiers.
@@ -235,9 +236,9 @@ namespace Charge
             BarrierTex = this.Content.Load<Texture2D>("Barrier");
             BatteryTex = this.Content.Load<Texture2D>("BatteryGlow");
             EnemyTex = this.Content.Load<Texture2D>("Enemy");
-            PlatformCenterTex = this.Content.Load<Texture2D>("PlatformCenterPiece");
-            PlatformLeftTex = this.Content.Load<Texture2D>("PlatformLeftCap");
-            PlatformRightTex = this.Content.Load<Texture2D>("PlatformRightCap");
+            PlatformCenterTex = this.Content.Load<Texture2D>("WhitePlatformCenterPiece");
+            PlatformLeftTex = this.Content.Load<Texture2D>("WhitePlatformLeftCap");
+            PlatformRightTex = this.Content.Load<Texture2D>("WhitePlatformRightCap");
             PlayerTex = this.Content.Load<Texture2D>("Player");
             WallTex = this.Content.Load<Texture2D>("Wall");
             ChargeBarTex= this.Content.Load<Texture2D>("ChargeBar");
@@ -765,7 +766,7 @@ namespace Charge
         {
             if (player.position.Right > frontBarrier.position.Center.X)
             {
-                PlayerDeath();
+                //PlayerDeath();
             }
             if (player.position.Left < backBarrier.position.Center.X)
             {
@@ -889,17 +890,30 @@ namespace Charge
             int chargeBackgroundIndex;
             Color backColor;
 
-            chargeBackgroundIndex = (Convert.ToInt32(Math.Floor(player.GetCharge() / GameplayVars.ChargeBarCapacity)) % ChargeLevelColors.Length);
-            backColor = ChargeLevelColors[chargeBackgroundIndex];
+            backColor = ChargeBarLevelColors[GetBackgroundColorIndex()];
             
             // Pick the foreground color for the charge bar
-			int chargeForegroundIndex = (chargeBackgroundIndex + 1) % ChargeLevelColors.Length;
-            Color foreColor = ChargeLevelColors[chargeForegroundIndex];
+            Color foreColor = ChargeBarLevelColors[GetForegroundColorIndex()];
 
             // Set the colors for the charge bar
             chargeBar.SetBackgroundColor(backColor);
             chargeBar.SetForegroundColor(foreColor);
 		}
+
+        public Color GetCurrentPlatformColor()
+        {
+            return PlatformLevelColors[GetForegroundColorIndex()];
+        }
+
+        public int GetBackgroundColorIndex()
+        {
+            return (Convert.ToInt32(Math.Floor(player.GetCharge() / GameplayVars.ChargeBarCapacity)) % ChargeBarLevelColors.Length);
+        }
+
+        public int GetForegroundColorIndex()
+        {
+            return (GetBackgroundColorIndex() + 1) % ChargeBarLevelColors.Length;
+        }
 
 		/// <summary>
 		/// Updates the player speed based on the current charge level
@@ -915,7 +929,7 @@ namespace Charge
 		public void GenerateLevelContent()
         {
             //Get the new platforms
-            List<Platform> newPlatforms = levelGenerator.GenerateNewPlatforms(platforms.Count, PlatformLeftTex, PlatformCenterTex, PlatformRightTex);
+            List<Platform> newPlatforms = levelGenerator.GenerateNewPlatforms(platforms.Count, PlatformLeftTex, PlatformCenterTex, PlatformRightTex, GetCurrentPlatformColor());
 
             //Add each platform to the list of platforms
             //And generates items to go above each platform

@@ -15,14 +15,16 @@ namespace Charge
 
         //Sections that make up the platform
         public List<PlatformSection> sections;
+        public Color tint;
 
         /// <summary>
         /// Create the platform with position and sprite
         /// The created platform will be automatically split into sections
         /// </summary>
-        public Platform(Rectangle position, Texture2D leftCap, Texture2D center, Texture2D rightCap)
+        public Platform(Rectangle position, Texture2D leftCap, Texture2D center, Texture2D rightCap, Color tint)
         {
             base.init(position, null);
+            this.tint = tint;
             AlignWidthToSegments();
             InitSections(leftCap, center, rightCap);
         }
@@ -73,18 +75,18 @@ namespace Charge
             int SectionWidth = LevelGenerationVars.SegmentWidth;
             int SectionHeight = LevelGenerationVars.PlatformHeight;
 
-            PlatformSection left = new PlatformSection(new Rectangle(StartSectionX, SectionY, SectionWidth, SectionHeight), leftCapTex);
+            PlatformSection left = new PlatformSection(new Rectangle(StartSectionX, SectionY, SectionWidth, SectionHeight), leftCapTex, tint);
             sections.Add(left);
 
             //Middle sections
             for (int i = 1; i < numSections-1; i++)
             {
-                PlatformSection mid = new PlatformSection(new Rectangle(StartSectionX + i*SectionWidth, SectionY, SectionWidth, SectionHeight), centerTex);
+                PlatformSection mid = new PlatformSection(new Rectangle(StartSectionX + i*SectionWidth, SectionY, SectionWidth, SectionHeight), centerTex, tint);
                 sections.Add(mid);
             }
 
             //Right section
-            PlatformSection right = new PlatformSection(new Rectangle(StartSectionX + (numSections-1)*SectionWidth, SectionY, SectionWidth, SectionHeight), rightCapTex);
+            PlatformSection right = new PlatformSection(new Rectangle(StartSectionX + (numSections-1)*SectionWidth, SectionY, SectionWidth, SectionHeight), rightCapTex, tint);
             sections.Add(right);
 
         }

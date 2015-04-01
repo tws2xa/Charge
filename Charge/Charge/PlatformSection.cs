@@ -18,14 +18,18 @@ namespace Charge
         public static string WALLSTR = "wall";
         public static string BATTERYSTR = "battery";
 
-        public PlatformSection(Rectangle position, Texture2D tex)
+        Color tint;
+
+        public PlatformSection(Rectangle position, Texture2D tex, Color tint)
         {
+            this.tint = tint;
             base.init(position, tex);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            base.Draw(spriteBatch);
+            spriteBatch.Draw(tex, position, tint);
+            //base.Draw(spriteBatch);
         }
     }
 }

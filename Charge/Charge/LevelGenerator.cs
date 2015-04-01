@@ -84,7 +84,7 @@ namespace Charge
         /// <param name="PlatformCenterTex">Texture for generated center platform sections</param>
         /// <param name="PlatformRightTex">Texture for generated right cap platform sections</param>
         /// <returns>List of newly generated platforms</returns>
-        public List<Platform> GenerateNewPlatforms(int curNumPlatforms, Texture2D PlatformLeftTex, Texture2D PlatformCenterTex, Texture2D PlatformRightTex)
+        public List<Platform> GenerateNewPlatforms(int curNumPlatforms, Texture2D PlatformLeftTex, Texture2D PlatformCenterTex, Texture2D PlatformRightTex, Color platColor)
         {
             //The list of newly generated platforms
             List<Platform> newPlatforms = new List<Platform>();
@@ -101,7 +101,7 @@ namespace Charge
                     if (i == 2) height = LevelGenerationVars.Tier3Height;
 
                     //Make the new platform
-                    Platform nextPlat = GenerateNewPlatform(rightMost, height, PlatformLeftTex, PlatformCenterTex, PlatformRightTex);
+                    Platform nextPlat = GenerateNewPlatform(rightMost, height, PlatformLeftTex, PlatformCenterTex, PlatformRightTex, platColor);
 
                     //Update the right most platform in the tier
                     //(Which is now the just created platform)
@@ -146,7 +146,7 @@ namespace Charge
         /// <param name="rightMost">Right most platform of the tier in which to add the platform</param>
         /// <param name="tierHeight">The height of the tier</param>
         /// <returns>The newly generated platform</returns>
-        private Platform GenerateNewPlatform(Platform rightMost, int tierHeight, Texture2D PlatformLeftTex, Texture2D PlatformCenterTex, Texture2D PlatformRightTex)
+        private Platform GenerateNewPlatform(Platform rightMost, int tierHeight, Texture2D PlatformLeftTex, Texture2D PlatformCenterTex, Texture2D PlatformRightTex, Color platColor)
         {
             //Must spawn off the right side of the screen (at a minimum)
             int minX = GameplayVars.WinWidth;
@@ -174,8 +174,7 @@ namespace Charge
             int width = LevelGenerationVars.SegmentWidth * rand.Next(LevelGenerationVars.MinNumSegments, LevelGenerationVars.MaxNumSegments);
 
             Platform newPlatform = new Platform(new Rectangle(spawnX, tierHeight, width, LevelGenerationVars.PlatformHeight),
-                PlatformLeftTex, PlatformCenterTex, PlatformRightTex);
-
+                PlatformLeftTex, PlatformCenterTex, PlatformRightTex, platColor);
             return newPlatform;
         }
 
