@@ -12,11 +12,13 @@ namespace Charge
 {
     class WorldEntity
     {
-        public Texture2D tex; //Sprite for the object
+		public Texture2D tex; //Sprite for the object
         public Rectangle position; //Object's position in the world
         public bool destroyMe; //Should the object be destroyed
 
-        //Needed for inheritence
+		private double timeElapsedSinceLastMovement;	// How much time has passed since the last movement
+		
+		//Needed for inheritence
         public WorldEntity() { }
 
         /// <summary>
@@ -36,6 +38,8 @@ namespace Charge
             this.position = position;
             this.tex = tex;
             destroyMe = false;
+
+			timeElapsedSinceLastMovement = 0;
         }
 
         /// <summary>
@@ -51,7 +55,17 @@ namespace Charge
         /// </summary>
         public virtual void Update(float deltaTime)
         {
-            this.position.X -= Convert.ToInt32(ChargeMain.GetPlayerSpeed() * deltaTime);
+			timeElapsedSinceLastMovement += deltaTime;
+
+			double movementInPixels = 0;
+			if (ChargeMain.GetPlayerSpeed() > 0) // Avoid divide by zero errors
+			{
+				// Calculate how many full pixels the object should move in the timeElapsedSinceLastMovement interval
+				movementInPixels = Math.Floor(timeElapsedSinceLastMovement * ChargeMain.GetPlayerSpeed());
+				timeElapsedSinceLastMovement -= movementInPixels * (1 / ChargeMain.GetPlayerSpeed());
+			}
+
+            this.position.X -= Convert.ToInt32(movementInPixels);
 
             if (!(this is Barrier))
                 PerformScreenBoundsCheck();
@@ -65,7 +79,6 @@ namespace Charge
         {
             if (CheckOffLeftSideOfScreen()) this.destroyMe = true;
         }
-
 
         /// <summary>
         /// Checks if the entity is off the left side of the screen
