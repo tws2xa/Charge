@@ -32,7 +32,7 @@ namespace Charge
 			timeElapsedSinceLastMovement += deltaTime;
 
 			double movementInPixels = 0;
-			if (ChargeMain.GetPlayerSpeed() > 0) // Avoid divide by zero errors
+			if (ChargeMain.barrierSpeed > 0) // Avoid divide by zero errors
 			{
 				// Calculate how many full pixels the object should move in the timeElapsedSinceLastMovement interval
 				movementInPixels = Math.Floor(timeElapsedSinceLastMovement * ChargeMain.barrierSpeed);
