@@ -767,7 +767,7 @@ namespace Charge
         {
             if (player.position.Right > frontBarrier.position.Center.X)
             {
-                //PlayerDeath();
+                PlayerDeath();
             }
             if (player.position.Left < backBarrier.position.Center.X)
             {
