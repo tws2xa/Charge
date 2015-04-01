@@ -269,8 +269,6 @@ namespace Charge
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-
-
             if (!this.IsActive)
             {
                 PauseGame();
