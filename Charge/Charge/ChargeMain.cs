@@ -154,7 +154,7 @@ namespace Charge
             walls.Clear();
             batteries.Clear();
             otherEnts.Clear();
-
+            
             //Create the initial objects
             player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 110, GameplayVars.StartPlayerWidth, GameplayVars.StartPlayerHeight), PlayerTex); //The player character
             backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier behind the player
@@ -166,6 +166,9 @@ namespace Charge
             int iconSpacer = 10;
             int iconY = GameplayVars.WinHeight - SpecialAbilityIconSet.iconHeight - iconSpacer;
             specialAbilityIcons = new SpecialAbilityIconSet(iconSpacer, iconY, iconSpacer, DischargeIconTex, ShootIconTex, OverchargeIconTex, WhiteTex);
+
+            //Reset the level generator.
+            levelGenerator.Reset();
 
             //Long floor to catch player at the beginning of the game
             int startPlatWidth = GameplayVars.WinWidth - GameplayVars.PlayerStartX/3;
@@ -390,9 +393,8 @@ namespace Charge
                 // Draw Score
                 if (player.isDead)
                 {
-                    //spriteBatch.DrawString(Font, "Final Score: " + score, new Vector2(365, 250), Color.WhiteSmoke);
-                    //spriteBatch.DrawString(Font, "Press [ENTER] to play again", new Vector2(290, 300), Color.WhiteSmoke);
-                    for (int i = 0; i < 9; i++ )
+                    bool hasDrawnMyScore = false;
+                    for (int i = 0; i < 10; i++ )
                     {
                         String place;
                         if (i == 0)
@@ -403,11 +405,31 @@ namespace Charge
                             place = "3rd";
                         else
                             place = (i + 1) + "th";
-                        DrawStringWithShadow(spriteBatch, place + ": " + highScores[i], new Vector2(405, 75 + 35 * i));
-                    }
+                        //Highlight your score in the leaderboard
 
-                    DrawStringWithShadow(spriteBatch, "Final Score: " + score, new Vector2(330, 450));
-                    DrawStringWithShadow(spriteBatch, "Press [ENTER] to play again", new Vector2(240, 500));
+                        string toDraw = place + ": " + highScores[i];
+                        int strDrawX = GetCenteredStringLocation(Font, toDraw, GameplayVars.WinWidth / 2);
+
+                        if (highScores[i] == score && !hasDrawnMyScore)
+                        {
+                            DrawStringWithShadow(spriteBatch, place + ": " + highScores[i], new Vector2(strDrawX, 78 + 35 * i), Color.Gold, new Color(10, 10, 10));
+                            hasDrawnMyScore = true;
+                        }
+                        else
+                        {
+                            DrawStringWithShadow(spriteBatch, place + ": " + highScores[i], new Vector2(strDrawX, 78 + 35 * i));
+                        }
+                    }
+                    if (hasDrawnMyScore)
+                    {
+                        string highScore = "New High Score!";
+                        int highScoreDrawX = GetCenteredStringLocation(Font, highScore, GameplayVars.WinWidth / 2);
+                        DrawStringWithShadow(spriteBatch, highScore, new Vector2(highScoreDrawX, 33), Color.Gold, new Color(10, 10, 10));
+                    }
+                    string finalScore = ("Final Score: " + score);
+                    string playAgain = "Press [Enter] to play again";
+                    DrawStringWithShadow(spriteBatch, finalScore, new Vector2(GetCenteredStringLocation(Font, finalScore, GameplayVars.WinWidth / 2), 438));
+                    DrawStringWithShadow(spriteBatch, playAgain, new Vector2(GetCenteredStringLocation(Font, playAgain, GameplayVars.WinWidth / 2), 488));
 
                 }
                 else
@@ -415,8 +437,6 @@ namespace Charge
                     DrawStringWithShadow(spriteBatch, "Score:" + score, new Vector2(750, 500));
                 }
                 
-                //DrawStringWithShadow(spriteBatch, "Cooldown: " + Convert.ToInt32(globalCooldown), new Vector2(15, 500));
-
 				// Draw the pause screen on top of all of the game assets
 				if (currentGameState == GameState.Paused)
 				{
@@ -428,6 +448,11 @@ namespace Charge
             base.Draw(gameTime);
         }
 
+        private int GetCenteredStringLocation(SpriteFont theFont, String str, int center)
+        {
+            return Convert.ToInt32(Math.Round(center - theFont.MeasureString(str).X / 2));
+        }
+
         /// <summary>
         /// Draws all UI elements
         /// </summary>
@@ -437,6 +462,7 @@ namespace Charge
             specialAbilityIcons.Draw(spriteBatch);
         }
 
+
         /// <summary>
         /// Draws a string with a slight, black shadow behind it
         /// </summary>
@@ -444,8 +470,20 @@ namespace Charge
         /// <param name="location">Upper left corner of string</param>
         void DrawStringWithShadow(SpriteBatch spriteBatch, String text, Vector2 location)
         {
-            spriteBatch.DrawString(Font, text, new Vector2(location.X + 2, location.Y + 2), Color.Black);
-            spriteBatch.DrawString(Font, text, location, Color.WhiteSmoke);
+            DrawStringWithShadow(spriteBatch, text, location, Color.WhiteSmoke, Color.Black);
+        }
+
+        /// <summary>
+        /// Draws a string with a slight, black shadow behind it
+        /// </summary>
+        /// <param name="text">Text to draw</param>
+        /// <param name="location">Upper left corner of string</param>
+        /// <param name="backColor">Shadow Color</param>
+        /// <param name="textColor">Main text Color</param>
+        void DrawStringWithShadow(SpriteBatch spriteBatch, String text, Vector2 location, Color textColor, Color backColor)
+        {
+            spriteBatch.DrawString(Font, text, new Vector2(location.X + 2, location.Y + 2), backColor);
+            spriteBatch.DrawString(Font, text, location, textColor);
         }
 
         /// <summary>
