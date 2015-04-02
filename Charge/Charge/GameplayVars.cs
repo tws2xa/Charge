@@ -43,5 +43,6 @@ namespace Charge
         public static float OverchargePermanentAddAmt = OverchargePermanentAdd * 3.0f;
         public static float OverchargeDecAmt = OverchargeMax / 5.0f; //Should take about 5 seconds to reach normality again
 
+        public static float titleScrollSpeed = 100;
     }
 }

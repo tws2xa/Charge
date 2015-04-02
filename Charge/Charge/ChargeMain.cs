@@ -131,7 +131,8 @@ namespace Charge
 
             //Initialize starting values for all numeric variables
             InitVars();
-           
+            playerSpeed = GameplayVars.titleScrollSpeed;
+
             //Initialize Monogame Stuff
             base.Initialize();
 
@@ -307,9 +308,13 @@ namespace Charge
             {
                 //Delta time in seconds
                 float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
-
+                
                 background.Update(deltaTime); //Update the background scroll
 
+                levelGenerator.Update(deltaTime);
+                GenerateLevelContent();
+
+                UpdateWorldEntities(deltaTime);
             }
 
 			if (currentGameState == GameState.InGame)
@@ -375,6 +380,40 @@ namespace Charge
 
                 //Draw Background
                 background.Draw(spriteBatch);
+
+
+                //Draw Walls
+                foreach (WorldEntity wall in walls)
+                {
+                    wall.Draw(spriteBatch);
+                }
+
+                //Draw platforms
+                foreach (Platform platform in platforms)
+                {
+                    platform.Draw(spriteBatch);
+                }
+
+                //Draw Enemies
+                foreach (Enemy enemy in enemies)
+                {
+                    enemy.Draw(spriteBatch);
+                }
+
+                //Draw Batteries
+                foreach (WorldEntity battery in batteries)
+                {
+                    battery.Draw(spriteBatch);
+                }
+
+                //Draw Other
+                foreach (WorldEntity ent in otherEnts)
+                {
+                    ent.Draw(spriteBatch);
+                }
+                
+                //Darken background
+                spriteBatch.Draw(WhiteTex, new Rectangle(-10, -10, GameplayVars.WinWidth + 20, GameplayVars.WinHeight + 20), Color.Black * 0.5f);
 
                 //Draw Title Menu
                 String Title = "CHARGE";
@@ -570,7 +609,11 @@ namespace Charge
                  if (controls.onPress(Keys.Space, Buttons.A) || controls.onPress(Keys.Enter, Buttons.Start))
                  {
                      if (currentTitleSelection == TitleSelection.Start)
+                     {
+                         InitVars();
+                         SetupInitialConfiguration();
                          currentGameState = GameState.InGame;
+                     }
                      else
                      {
 
