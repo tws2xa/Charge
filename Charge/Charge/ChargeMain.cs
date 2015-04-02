@@ -60,6 +60,7 @@ namespace Charge
         int score; //Player score
         List<Int32> highScores; //Top 10 scores
         float tempScore; //Keeps track of fractional score increases
+        int numScores = 10; //Number of high scores to log
         private static float globalCooldown; //The cooldown on powerups
         private static float totalGlobalCooldown; //The max from which the cooldown is decreasing
 
@@ -75,6 +76,7 @@ namespace Charge
         Random rand; //Used for generating random variables
         LevelGenerator levelGenerator; //Generates the platforms
         Controls controls;
+        bool soundOn = true;
 
         //For reading and writing files
         StreamReader streamReader;
@@ -413,7 +415,7 @@ namespace Charge
                 }
                 
                 //Darken background
-                spriteBatch.Draw(WhiteTex, new Rectangle(-10, -10, GameplayVars.WinWidth + 20, GameplayVars.WinHeight + 20), Color.Black * 0.5f);
+                spriteBatch.Draw(WhiteTex, new Rectangle(-10, -10, GameplayVars.WinWidth + 20, GameplayVars.WinHeight + 20), Color.Black * 0.3f);
 
                 //Draw Title Menu
                 String Title = "CHARGE";
@@ -494,7 +496,7 @@ namespace Charge
                 if (player.isDead)
                 {
                     bool hasDrawnMyScore = false;
-                    for (int i = 0; i < 10; i++ )
+                    for (int i = 0; i < numScores; i++ )
                     {
                         String place;
                         if (i == 0)
@@ -505,13 +507,12 @@ namespace Charge
                             place = "3rd";
                         else
                             place = (i + 1) + "th";
-                        //Highlight your score in the leaderboard
-
+                        
                         string toDraw = place + ": " + highScores[i];
                         int strDrawX = GetCenteredStringLocation(Font, toDraw, GameplayVars.WinWidth / 2);
-
                         if (highScores[i] == score && !hasDrawnMyScore)
                         {
+                            //Highlight your score in the leaderboard
                             DrawStringWithShadow(spriteBatch, place + ": " + highScores[i], new Vector2(strDrawX, 78 + 35 * i), Color.Gold, new Color(10, 10, 10));
                             hasDrawnMyScore = true;
                         }
@@ -637,7 +638,7 @@ namespace Charge
 					player.jmpNum++;
 					player.vSpeed = GameplayVars.JumpInitialVelocity;
 					player.grounded = false;
-                    jumpSound.Play();
+                    PlaySound(jumpSound);
 				} // Cut jump short on button release
 				else if (controls.onRelease(Keys.Space, Buttons.A) && player.vSpeed < 0)
 				{
@@ -692,6 +693,25 @@ namespace Charge
 			}
 		}
 
+        /// <summary>
+        /// Plays the given sound
+        /// </summary>
+        /// <param name="sound">The sound to play</param>
+        private void PlaySound(SoundEffect sound)
+        {
+            if (soundOn)
+            {
+                try
+                {
+                    sound.Play();
+                }
+                catch (Microsoft.Xna.Framework.Audio.NoAudioHardwareException)
+                {
+                    Console.WriteLine("Failed to play sound: " + sound);
+                    soundOn = false;
+                }
+            }
+        }
 
         /// <summary>
         /// Launches the overcharge special ability
@@ -704,7 +724,7 @@ namespace Charge
 			}
 
             player.Overcharge();
-            overchargeSound.Play();
+            PlaySound(overchargeSound);
 
             SetGlobalCooldown(GameplayVars.OverchargeCooldownTime);
 		}
@@ -730,7 +750,7 @@ namespace Charge
             projectiles.Add(bullet);
 
             SetGlobalCooldown(GameplayVars.ShootCooldownTime);
-            shootSound.Play();
+            PlaySound(shootSound);
         }
 
         /// <summary>
@@ -1226,9 +1246,9 @@ namespace Charge
             highScores.Sort();
             highScores.Reverse();
             streamWriter = new StreamWriter("HighScores.txt");
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < numScores - 1; i++)
                 streamWriter.Write(highScores[i]+" ");
-            streamWriter.Write(highScores[9]);
+            streamWriter.Write(highScores[numScores - 1]);
             streamWriter.Close();
         }
     }
