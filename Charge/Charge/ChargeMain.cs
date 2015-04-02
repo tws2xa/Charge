@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
+using Microsoft.Xna.Framework.Audio;
 
 #endregion
 
@@ -64,6 +65,9 @@ namespace Charge
 
         private SpriteFont Font; //Sprite Font to draw score
         private SpriteFont FontLarge; //Sprite Font for title screen
+        private SoundEffect shootSound;
+        private SoundEffect jumpSound;
+        private SoundEffect overchargeSound;
         private static float playerSpeed; //Current run speed
         public static float barrierSpeed; //Speed of barriers
 
@@ -261,9 +265,14 @@ namespace Charge
             OverchargeIconTex = this.Content.Load<Texture2D>("OverchargeIcon");
             WhiteTex = this.Content.Load<Texture2D>("White");
 
+            //Fonts
             Font = this.Content.Load<SpriteFont>("Fonts/OCR-A-Extended-24");
             FontLarge = this.Content.Load <SpriteFont>("Fonts/OCR-A-Extended-48");
 
+            //Sound Effects
+            shootSound = Content.Load<SoundEffect>("SoundFX/shoot");
+            jumpSound = Content.Load<SoundEffect>("SoundFX/jump");
+            overchargeSound = Content.Load<SoundEffect>("SoundFX/overcharge");
             //Init all objects and lists
             SetupInitialConfiguration();
         }
@@ -585,6 +594,7 @@ namespace Charge
 					player.jmpNum++;
 					player.vSpeed = GameplayVars.JumpInitialVelocity;
 					player.grounded = false;
+                    jumpSound.Play();
 				} // Cut jump short on button release
 				else if (controls.onRelease(Keys.Space, Buttons.A) && player.vSpeed < 0)
 				{
@@ -651,6 +661,7 @@ namespace Charge
 			}
 
             player.Overcharge();
+            overchargeSound.Play();
 
             SetGlobalCooldown(GameplayVars.OverchargeCooldownTime);
 		}
@@ -676,6 +687,7 @@ namespace Charge
             projectiles.Add(bullet);
 
             SetGlobalCooldown(GameplayVars.ShootCooldownTime);
+            shootSound.Play();
         }
 
         /// <summary>
