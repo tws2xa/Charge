@@ -249,7 +249,7 @@ namespace Charge
             OverchargeIconTex = this.Content.Load<Texture2D>("OverchargeIcon");
             WhiteTex = this.Content.Load<Texture2D>("White");
 
-            Font = this.Content.Load<SpriteFont>("OCR-A-Extended-24");
+            Font = this.Content.Load<SpriteFont>("Fonts/OCR-A-Extended-24");
 
             //Init all objects and lists
             SetupInitialConfiguration();
