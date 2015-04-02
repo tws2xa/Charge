@@ -178,5 +178,14 @@ namespace Charge
             return newPlatform;
         }
 
+        /// <summary>
+        /// Resets the level generation
+        /// </summary>
+        internal void Reset()
+        {
+            rightMostInTiers[0] = null;
+            rightMostInTiers[1] = null;
+            rightMostInTiers[2] = null;
+        }
     }
 }
