@@ -47,11 +47,20 @@ namespace Charge
         /// <summary>
         /// Draw each of the platform's sections
         /// </summary>
-        public override void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, float brightness)
         {
             foreach(PlatformSection section in sections) {
-                section.Draw(spriteBatch);
+                section.Draw(spriteBatch, brightness);
             }
+        }
+
+        /// <summary>
+        /// Draw each of the platform's sections
+        /// </summary>
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            Console.WriteLine("Caution: Calling un-darkened version of platform draw.");
+            Draw(spriteBatch, 1);
         }
 
         /// <summary>

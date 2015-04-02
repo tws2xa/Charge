@@ -20,7 +20,7 @@ namespace Charge
         public static float Gravity = 40; // The y-axis starts at 0 at the top of the screen, so gravity should increase Y
         public static float JumpInitialVelocity = -16; // The y-axis starts at 0 at the top of the screen, so jump should decrease Y
         public static float PlayerStartSpeed = 150;
-        public static float BarrierStartSpeed = 190;
+        public static float BarrierStartSpeed = 150;
         public static float EnemyMoveSpeed = 1;
         public static float BulletMoveSpeed = 10;
         public static float ChargeDecreaseRate = 2;
@@ -32,7 +32,7 @@ namespace Charge
         public static float OverchargeCooldownTime = 20; //Seconds
         public static float ShootCooldownTime = 5; //Seconds
 
-		public static int ChargeBarCapacity = 100;
+		public static int ChargeBarCapacity = 75;
 
         public static float DischargeCost = 50;
         public static float ShootCost = 10;
@@ -44,5 +44,6 @@ namespace Charge
         public static float OverchargeDecAmt = OverchargeMax / 5.0f; //Should take about 5 seconds to reach normality again
 
         public static float titleScrollSpeed = 100;
+        public static int MinPlatformBrightness = 205; //255 = fully bright
     }
 }

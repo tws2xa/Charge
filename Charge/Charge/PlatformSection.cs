@@ -19,7 +19,7 @@ namespace Charge
         public static string BATTERYSTR = "battery";
 
         Color tint;
-
+        
         public PlatformSection(Rectangle position, Texture2D tex, Color tint)
         {
             this.tint = tint;
@@ -28,7 +28,21 @@ namespace Charge
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(tex, position, tint);
+            Draw(spriteBatch, 1);
+        }
+
+        public void Draw(SpriteBatch spriteBatch, float brightness)
+        {
+            float variationAmt = 255 - GameplayVars.MinPlatformBrightness;
+            float toSub =  variationAmt - variationAmt * brightness;
+
+            int R = Convert.ToInt32(tint.R - toSub);
+            int G = Convert.ToInt32(tint.G - toSub);
+            int B = Convert.ToInt32(tint.B - toSub);
+
+            Color drawCol = new Color(R, G, B);
+
+            spriteBatch.Draw(tex, position, drawCol);
             //base.Draw(spriteBatch);
         }
     }

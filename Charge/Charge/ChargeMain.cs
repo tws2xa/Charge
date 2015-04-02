@@ -393,7 +393,7 @@ namespace Charge
                 //Draw platforms
                 foreach (Platform platform in platforms)
                 {
-                    platform.Draw(spriteBatch);
+                    platform.Draw(spriteBatch, GetLevelChargePercent());
                 }
 
                 //Draw Enemies
@@ -455,7 +455,7 @@ namespace Charge
 				//Draw platforms
 				foreach (Platform platform in platforms)
 				{
-					platform.Draw(spriteBatch);
+					platform.Draw(spriteBatch, GetLevelChargePercent());
 				}
 
 				//Draw Enemies
@@ -1106,9 +1106,7 @@ namespace Charge
 
         public Color GetCurrentPlatformColor()
         {
-            float barrierChargeEquivalent = barrierSpeed / GameplayVars.ChargeToSpeedCoefficient;
-            int index = Convert.ToInt32(Math.Floor(barrierChargeEquivalent / GameplayVars.ChargeBarCapacity));
-            index += 1;
+            int index = GetCurrentLevel();
             index %= PlatformLevelColors.Length;
             return PlatformLevelColors[index];
         }
@@ -1238,6 +1236,27 @@ namespace Charge
         internal static float GetTotalCooldown()
         {
             return totalGlobalCooldown;
+        }
+
+        public int GetCurrentLevel()
+        {
+            float barrierChargeEquivalent = barrierSpeed / GameplayVars.ChargeToSpeedCoefficient;
+            int level = Convert.ToInt32(Math.Floor(barrierChargeEquivalent / GameplayVars.ChargeBarCapacity));
+            level += 1;
+            return level;
+        }
+
+        public float GetLevelChargePercent()
+        {
+            float curCharge = player.GetCharge();
+            float maxCharge = GameplayVars.ChargeBarCapacity * GetCurrentLevel();
+
+            if (maxCharge - curCharge >= GameplayVars.ChargeBarCapacity) return 0; //A whole level's worth too slow
+            if (maxCharge - curCharge <= 0) return 1; //Current charge > max
+
+            curCharge %= GameplayVars.ChargeBarCapacity;
+
+            return (curCharge / (float)GameplayVars.ChargeBarCapacity);
         }
 
         public void updateHighScore(int finalScore)

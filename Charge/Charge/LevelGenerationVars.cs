@@ -46,10 +46,10 @@ namespace Charge
          * And if it's in none of these ranges, it spawns nothing.
          */
         public static int SectionContentRollNum = 1000;
-        public static int BatterySpawnRollRange = 125;
+        public static int BatterySpawnRollRange = 100;
         public static int WallSpawnFrequency = 12;
         public static int EnemySpawnFrequency = 8;
-        public static int MaxBatteryVariation = BatterySpawnRollRange / 3;
+        public static int MaxBatteryVariation = BatterySpawnRollRange / 2;
 
     }
 }

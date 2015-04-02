@@ -36,7 +36,7 @@ namespace Charge
             grounded = false;
             isDead = false;
 
-            SetCharge(GameplayVars.ChargeBarCapacity / 2);	// Init the player charge level to half of the max
+            SetCharge(2 * GameplayVars.ChargeBarCapacity / 3);	// Init the player charge level to half of the max
         }
 
         /// <summary>
