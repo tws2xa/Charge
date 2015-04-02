@@ -31,7 +31,14 @@ namespace Charge
 			GameOver
 		};
 
+        enum TitleSelection
+        {
+            Start,
+            Options
+        };
+
 		GameState currentGameState;
+        TitleSelection currentTitleSelection;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -56,6 +63,7 @@ namespace Charge
         private static float totalGlobalCooldown; //The max from which the cooldown is decreasing
 
         private SpriteFont Font; //Sprite Font to draw score
+        private SpriteFont FontLarge; //Sprite Font for title screen
         private static float playerSpeed; //Current run speed
         public static float barrierSpeed; //Speed of barriers
 
@@ -119,9 +127,12 @@ namespace Charge
 
             //Initialize starting values for all numeric variables
             InitVars();
-
+           
             //Initialize Monogame Stuff
             base.Initialize();
+
+            //Set title screen
+            currentGameState = GameState.TitleScreen;
         }
 
         /// <summary>
@@ -139,7 +150,7 @@ namespace Charge
 
 			// Initalize the gamestate
 			// TODO: Should probably initialize this to TitleScreen once that is implemented
-			currentGameState = GameState.InGame;
+       
         }
 
         /// <summary>
@@ -251,6 +262,7 @@ namespace Charge
             WhiteTex = this.Content.Load<Texture2D>("White");
 
             Font = this.Content.Load<SpriteFont>("Fonts/OCR-A-Extended-24");
+            FontLarge = this.Content.Load <SpriteFont>("Fonts/OCR-A-Extended-48");
 
             //Init all objects and lists
             SetupInitialConfiguration();
@@ -272,14 +284,24 @@ namespace Charge
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+
+            // This should be done regardless of the GameState
+            controls.Update(); //Collect input data
+            ProcessPlayerInput(); //Process input
+
             if (!this.IsActive)
             {
                 PauseGame();
             }
 
-			// This should be done regardless of the GameState
-			controls.Update(); //Collect input data
-			ProcessPlayerInput(); //Process input
+            if(currentGameState == GameState.TitleScreen)
+            {
+                //Delta time in seconds
+                float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
+
+                background.Update(deltaTime); //Update the background scroll
+
+            }
 
 			if (currentGameState == GameState.InGame)
 			{
@@ -287,12 +309,12 @@ namespace Charge
 				float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
 
 				background.Update(deltaTime); //Update the background scroll
-
 				
                 if (player.isDead)
                 {
 
                 }
+
                 else
                 {
                     player.Update(deltaTime); //Update the player
@@ -338,6 +360,36 @@ namespace Charge
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
+
+            if (currentGameState == GameState.TitleScreen)
+            {
+
+                //Draw Background
+                background.Draw(spriteBatch);
+
+                //Draw Title Menu
+                String Title = "CHARGE";
+                String Options = "Options";
+                String Start = "Start Game";
+                int selection = 0;
+                int TitleDrawX = GetCenteredStringLocation(FontLarge, Title, GameplayVars.WinWidth / 2);
+                int OptionsDrawX = GetCenteredStringLocation(Font, Options, GameplayVars.WinWidth / 2);
+                int StartDrawX = GetCenteredStringLocation(Font, Start, GameplayVars.WinWidth / 2);
+                spriteBatch.DrawString(FontLarge, Title, new Vector2(TitleDrawX, 100), Color.White);
+
+                if (currentTitleSelection == TitleSelection.Start)
+                {
+                    spriteBatch.DrawString(Font, Start, new Vector2(StartDrawX, 250), Color.Gold);
+                    spriteBatch.DrawString(Font, Options, new Vector2(OptionsDrawX, 325), Color.White);
+                }
+                else
+                {
+                    spriteBatch.DrawString(Font, Start, new Vector2(StartDrawX, 250), Color.White);
+                    spriteBatch.DrawString(Font, Options, new Vector2(OptionsDrawX, 325), Color.Gold);
+                }
+
+                
+            }
 
 			if (currentGameState == GameState.InGame || currentGameState == GameState.Paused)
 			{
@@ -496,6 +548,27 @@ namespace Charge
 			{
 				Exit();
 			}
+            if (currentGameState == GameState.TitleScreen)
+            {
+                if (controls.onPress(Keys.Up, Buttons.LeftThumbstickUp) || controls.onPress(Keys.Down, Buttons.LeftThumbstickDown))
+                {
+                    if (currentTitleSelection == TitleSelection.Start)
+                        currentTitleSelection = TitleSelection.Options;
+                    else
+                        currentTitleSelection = TitleSelection.Start;
+                }
+
+                 if (controls.onPress(Keys.Space, Buttons.A) || controls.onPress(Keys.Enter, Buttons.Start))
+                 {
+                     if (currentTitleSelection == TitleSelection.Start)
+                         currentGameState = GameState.InGame;
+                     else
+                     {
+
+                     }
+                 }
+
+            }
 
 			if (currentGameState == GameState.InGame)
 			{
