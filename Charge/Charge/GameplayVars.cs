@@ -44,6 +44,6 @@ namespace Charge
         public static float OverchargeDecAmt = OverchargeMax / 5.0f; //Should take about 5 seconds to reach normality again
 
         public static float titleScrollSpeed = 100;
-        public static int MinPlatformBrightness = 205; //255 = fully bright
+        public static int MinPlatformBrightness = 255; //255 = fully bright
     }
 }

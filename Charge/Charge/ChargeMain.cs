@@ -301,7 +301,7 @@ namespace Charge
             controls.Update(); //Collect input data
             ProcessPlayerInput(); //Process input
 
-            if (!this.IsActive)
+            if (currentGameState == GameState.InGame && !this.IsActive)
             {
                 PauseGame();
             }
@@ -595,7 +595,7 @@ namespace Charge
 			// TODO: We should probably change this to confirm that the player wants to quit
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 			{
-				Exit();
+                Exit();
 			}
             if (currentGameState == GameState.TitleScreen)
             {
@@ -703,7 +703,7 @@ namespace Charge
             {
                 try
                 {
-                    sound.Play();
+                    //sound.Play();
                 }
                 catch (Microsoft.Xna.Framework.Audio.NoAudioHardwareException)
                 {

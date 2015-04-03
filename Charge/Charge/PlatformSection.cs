@@ -33,7 +33,7 @@ namespace Charge
 
         public void Draw(SpriteBatch spriteBatch, float brightness)
         {
-            float variationAmt = 255 - GameplayVars.MinPlatformBrightness;
+            /*float variationAmt = 255 - GameplayVars.MinPlatformBrightness;
             float toSub =  variationAmt - variationAmt * brightness;
 
             int R = Convert.ToInt32(tint.R - toSub);
@@ -42,7 +42,9 @@ namespace Charge
 
             Color drawCol = new Color(R, G, B);
 
-            spriteBatch.Draw(tex, position, drawCol);
+            spriteBatch.Draw(tex, position, drawCol);*/
+            spriteBatch.Draw(tex, position, tint);
+
             //base.Draw(spriteBatch);
         }
     }
