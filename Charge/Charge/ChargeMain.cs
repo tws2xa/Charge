@@ -69,8 +69,11 @@ namespace Charge
         private SoundEffect shootSound;
         private SoundEffect jumpSound;
         private SoundEffect overchargeSound;
+        private SoundEffect landSound;
         private static float playerSpeed; //Current run speed
         public static float barrierSpeed; //Speed of barriers
+
+        bool playLandSound = true;
 
         //Useful Tools
         Random rand; //Used for generating random variables
@@ -276,6 +279,7 @@ namespace Charge
             shootSound = Content.Load<SoundEffect>("SoundFX/shoot");
             jumpSound = Content.Load<SoundEffect>("SoundFX/jump");
             overchargeSound = Content.Load<SoundEffect>("SoundFX/overcharge");
+            landSound = Content.Load<SoundEffect>("SoundFX/land");
             //Init all objects and lists
             SetupInitialConfiguration();
         }
@@ -334,6 +338,12 @@ namespace Charge
                 else
                 {
                     player.Update(deltaTime); //Update the player
+
+                    //Play the land sound if they player has jumped or fallen
+                    if (!playLandSound && Math.Abs(player.vSpeed) > Math.Abs(GameplayVars.JumpInitialVelocity / 2))
+                    {
+                        playLandSound = true;
+                    }
 
                     UpdateWorldEntities(deltaTime);	//Update all entities in the world
 
@@ -703,7 +713,7 @@ namespace Charge
             {
                 try
                 {
-                    //sound.Play();
+                    sound.Play();
                 }
                 catch (Microsoft.Xna.Framework.Audio.NoAudioHardwareException)
                 {
@@ -976,7 +986,15 @@ namespace Charge
                 if (plat.position.Left < player.position.Right * 2)
                 {
                     bool collided = player.CheckPlatformCollision(plat); //Handles the checking and results of collisions
-                    if (collided) break; //Hit a platform. No need to check any more.
+                    if (collided)
+                    {
+                        if (playLandSound)
+                        {
+                            playLandSound = false;
+                            PlaySound(landSound);
+                        }
+                        break; //Hit a platform. No need to check any more.
+                    }
                 }
             }
         }
