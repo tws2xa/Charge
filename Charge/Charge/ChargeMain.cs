@@ -890,6 +890,10 @@ namespace Charge
                 if (entity.destroyMe)
                 {
                     enemies.Remove(entity);
+                    List<Color> destroyCols = new List<Color>() { Color.Red, Color.Black };
+                    PixelEffect pixelEffect = new PixelEffect(entity.position, WhiteTex, destroyCols);
+                    pixelEffect.yVel = -20;
+                    otherEnts.Add(pixelEffect);
                     entity = null;
                     i--;
                 }
@@ -905,6 +909,12 @@ namespace Charge
                 if (entity.destroyMe)
                 {
                     walls.Remove(entity);
+                    List<Color> destroyCols = new List<Color>() { Color.Red, Color.Black };
+                    PixelEffect pixelEffect = new PixelEffect(entity.position, WhiteTex, destroyCols);
+                    pixelEffect.xVel = playerSpeed / 4;
+                    pixelEffect.yVel = -35;
+                    pixelEffect.SetSpawnFreqAndFade(5, 0.5f);
+                    otherEnts.Add(pixelEffect);
                     entity = null;
                     i--;
                 }
@@ -1038,8 +1048,8 @@ namespace Charge
                     }
                     else
                     {
-                    PlayerDeath();
-                }
+                        PlayerDeath();
+                    }
             }
         }
         }
