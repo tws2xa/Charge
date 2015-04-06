@@ -60,7 +60,6 @@ namespace Charge
         int score; //Player score
         List<Int32> highScores; //Top 10 scores
         float tempScore; //Keeps track of fractional score increases
-        int numScores = 10; //Number of high scores to log
         private static float globalCooldown; //The cooldown on powerups
         private static float totalGlobalCooldown; //The max from which the cooldown is decreasing
 
@@ -344,6 +343,7 @@ namespace Charge
                     {
                         playLandSound = true;
                     }
+                    UpdateScore(deltaTime);	//Update the player score
 
                     UpdateWorldEntities(deltaTime);	//Update all entities in the world
 
@@ -358,8 +358,6 @@ namespace Charge
                     GenerateLevelContent();	//Generate more level content
 
                     UpdateCooldown(deltaTime); //Update the global cooldown
-
-                    UpdateScore(deltaTime);	//Update the player score
                     
                     UpdateEffects(deltaTime); //Handle effects for things like Overcharge, etc
 
@@ -505,8 +503,9 @@ namespace Charge
                 // Draw Score
                 if (player.isDead)
                 {
+                    spriteBatch.Draw(WhiteTex, new Rectangle(-10, -10, GameplayVars.WinWidth + 20, GameplayVars.WinHeight + 20), Color.Black * 0.5f);
                     bool hasDrawnMyScore = false;
-                    for (int i = 0; i < numScores; i++ )
+                    for (int i = 0; i < GameplayVars.NumScores; i++ )
                     {
                         String place;
                         if (i == 0)
@@ -523,12 +522,12 @@ namespace Charge
                         if (highScores[i] == score && !hasDrawnMyScore)
                         {
                             //Highlight your score in the leaderboard
-                            DrawStringWithShadow(spriteBatch, place + ": " + highScores[i], new Vector2(strDrawX, 78 + 35 * i), Color.Gold, new Color(10, 10, 10));
+                            DrawStringWithShadow(spriteBatch, toDraw, new Vector2(strDrawX, 78 + 35 * i), Color.Gold, new Color(10, 10, 10));
                             hasDrawnMyScore = true;
                         }
                         else
                         {
-                            DrawStringWithShadow(spriteBatch, place + ": " + highScores[i], new Vector2(strDrawX, 78 + 35 * i));
+                            DrawStringWithShadow(spriteBatch, toDraw, new Vector2(strDrawX, 78 + 35 * i));
                         }
                     }
                     if (hasDrawnMyScore)
@@ -716,6 +715,11 @@ namespace Charge
                     sound.Play();
                 }
                 catch (Microsoft.Xna.Framework.Audio.NoAudioHardwareException)
+                {
+                    Console.WriteLine("Failed to play sound: " + sound);
+                    soundOn = false;
+                }
+                catch (System.DllNotFoundException)
                 {
                     Console.WriteLine("Failed to play sound: " + sound);
                     soundOn = false;
@@ -1292,10 +1296,11 @@ namespace Charge
             highScores.Add(finalScore);
             highScores.Sort();
             highScores.Reverse();
+            highScores.RemoveAt(GameplayVars.NumScores);
             streamWriter = new StreamWriter("HighScores.txt");
-            for (int i = 0; i < numScores - 1; i++)
+            for (int i = 0; i < GameplayVars.NumScores - 1; i++)
                 streamWriter.Write(highScores[i]+" ");
-            streamWriter.Write(highScores[numScores - 1]);
+            streamWriter.Write(highScores[GameplayVars.NumScores - 1]);
             streamWriter.Close();
         }
     }

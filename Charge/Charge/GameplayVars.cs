@@ -45,5 +45,7 @@ namespace Charge
 
         public static float titleScrollSpeed = 100;
         public static int MinPlatformBrightness = 255; //255 = fully bright
+
+        public static int NumScores = 10;
     }
 }
