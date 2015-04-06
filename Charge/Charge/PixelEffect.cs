@@ -170,6 +170,9 @@ namespace Charge
         /// </summary>
         private void SpawnPixel()
         {
+
+            if (position.Width < pixelSize || position.Height < pixelSize) return;
+
             int colIndex = rand.Next(0, colors.Count);
 
             int xOffset = rand.Next(0, position.Width - pixelSize);

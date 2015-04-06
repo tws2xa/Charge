@@ -894,10 +894,20 @@ namespace Charge
                 if (entity.destroyMe)
                 {
                     enemies.Remove(entity);
+
+                    /*
+                    List<Color> destroyCols = new List<Color>() { Color.Red, Color.Black };
+                    DisintegrationEffect disEffect = new DisintegrationEffect(entity.position, EnemyTex, WhiteTex, destroyCols, 0.2f, false);
+                    otherEnts.Add(disEffect);
+                    */
+                    
                     List<Color> destroyCols = new List<Color>() { Color.Red, Color.Black };
                     PixelEffect pixelEffect = new PixelEffect(entity.position, WhiteTex, destroyCols);
                     pixelEffect.yVel = -20;
                     otherEnts.Add(pixelEffect);
+                    
+
+
                     entity = null;
                     i--;
                 }
@@ -913,12 +923,20 @@ namespace Charge
                 if (entity.destroyMe)
                 {
                     walls.Remove(entity);
+                    
+                    /*
+                    List<Color> destroyCols = new List<Color>() { Color.Red, Color.Black };
+                    DisintegrationEffect disEffect = new DisintegrationEffect(entity.position, WallTex, WhiteTex, destroyCols, 0.1f, true);
+                    otherEnts.Add(disEffect);
+                    */
+                    
                     List<Color> destroyCols = new List<Color>() { Color.Red, Color.Black };
                     PixelEffect pixelEffect = new PixelEffect(entity.position, WhiteTex, destroyCols);
                     pixelEffect.xVel = playerSpeed / 4;
                     pixelEffect.yVel = -35;
                     pixelEffect.SetSpawnFreqAndFade(5, 0.5f);
                     otherEnts.Add(pixelEffect);
+
                     entity = null;
                     i--;
                 }

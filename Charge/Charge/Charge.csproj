@@ -42,6 +42,7 @@
     <Compile Include="ChargeBar.cs" />
     <Compile Include="Controls.cs" />
     <Compile Include="DischargeAnimation.cs" />
+    <Compile Include="DisintegrationEffect.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="GameplayVars.cs" />
     <Compile Include="LevelGenerationVars.cs" />
