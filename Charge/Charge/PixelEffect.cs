@@ -120,7 +120,7 @@ namespace Charge
             }
 
             //Update the spawn frequency
-            spawnFrequency -= (1 / spawnFadeTime) * deltaTime;
+            if(spawnFadeTime > 0) spawnFrequency -= (1 / spawnFadeTime) * deltaTime;
             if (spawnFrequency <= 0)
             {
                 spawnFrequency = 0;

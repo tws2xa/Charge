@@ -15,13 +15,25 @@ namespace Charge
     {
 		private double timeElapsedSinceLastMovement;
 
+        public bool doPixelEffect = false;
+        private PixelEffect pixelEffect;
+
         /// <summary>
         /// Create the barrier with position and sprite
         /// </summary>
-        public Barrier(Rectangle position, Texture2D tex)
+        public Barrier(Rectangle position, Texture2D tex, Texture2D pixelTex)
         {
 			timeElapsedSinceLastMovement = 0;
             base.init(position, tex);
+
+            if (doPixelEffect)
+            {
+                int pixelWidth = position.Width / 2;
+                Rectangle pixelRect = new Rectangle(position.X + position.Width / 2 - pixelWidth / 2, position.Y, pixelWidth, position.Height);
+                pixelEffect = new PixelEffect(pixelRect, pixelTex, new List<Color>() { Color.White, Color.Black });
+                pixelEffect.spawnFadeTime = -1;
+                pixelEffect.spawnFrequency = 0.2f;
+            }
         }
 
         /// <summary>
@@ -41,7 +53,19 @@ namespace Charge
 
 			this.position.X += Convert.ToInt32(movementInPixels);
 
+            if (doPixelEffect)
+            {
+                pixelEffect.position.X += Convert.ToInt32(movementInPixels);
+                pixelEffect.Update(deltaTime);
+            }
+
 			base.Update(deltaTime);
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            base.Draw(spriteBatch);
+            if(doPixelEffect) pixelEffect.Draw(spriteBatch);
         }
     }
 }
