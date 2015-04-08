@@ -257,13 +257,13 @@ namespace Charge
 
             //Load all needed game textures and fonts
             BackgroundTex = this.Content.Load<Texture2D>("Background");
-            BarrierTex = this.Content.Load<Texture2D>("Barrier");
+            BarrierTex = this.Content.Load<Texture2D>("AnimatedPngs/BarrierAnimated.png");
             BatteryTex = this.Content.Load<Texture2D>("BatteryGlow");
             EnemyTex = this.Content.Load<Texture2D>("Enemy");
             PlatformCenterTex = this.Content.Load<Texture2D>("WhitePlatformCenterPiece");
             PlatformLeftTex = this.Content.Load<Texture2D>("WhitePlatformLeftCap");
             PlatformRightTex = this.Content.Load<Texture2D>("WhitePlatformRightCap");
-            PlayerTex = this.Content.Load<Texture2D>("Player");
+            PlayerTex = this.Content.Load<Texture2D>("AnimatedPngs/PlayerAnimation1.png");
             WallTex = this.Content.Load<Texture2D>("RedWall");
             ChargeBarTex= this.Content.Load<Texture2D>("ChargeBar");
             DischargeTex = this.Content.Load<Texture2D>("Discharge");
@@ -281,6 +281,7 @@ namespace Charge
             jumpSound = Content.Load<SoundEffect>("SoundFX/jump");
             overchargeSound = Content.Load<SoundEffect>("SoundFX/overcharge");
             landSound = Content.Load<SoundEffect>("SoundFX/land");
+
             //Init all objects and lists
             SetupInitialConfiguration();
         }
@@ -452,7 +453,6 @@ namespace Charge
                 String Title = "CHARGE";
                 String Options = "Options";
                 String Start = "Start Game";
-                int selection = 0;
                 int TitleDrawX = GetCenteredStringLocation(FontLarge, Title, GameplayVars.WinWidth / 2);
                 int OptionsDrawX = GetCenteredStringLocation(Font, Options, GameplayVars.WinWidth / 2);
                 int StartDrawX = GetCenteredStringLocation(Font, Start, GameplayVars.WinWidth / 2);
@@ -468,14 +468,12 @@ namespace Charge
                     spriteBatch.DrawString(Font, Start, new Vector2(StartDrawX, 250), Color.White);
                     spriteBatch.DrawString(Font, Options, new Vector2(OptionsDrawX, 325), Color.Gold);
                 }
-
-                
             }
 
 			if (currentGameState == GameState.InGame || currentGameState == GameState.Paused)
 			{
-				//Draw background
-				background.Draw(spriteBatch);
+                //Draw background
+                background.Draw(spriteBatch);
 
                 //Draw Walls
                 foreach (WorldEntity wall in walls)
@@ -1167,7 +1165,6 @@ namespace Charge
 			player.DecCharge(GameplayVars.ChargeDecreaseRate * deltaTime);
             
             // Pick the background color for the charge bar
-            int chargeBackgroundIndex;
             Color backColor;
 
             backColor = ChargeBarLevelColors[GetBackgroundColorIndex()];

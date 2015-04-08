@@ -14,27 +14,40 @@ namespace Charge
     enum OverchargeState { OFF, INCREASING, DECREASING };
 
     //More methods and fields may be added later
-    class Player : WorldEntity
+    class Player : AnimatedWorldEntity
     {
+        private static readonly double FrameTime = 0.1; // How long to wait before switching to the next animation frame
+        private static readonly int NumAnimationFrames = 6; // How many frames are included in the sprite strip
+
 		public float vSpeed;
 		public bool grounded;
         public int jmpNum;
         public bool isDead;
+
         private float overcharge = 0;
         private float playerChargeLevel; // Current charge
+        private OverchargeState overchargeState;
 
-        OverchargeState overchargeState;
+        // Animation variables
+        private Rectangle spriteSrcRect;
+        private double timeElapsedSinceLastFrameUpdate; // The cumulative time that has passed since the animation frame was last updated
+        private int currentFrameNum;
+        private int frameWidth;
 
 		/// <summary>
 		/// Create the player with position and sprite
 		/// </summary>
-		public Player(Rectangle position, Texture2D tex)
+		public Player(Rectangle position, Texture2D tex) : base(position, tex, FrameTime, NumAnimationFrames, false)
         {
-            base.init(position, tex);
             vSpeed = 0;
             jmpNum = 0;
             grounded = false;
             isDead = false;
+
+            spriteSrcRect = new Rectangle();
+            timeElapsedSinceLastFrameUpdate = 0;
+            currentFrameNum = 0;
+            frameWidth = tex.Width / NumAnimationFrames;
 
             SetCharge(2 * GameplayVars.ChargeBarCapacity / 3);	// Init the player charge level to half of the max
         }
@@ -44,6 +57,7 @@ namespace Charge
         /// </summary>
         public override void Update(float deltaTime)
         {
+            base.Update(deltaTime); // Updates animation frames
 
             if (overchargeState == OverchargeState.INCREASING)
             {
@@ -76,7 +90,6 @@ namespace Charge
             {
                 vSpeed = 0;
             }
-
         }
 
         /// <summary>
