@@ -11,20 +11,22 @@ using Microsoft.Xna.Framework.Storage;
 namespace Charge
 {
     //More methods and fields may be added later
-    class Barrier : WorldEntity
+    class Barrier : AnimatedWorldEntity
     {
-		private double timeElapsedSinceLastMovement;
+        private static readonly double FrameTime = 0.075; // How long to wait before switching to the next animation frame
+        private static readonly int NumAnimationFrames = 5; // How many frames are included in the sprite strip
 
         public bool doPixelEffect = false;
+
         private PixelEffect pixelEffect;
+        private double timeElapsedSinceLastMovement;
 
         /// <summary>
         /// Create the barrier with position and sprite
         /// </summary>
-        public Barrier(Rectangle position, Texture2D tex, Texture2D pixelTex)
+        public Barrier(Rectangle position, Texture2D tex, Texture2D pixelTex) : base(position, tex, FrameTime, NumAnimationFrames, true)
         {
 			timeElapsedSinceLastMovement = 0;
-            base.init(position, tex);
 
             if (doPixelEffect)
             {
@@ -41,6 +43,8 @@ namespace Charge
         /// </summary>
         public override void Update(float deltaTime)
         {
+            base.Update(deltaTime); // Update animation and move with player speed
+
 			timeElapsedSinceLastMovement += deltaTime;
 
 			double movementInPixels = 0;
@@ -58,8 +62,6 @@ namespace Charge
                 pixelEffect.position.X += Convert.ToInt32(movementInPixels);
                 pixelEffect.Update(deltaTime);
             }
-
-			base.Update(deltaTime);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
