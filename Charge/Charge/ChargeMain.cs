@@ -69,6 +69,7 @@ namespace Charge
         private SoundEffect jumpSound;
         private SoundEffect overchargeSound;
         private SoundEffect landSound;
+        private SoundEffect enemyDeathSound;
         private static float playerSpeed; //Current run speed
         public static float barrierSpeed; //Speed of barriers
 
@@ -283,6 +284,7 @@ namespace Charge
             jumpSound = Content.Load<SoundEffect>("SoundFX/jump");
             overchargeSound = Content.Load<SoundEffect>("SoundFX/overcharge");
             landSound = Content.Load<SoundEffect>("SoundFX/land");
+            enemyDeathSound = Content.Load<SoundEffect>("SoundFX/enemyDeath.wav");
 
             //Init all objects and lists
             SetupInitialConfiguration();
@@ -1117,6 +1119,7 @@ namespace Charge
                     if (effect is DischargeAnimation && effect.position.Intersects(enemy.position))
                     {
                         enemy.destroyMe = true;
+                        PlaySound(enemyDeathSound);
                     }
                 }
             }
@@ -1135,6 +1138,7 @@ namespace Charge
                     {
                         enemy.destroyMe = true;
                         projectile.destroyMe = true;
+                        PlaySound(enemyDeathSound);
                     }
                 }
             }
