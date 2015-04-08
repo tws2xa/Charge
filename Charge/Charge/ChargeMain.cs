@@ -76,6 +76,8 @@ namespace Charge
         PixelEffect fullScreenPixelEffect;
         bool doPausePixelEffect = true;
 
+        bool playerPixelizeOnDeath = false;
+
         //Useful Tools
         Random rand; //Used for generating random variables
         LevelGenerator levelGenerator; //Generates the platforms
@@ -179,8 +181,8 @@ namespace Charge
             
             //Create the initial objects
             player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 110, GameplayVars.StartPlayerWidth, GameplayVars.StartPlayerHeight), PlayerTex); //The player character
-            backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex, WhiteTex); //The death barrier behind the player
-            frontBarrier = new Barrier(new Rectangle(GameplayVars.FrontBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex, WhiteTex); //The death barrier in front of the player
+            backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 50, GameplayVars.WinHeight + 100), BarrierTex, WhiteTex); //The death barrier behind the player
+            frontBarrier = new Barrier(new Rectangle(GameplayVars.FrontBarrierStartX, -50, 50, GameplayVars.WinHeight + 100), BarrierTex, WhiteTex); //The death barrier in front of the player
             background = new Background(BackgroundTex);
 			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 5, graphics.GraphicsDevice.Viewport.Width / 2, 25), ChargeBarTex, ChargeBarLevelColors[0], ChargeBarLevelColors[1]);
 
@@ -334,7 +336,10 @@ namespace Charge
 				
                 if (player.isDead)
                 {
-
+                    foreach (WorldEntity e in otherEnts)
+                    {
+                        e.Update(deltaTime);
+                    }
                 }
 
                 else
@@ -512,7 +517,7 @@ namespace Charge
                 }
                 
 				//Draw the player
-				player.Draw(spriteBatch);
+				if(!playerPixelizeOnDeath || !player.isDead) player.Draw(spriteBatch);
 
 				//Draw Barriers
 				frontBarrier.Draw(spriteBatch);
@@ -1143,6 +1148,18 @@ namespace Charge
         {
            // freezeWorld();
             player.isDead = true;
+
+            if (playerPixelizeOnDeath)
+            {
+                List<Color> playerDeathColors = new List<Color>() { Color.Black, Color.White };
+                PixelEffect playerDeathEffect = new PixelEffect(player.position, WhiteTex, playerDeathColors);
+                playerDeathEffect.pixelYVel = -20;
+                playerDeathEffect.pixelXVel = 20;
+                playerDeathEffect.SetSpawnFreqAndFade(5, 4);
+                playerDeathEffect.followCamera = false;
+                otherEnts.Add(playerDeathEffect);
+            }
+
             updateHighScore(score);
         }
 
