@@ -76,7 +76,8 @@ namespace Charge
         bool playLandSound = true;
         PixelEffect fullScreenPixelEffect;
         bool doPausePixelEffect = true;
-
+        bool doHighScorePixelEffect = false;
+        bool doMainMenuPixelEffect = false;
         bool playerPixelizeOnDeath = false;
 
         //Useful Tools
@@ -86,7 +87,6 @@ namespace Charge
         bool soundOn = true;
 
         //For reading and writing files
-        StreamReader streamReader;
         StreamWriter streamWriter;
 
         //Textures
@@ -305,7 +305,9 @@ namespace Charge
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
-        {
+        {   
+            //Delta time in seconds
+            float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
 
             // This should be done regardless of the GameState
             controls.Update(); //Collect input data
@@ -317,10 +319,7 @@ namespace Charge
             }
 
             if(currentGameState == GameState.TitleScreen)
-            {
-                //Delta time in seconds
-                float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
-                
+            {   
                 background.Update(deltaTime); //Update the background scroll
 
                 levelGenerator.Update(deltaTime);
@@ -331,9 +330,6 @@ namespace Charge
 
 			if (currentGameState == GameState.InGame)
 			{
-				//Delta time in seconds
-				float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
-
 				background.Update(deltaTime); //Update the background scroll
 				
                 if (player.isDead)
@@ -375,9 +371,8 @@ namespace Charge
                 }
 			}
 
-            if (currentGameState == GameState.Paused && doPausePixelEffect)
+            if (fullScreenPixelEffect != null)
             {
-                float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
                 fullScreenPixelEffect.Update(deltaTime);
             }
 				
@@ -393,17 +388,7 @@ namespace Charge
 
             if (doPausePixelEffect)
             {
-                List<Color> colors = new List<Color>();
-                for (int i = 0; i <= 255; i += 20)
-                {
-                    colors.Add(new Color(i, i, i));
-                }
-                fullScreenPixelEffect = new PixelEffect(new Rectangle(0, 0, GameplayVars.WinWidth, GameplayVars.WinHeight), WhiteTex, colors);
-                fullScreenPixelEffect.spawnFadeTime = -1;
-                fullScreenPixelEffect.followCamera = false;
-                fullScreenPixelEffect.pixelFadeTime = 3;
-                fullScreenPixelEffect.spawnFrequency = 0.2f;
-                fullScreenPixelEffect.pixelYVel = 20;
+                CreateBasicFullScreenPixelEffect();
             }
         }
 
@@ -418,10 +403,8 @@ namespace Charge
 
             if (currentGameState == GameState.TitleScreen)
             {
-
                 //Draw Background
                 background.Draw(spriteBatch);
-
 
                 //Draw Walls
                 foreach (WorldEntity wall in walls)
@@ -455,6 +438,13 @@ namespace Charge
                 
                 //Darken background
                 spriteBatch.Draw(WhiteTex, new Rectangle(-10, -10, GameplayVars.WinWidth + 20, GameplayVars.WinHeight + 20), Color.Black * 0.3f);
+
+                //Pixel effect if turned on
+                if (doMainMenuPixelEffect)
+                {
+                    if (fullScreenPixelEffect == null) CreateBasicFullScreenPixelEffect();
+                    fullScreenPixelEffect.Draw(spriteBatch);
+                }
 
                 //Draw Title Menu
                 String Title = "CHARGE";
@@ -532,6 +522,11 @@ namespace Charge
                 if (player.isDead)
                 {
                     spriteBatch.Draw(WhiteTex, new Rectangle(-10, -10, GameplayVars.WinWidth + 20, GameplayVars.WinHeight + 20), Color.Black * 0.5f);
+                    if (doHighScorePixelEffect)
+                    {
+                        if (fullScreenPixelEffect == null) CreateBasicFullScreenPixelEffect();
+                        fullScreenPixelEffect.Draw(spriteBatch);
+                    }
                     bool hasDrawnMyScore = false;
                     for (int i = 0; i < GameplayVars.NumScores; i++ )
                     {
@@ -1364,6 +1359,21 @@ namespace Charge
                 streamWriter.Write(highScores[i]+" ");
             streamWriter.Write(highScores[GameplayVars.NumScores - 1]);
             streamWriter.Close();
+        }
+
+        public void CreateBasicFullScreenPixelEffect()
+        {
+            List<Color> colors = new List<Color>();
+            for (int i = 0; i <= 255; i += 20)
+            {
+                colors.Add(new Color(i, i, i));
+            }
+            fullScreenPixelEffect = new PixelEffect(new Rectangle(0, 0, GameplayVars.WinWidth, GameplayVars.WinHeight), WhiteTex, colors);
+            fullScreenPixelEffect.spawnFadeTime = -1;
+            fullScreenPixelEffect.followCamera = false;
+            fullScreenPixelEffect.pixelFadeTime = 3;
+            fullScreenPixelEffect.spawnFrequency = 0.2f;
+            fullScreenPixelEffect.pixelYVel = 20;
         }
     }
 }
