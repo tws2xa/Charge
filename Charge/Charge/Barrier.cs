@@ -28,11 +28,12 @@ namespace Charge
 
             if (doPixelEffect)
             {
-                int pixelWidth = position.Width / 2;
+                int pixelWidth = position.Width / 3;
                 Rectangle pixelRect = new Rectangle(position.X + position.Width / 2 - pixelWidth / 2, position.Y, pixelWidth, position.Height);
                 pixelEffect = new PixelEffect(pixelRect, pixelTex, new List<Color>() { Color.White, Color.Black });
                 pixelEffect.spawnFadeTime = -1;
                 pixelEffect.spawnFrequency = 0.2f;
+                pixelEffect.pixelYVel = 65;
             }
         }
 

@@ -73,6 +73,8 @@ namespace Charge
         public static float barrierSpeed; //Speed of barriers
 
         bool playLandSound = true;
+        PixelEffect fullScreenPixelEffect;
+        bool doPausePixelEffect = false;
 
         //Useful Tools
         Random rand; //Used for generating random variables
@@ -364,9 +366,15 @@ namespace Charge
                     specialAbilityIcons.Update(deltaTime); //Update the UI icons
                 }
 			}
+
+            if (currentGameState == GameState.Paused && doPausePixelEffect)
+            {
+                float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
+                fullScreenPixelEffect.Update(deltaTime);
+            }
 				
             base.Update(gameTime);
-			}
+		}
             
         /// <summary>
         /// Pauses the game
@@ -374,6 +382,21 @@ namespace Charge
         private void PauseGame()
         {
             currentGameState = GameState.Paused;
+
+            if (doPausePixelEffect)
+            {
+                List<Color> colors = new List<Color>();
+                for (int i = 0; i <= 255; i += 20)
+                {
+                    colors.Add(new Color(i, i, i));
+                }
+                fullScreenPixelEffect = new PixelEffect(new Rectangle(0, 0, GameplayVars.WinWidth, GameplayVars.WinHeight), WhiteTex, colors);
+                fullScreenPixelEffect.spawnFadeTime = -1;
+                fullScreenPixelEffect.followCamera = false;
+                fullScreenPixelEffect.pixelFadeTime = 3;
+                fullScreenPixelEffect.spawnFrequency = 0.2f;
+                fullScreenPixelEffect.pixelYVel = 20;
+            }
         }
 
         /// <summary>
@@ -550,6 +573,8 @@ namespace Charge
 				// Draw the pause screen on top of all of the game assets
 				if (currentGameState == GameState.Paused)
 				{
+                    spriteBatch.Draw(WhiteTex, new Rectangle(0, 0, GameplayVars.WinWidth, GameplayVars.WinHeight), Color.Black * 0.5f);
+                    if(doPausePixelEffect) fullScreenPixelEffect.Draw(spriteBatch);
                     DrawStringWithShadow(spriteBatch, "Paused", new Vector2(15, 15));
 				}
 			}
@@ -697,6 +722,7 @@ namespace Charge
 				// Player has pressed the Pause command (P key or Start button)
 				if (controls.onPress(Keys.P, Buttons.Start))
 				{
+                    if(doPausePixelEffect) fullScreenPixelEffect = null;
 					currentGameState = GameState.InGame;
 				}
 			}

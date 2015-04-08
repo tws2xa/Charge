@@ -13,6 +13,8 @@ namespace Charge
         public Color col; //Pixel color
         public int xOffset; //Offset from main effect's x position
         public int yOffset; //Offset from main effect's y position
+        public float xInc; //Used to track x velocity
+        public float yInc; //Used to track y velocity
         public float opacity; //Opacity
 
         public Pixel(Color col, int xOffset, int yOffset)
@@ -20,6 +22,8 @@ namespace Charge
             this.col = col;
             this.xOffset = xOffset;
             this.yOffset = yOffset;
+            this.xInc = 0;
+            this.yInc = 0;
             opacity = 1;
         }
     }
@@ -32,6 +36,8 @@ namespace Charge
         public float spawnFadeTime; //How quickly the spawn frequency decreases
         public float pixelFadeTime; //How quickly pixel opacity fades
 
+        public float pixelXVel; //X Velocity of each individual pixel
+        public float pixelYVel; //Y Velocity of each individual pixel
         public float xVel; //X Velocity of the effect
         public float yVel; //Y Velocity of the effect
         float xInc; //Used to track float speeds with int positions
@@ -50,6 +56,8 @@ namespace Charge
         ///     follow camera: true
         ///     spawn frequency: 3
         ///     spawn fade time: 0.5
+        ///     pixelXVel: 0
+        ///     pixelYVel: 0
         ///     xVel: 0
         ///     yVel: 0
         /// </summary>
@@ -70,6 +78,8 @@ namespace Charge
             yVel = 0;
             xInc = 0;
             yInc = 0;
+            pixelXVel = 0;
+            pixelYVel = 0;
 
             pixels = new List<Pixel>();
             rand = new Random();
@@ -111,11 +121,24 @@ namespace Charge
             //Update each pixel's opacity
             for (int i = 0; i<pixels.Count; i++)
             {
-                pixels[i].opacity -= (1 / pixelFadeTime) * deltaTime;
-                if (pixels[i].opacity <= 0)
+                Pixel curPix = pixels[i];
+                curPix.opacity -= (1 / pixelFadeTime) * deltaTime;
+                if (curPix.opacity <= 0)
                 {
                     pixels.RemoveAt(i); //Remove if invisible
                     i--;
+                }
+                curPix.xInc += pixelXVel * deltaTime;
+                if (Math.Abs(curPix.xInc) > 1)
+                {
+                    curPix.xOffset += Convert.ToInt32(Math.Floor(curPix.xInc));
+                    curPix.xInc %= 1;
+                }
+                curPix.yInc += pixelYVel * deltaTime;
+                if (Math.Abs(curPix.yInc) > 1)
+                {
+                    curPix.yOffset += Convert.ToInt32(Math.Floor(curPix.yInc));
+                    curPix.yInc %= 1;
                 }
             }
 
