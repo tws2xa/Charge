@@ -74,7 +74,7 @@ namespace Charge
 
         bool playLandSound = true;
         PixelEffect fullScreenPixelEffect;
-        bool doPausePixelEffect = false;
+        bool doPausePixelEffect = true;
 
         //Useful Tools
         Random rand; //Used for generating random variables
