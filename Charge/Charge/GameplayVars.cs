@@ -11,8 +11,14 @@ namespace Charge
         public static int WinHeight = 550;
         public static int StartPlayerWidth = 44;
         public static int StartPlayerHeight = 71;
+        public static int PlayerXBuffer = 15;
+        public static int PlayerYBuffer = 15;
         public static int PlayerStartX = WinWidth/3;
         public static int playerNumJmps = 2;
+        public static int wallXBuffer = 10;
+        public static int wallYBuffer = 30;
+        public static int enemyXBuffer = 5;
+        public static int enemyYBuffer = 5;
         public static float maxPlayerVSpeed = 50;
         public static int BackBarrierStartX = -150;
         public static int FrontBarrierStartX = WinWidth + 350;
@@ -31,6 +37,7 @@ namespace Charge
         public static float DischargeCooldownTime = 20; //Seconds
         public static float OverchargeCooldownTime = 20; //Seconds
         public static float ShootCooldownTime = 5; //Seconds
+       
 
 		public static int ChargeBarCapacity = 75;
 

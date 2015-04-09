@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 #endregion
 
@@ -56,6 +57,7 @@ namespace Charge
         Background background; //The scrolling backdrop
 		ChargeBar chargeBar; // The chargebar
         SpecialAbilityIconSet specialAbilityIcons; //Discharge, Shoot, and Overcharge icons
+        
 
         int score; //Player score
         List<Int32> highScores; //Top 10 scores
@@ -157,6 +159,9 @@ namespace Charge
             score = 0;
             globalCooldown = 0;
             totalGlobalCooldown = 0;
+
+            
+            //MediaPlayer.IsRepeating = true;
 
 			//UpdatePlayerSpeed(); // Use the current charge level to set the player speed
 
@@ -286,10 +291,11 @@ namespace Charge
             landSound = Content.Load<SoundEffect>("SoundFX/land");
             enemyDeathSound = Content.Load<SoundEffect>("SoundFX/enemyDeath.wav");
 
+            
             //Init all objects and lists
             SetupInitialConfiguration();
         }
-
+         
         /// <summary>
         /// UnloadContent will be called once per game and is the place to unload
         /// all content.
@@ -1077,7 +1083,7 @@ namespace Charge
         {
             foreach (WorldEntity enemy in enemies)
             {
-                if (player.position.Intersects(enemy.position))
+                if (player.CheckEnemyCollision(enemy))
                 {
                     PlayerDeath();
                 }
@@ -1088,7 +1094,7 @@ namespace Charge
         {
             foreach (WorldEntity wall in walls)
             {
-                if (player.position.Intersects(wall.position))
+                if (player.CheckWallCollision(wall))
                 {
                     if (player.OverchargeActive())
                     {

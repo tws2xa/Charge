@@ -127,6 +127,56 @@ namespace Charge
             return false;
         }
 
+        
+        public bool CheckWallCollision(WorldEntity wall)
+        {
+            if (HitWall(wall))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool HitWall(WorldEntity wall)
+        {
+            //Wall collision. The player must be roughly 10px of the visible sprite into the wall for a hit.
+            //Checks all non collision conditions
+            bool hit = true;      
+            if(this.position.X + this.position.Width - GameplayVars.PlayerXBuffer < wall.position.X ||
+               wall.position.X + wall.position.Width - GameplayVars.wallXBuffer   < this.position.X ||
+               this.position.Y < wall.position.Y - wall.position.Height + GameplayVars.wallYBuffer  ||
+               wall.position.Y < this.position.Y - this.position.Height + GameplayVars.PlayerYBuffer)
+            {
+                hit = false;
+            }
+   
+            return hit;
+        }
+
+        public bool CheckEnemyCollision(WorldEntity enemy)
+        {
+            if (HitEnemy(enemy))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool HitEnemy(WorldEntity enemy)
+        {
+            //Enemy collision. Checks all non collsion conditions
+            bool hit = true;
+            if (this.position.X + this.position.Width - GameplayVars.PlayerXBuffer < enemy.position.X ||
+               enemy.position.X + enemy.position.Width - GameplayVars.enemyXBuffer < this.position.X  ||
+               this.position.Y < enemy.position.Y - enemy.position.Height  ||
+               enemy.position.Y < this.position.Y)
+            {
+                hit = false;
+            }
+
+            return hit;
+        }
+
         /// <summary>
         /// Returns the total player charge (includes overcharge)
         /// </summary>
