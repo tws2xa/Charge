@@ -72,6 +72,7 @@ namespace Charge
         private SoundEffect overchargeSound;
         private SoundEffect landSound;
         private SoundEffect enemyDeathSound;
+        private Song Background1;
         private static float playerSpeed; //Current run speed
         public static float barrierSpeed; //Speed of barriers
 
@@ -184,6 +185,9 @@ namespace Charge
             walls.Clear();
             batteries.Clear();
             otherEnts.Clear();
+
+            MediaPlayer.Play(Background1);
+            MediaPlayer.IsRepeating = true;
             
             //Create the initial objects
             player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 110, GameplayVars.StartPlayerWidth, GameplayVars.StartPlayerHeight), PlayerTex); //The player character
@@ -290,6 +294,9 @@ namespace Charge
             overchargeSound = Content.Load<SoundEffect>("SoundFX/overcharge");
             landSound = Content.Load<SoundEffect>("SoundFX/land");
             enemyDeathSound = Content.Load<SoundEffect>("SoundFX/enemyDeath.wav");
+
+            //BackgroundMusic
+            Background1 = Content.Load<Song>("BackgroundMusic/Killing_Time.wav");
 
             
             //Init all objects and lists
