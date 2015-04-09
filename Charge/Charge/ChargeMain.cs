@@ -303,7 +303,7 @@ namespace Charge
             overchargeSound = Content.Load<SoundEffect>("SoundFX/overcharge");
             landSound = Content.Load<SoundEffect>("SoundFX/land");
             enemyDeathSound = Content.Load<SoundEffect>("SoundFX/enemyDeath.wav");
-            chargeCollect = Content.Load<SoundEffect>("SoundFX/charge_collect.wav");
+            chargeCollect = Content.Load<SoundEffect>("SoundFX/charge_collect_quiet.wav");
             //BackgroundMusic
             Background1 = Content.Load<Song>("BackgroundMusic/Killing_Time.wav");
             TitleMusic = Content.Load<Song>("BackgroundMusic/TitleLoop.wav");
