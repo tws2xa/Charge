@@ -14,8 +14,8 @@ namespace Charge
         public static int PlayerStartX = WinWidth/3;
         public static int playerNumJmps = 2;
         public static float maxPlayerVSpeed = 50;
-        public static int BackBarrierStartX = -50;
-        public static int FrontBarrierStartX = WinWidth + 250;
+        public static int BackBarrierStartX = -150;
+        public static int FrontBarrierStartX = WinWidth + 350;
         public static int FrontBarrierStartY = WinHeight + 50;
         public static float Gravity = 40; // The y-axis starts at 0 at the top of the screen, so gravity should increase Y
         public static float JumpInitialVelocity = -16; // The y-axis starts at 0 at the top of the screen, so jump should decrease Y

@@ -260,13 +260,13 @@ namespace Charge
 
             //Load all needed game textures and fonts
             BackgroundTex = this.Content.Load<Texture2D>("Background");
-            BarrierTex = this.Content.Load<Texture2D>("AnimatedPngs/BarrierAnimated.png");
-            BatteryTex = this.Content.Load<Texture2D>("BatteryGlow");
+            BarrierTex = this.Content.Load<Texture2D>("BarrierAnimated");
+            BatteryTex = this.Content.Load<Texture2D>("Battery");
             EnemyTex = this.Content.Load<Texture2D>("Enemy");
             PlatformCenterTex = this.Content.Load<Texture2D>("WhitePlatformCenterPiece");
             PlatformLeftTex = this.Content.Load<Texture2D>("WhitePlatformLeftCap");
             PlatformRightTex = this.Content.Load<Texture2D>("WhitePlatformRightCap");
-            PlayerTex = this.Content.Load<Texture2D>("AnimatedPngs/PlayerAnimation1.png");
+            PlayerTex = this.Content.Load<Texture2D>("PlayerAnimation1");
             WallTex = this.Content.Load<Texture2D>("RedWall");
             ChargeBarTex= this.Content.Load<Texture2D>("ChargeBar");
             DischargeTex = this.Content.Load<Texture2D>("Discharge");
@@ -399,7 +399,7 @@ namespace Charge
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
 
             if (currentGameState == GameState.TitleScreen)
             {
