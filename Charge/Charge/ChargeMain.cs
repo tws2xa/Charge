@@ -72,7 +72,9 @@ namespace Charge
         private SoundEffect overchargeSound;
         private SoundEffect landSound;
         private SoundEffect enemyDeathSound;
+        private SoundEffect chargeCollect;
         private Song Background1;
+        private Song TitleMusic;
         private static float playerSpeed; //Current run speed
         public static float barrierSpeed; //Speed of barriers
 
@@ -185,9 +187,16 @@ namespace Charge
             walls.Clear();
             batteries.Clear();
             otherEnts.Clear();
-
-            MediaPlayer.Play(Background1);
-            MediaPlayer.IsRepeating = true;
+            if (currentGameState == GameState.TitleScreen)
+            {
+                MediaPlayer.Play(TitleMusic);
+                MediaPlayer.IsRepeating = true;
+            }
+            if (currentGameState == GameState.InGame)
+            {
+                MediaPlayer.Play(Background1);
+                MediaPlayer.IsRepeating = true;
+            }
             
             //Create the initial objects
             player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 110, GameplayVars.StartPlayerWidth, GameplayVars.StartPlayerHeight), PlayerTex); //The player character
@@ -294,9 +303,10 @@ namespace Charge
             overchargeSound = Content.Load<SoundEffect>("SoundFX/overcharge");
             landSound = Content.Load<SoundEffect>("SoundFX/land");
             enemyDeathSound = Content.Load<SoundEffect>("SoundFX/enemyDeath.wav");
-
+            chargeCollect = Content.Load<SoundEffect>("SoundFX/charge_collect.wav");
             //BackgroundMusic
             Background1 = Content.Load<Song>("BackgroundMusic/Killing_Time.wav");
+            TitleMusic = Content.Load<Song>("BackgroundMusic/TitleLoop.wav");
 
             
             //Init all objects and lists
@@ -318,7 +328,8 @@ namespace Charge
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
-        {   
+        {
+           
             //Delta time in seconds
             float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
 
@@ -661,6 +672,11 @@ namespace Charge
                          InitVars();
                          SetupInitialConfiguration();
                          currentGameState = GameState.InGame;
+                         if (currentGameState == GameState.InGame)
+                         {
+                             MediaPlayer.Play(Background1);
+                             MediaPlayer.IsRepeating = true;
+                         }
                      }
                      else
                      {
@@ -815,8 +831,15 @@ namespace Charge
             {
                 return;
             }
+            if (GameplayVars.DischargeMaxCost < player.GetCharge() * GameplayVars.DischargeCost)
+            {
+                player.DecCharge(GameplayVars.DischargeCost);
+            }
+            else
+                player.DecCharge(player.GetCharge() * GameplayVars.DischargeCost);
+           
 
-            player.DecCharge(GameplayVars.DischargeCost);
+            
 
             DischargeAnimation discharge = new DischargeAnimation(new Rectangle(player.position.Left, player.position.Top, player.position.Width, player.position.Width), DischargeTex);
             otherEnts.Add(discharge);
@@ -1081,6 +1104,7 @@ namespace Charge
 				{
 					    player.IncCharge(GameplayVars.BatteryChargeReplenish);
 					battery.destroyMe = true;
+                    PlaySound(chargeCollect);
 					break;
 				}
 			}

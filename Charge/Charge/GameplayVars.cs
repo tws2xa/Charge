@@ -41,7 +41,8 @@ namespace Charge
 
 		public static int ChargeBarCapacity = 75;
 
-        public static float DischargeCost = 50;
+        public static float DischargeMaxCost = 50;
+        public static float DischargeCost = .3f;
         public static float ShootCost = 10;
         public static float OverchargeMax = 50;
         public static float OverchargePermanentAdd = BatteryChargeReplenish*2;
