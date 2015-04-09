@@ -15,6 +15,7 @@ namespace Charge
     {
         float moveSpeed; //Movement speed
         Platform myPlatform;
+        SpriteEffects mirror;
 
         /// <summary>
         /// Create the enemy with position and sprite
@@ -24,6 +25,10 @@ namespace Charge
             moveSpeed = GameplayVars.EnemyMoveSpeed;
             this.myPlatform = myPlatform;
             if ((new Random()).NextDouble() < 0.5) moveSpeed *= -1; //Randomize start direction
+            
+            if (moveSpeed > 0) mirror = SpriteEffects.FlipHorizontally;
+            else mirror = SpriteEffects.None;
+
             base.init(position, tex);
         }
 
@@ -47,8 +52,16 @@ namespace Charge
             else
             {
                 moveSpeed *= -1;
+                if (moveSpeed > 0) mirror = SpriteEffects.FlipHorizontally;
+                else mirror = SpriteEffects.None;
             }
+
             base.Update(deltaTime);
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(tex, position, null, Color.White, 0.0f, Vector2.Zero, mirror, 0.0f);
         }
         
         /// <summary>
