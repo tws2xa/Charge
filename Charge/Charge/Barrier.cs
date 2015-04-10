@@ -11,17 +11,32 @@ using Microsoft.Xna.Framework.Storage;
 namespace Charge
 {
     //More methods and fields may be added later
-    class Barrier : WorldEntity
+    class Barrier : AnimatedWorldEntity
     {
-		private double timeElapsedSinceLastMovement;
+        private static readonly double FrameTime = 0.075; // How long to wait before switching to the next animation frame
+        private static readonly int NumAnimationFrames = 5; // How many frames are included in the sprite strip
+
+        public bool doPixelEffect = false;
+
+        private PixelEffect pixelEffect;
+        private double timeElapsedSinceLastMovement;
 
         /// <summary>
         /// Create the barrier with position and sprite
         /// </summary>
-        public Barrier(Rectangle position, Texture2D tex)
+        public Barrier(Rectangle position, Texture2D tex, Texture2D pixelTex) : base(position, tex, FrameTime, NumAnimationFrames, true)
         {
 			timeElapsedSinceLastMovement = 0;
-            base.init(position, tex);
+
+            if (doPixelEffect)
+            {
+                int pixelWidth = position.Width / 3;
+                Rectangle pixelRect = new Rectangle(position.X + position.Width / 2 - pixelWidth / 2, position.Y, pixelWidth, position.Height);
+                pixelEffect = new PixelEffect(pixelRect, pixelTex, new List<Color>() { Color.White, Color.Black });
+                pixelEffect.spawnFadeTime = -1;
+                pixelEffect.spawnFrequency = 0.2f;
+                pixelEffect.pixelYVel = 65;
+            }
         }
 
         /// <summary>
@@ -29,6 +44,8 @@ namespace Charge
         /// </summary>
         public override void Update(float deltaTime)
         {
+            base.Update(deltaTime); // Update animation and move with player speed
+
 			timeElapsedSinceLastMovement += deltaTime;
 
 			double movementInPixels = 0;
@@ -41,7 +58,17 @@ namespace Charge
 
 			this.position.X += Convert.ToInt32(movementInPixels);
 
-			base.Update(deltaTime);
+            if (doPixelEffect)
+            {
+                pixelEffect.position.X += Convert.ToInt32(movementInPixels);
+                pixelEffect.Update(deltaTime);
+            }
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            base.Draw(spriteBatch);
+            if(doPixelEffect) pixelEffect.Draw(spriteBatch);
         }
     }
 }

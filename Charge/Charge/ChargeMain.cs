@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 #endregion
 
@@ -56,11 +57,11 @@ namespace Charge
         Background background; //The scrolling backdrop
 		ChargeBar chargeBar; // The chargebar
         SpecialAbilityIconSet specialAbilityIcons; //Discharge, Shoot, and Overcharge icons
+        
 
         int score; //Player score
         List<Int32> highScores; //Top 10 scores
         float tempScore; //Keeps track of fractional score increases
-        int numScores = 10; //Number of high scores to log
         private static float globalCooldown; //The cooldown on powerups
         private static float totalGlobalCooldown; //The max from which the cooldown is decreasing
 
@@ -70,10 +71,19 @@ namespace Charge
         private SoundEffect jumpSound;
         private SoundEffect overchargeSound;
         private SoundEffect landSound;
+        private SoundEffect enemyDeathSound;
+        private SoundEffect chargeCollect;
+        private Song Background1;
+        private Song TitleMusic;
         private static float playerSpeed; //Current run speed
         public static float barrierSpeed; //Speed of barriers
 
         bool playLandSound = true;
+        PixelEffect fullScreenPixelEffect;
+        bool doPausePixelEffect = true;
+        bool doHighScorePixelEffect = true;
+        bool doMainMenuPixelEffect = true;
+        bool playerPixelizeOnDeath = true;
 
         //Useful Tools
         Random rand; //Used for generating random variables
@@ -82,7 +92,6 @@ namespace Charge
         bool soundOn = false;
 
         //For reading and writing files
-        StreamReader streamReader;
         StreamWriter streamWriter;
 
         //Textures
@@ -154,6 +163,9 @@ namespace Charge
             globalCooldown = 0;
             totalGlobalCooldown = 0;
 
+            
+            //MediaPlayer.IsRepeating = true;
+
 			//UpdatePlayerSpeed(); // Use the current charge level to set the player speed
 
 			barrierSpeed = GameplayVars.BarrierStartSpeed;
@@ -175,11 +187,21 @@ namespace Charge
             walls.Clear();
             batteries.Clear();
             otherEnts.Clear();
+            if (currentGameState == GameState.TitleScreen)
+            {
+                MediaPlayer.Play(TitleMusic);
+                MediaPlayer.IsRepeating = true;
+            }
+            if (currentGameState == GameState.InGame)
+            {
+                MediaPlayer.Play(Background1);
+                MediaPlayer.IsRepeating = true;
+            }
             
             //Create the initial objects
             player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 110, GameplayVars.StartPlayerWidth, GameplayVars.StartPlayerHeight), PlayerTex); //The player character
-            backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier behind the player
-            frontBarrier = new Barrier(new Rectangle(GameplayVars.FrontBarrierStartX, -50, 90, GameplayVars.WinHeight + 100), BarrierTex); //The death barrier in front of the player
+            backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 50, GameplayVars.WinHeight + 100), BarrierTex, WhiteTex); //The death barrier behind the player
+            frontBarrier = new Barrier(new Rectangle(GameplayVars.FrontBarrierStartX, -50, 50, GameplayVars.WinHeight + 100), BarrierTex, WhiteTex); //The death barrier in front of the player
             background = new Background(BackgroundTex);
 			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 5, graphics.GraphicsDevice.Viewport.Width / 2, 25), ChargeBarTex, ChargeBarLevelColors[0], ChargeBarLevelColors[1]);
 
@@ -256,13 +278,13 @@ namespace Charge
 
             //Load all needed game textures and fonts
             BackgroundTex = this.Content.Load<Texture2D>("Background");
-            BarrierTex = this.Content.Load<Texture2D>("Barrier");
-            BatteryTex = this.Content.Load<Texture2D>("BatteryGlow");
+            BarrierTex = this.Content.Load<Texture2D>("BarrierAnimated");
+            BatteryTex = this.Content.Load<Texture2D>("Battery");
             EnemyTex = this.Content.Load<Texture2D>("Enemy");
             PlatformCenterTex = this.Content.Load<Texture2D>("WhitePlatformCenterPiece");
             PlatformLeftTex = this.Content.Load<Texture2D>("WhitePlatformLeftCap");
             PlatformRightTex = this.Content.Load<Texture2D>("WhitePlatformRightCap");
-            PlayerTex = this.Content.Load<Texture2D>("Player");
+            PlayerTex = this.Content.Load<Texture2D>("PlayerAnimation1");
             WallTex = this.Content.Load<Texture2D>("RedWall");
             ChargeBarTex= this.Content.Load<Texture2D>("ChargeBar");
             DischargeTex = this.Content.Load<Texture2D>("Discharge");
@@ -280,10 +302,17 @@ namespace Charge
             jumpSound = Content.Load<SoundEffect>("SoundFX/jump");
             overchargeSound = Content.Load<SoundEffect>("SoundFX/overcharge");
             landSound = Content.Load<SoundEffect>("SoundFX/land");
+            enemyDeathSound = Content.Load<SoundEffect>("SoundFX/enemyDeath.wav");
+            chargeCollect = Content.Load<SoundEffect>("SoundFX/charge_collect_quiet.wav");
+            //BackgroundMusic
+            Background1 = Content.Load<Song>("BackgroundMusic/Killing_Time.wav");
+            TitleMusic = Content.Load<Song>("BackgroundMusic/TitleLoop.wav");
+
+            
             //Init all objects and lists
             SetupInitialConfiguration();
         }
-
+         
         /// <summary>
         /// UnloadContent will be called once per game and is the place to unload
         /// all content.
@@ -300,6 +329,9 @@ namespace Charge
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+           
+            //Delta time in seconds
+            float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
 
             // This should be done regardless of the GameState
             controls.Update(); //Collect input data
@@ -311,10 +343,7 @@ namespace Charge
             }
 
             if(currentGameState == GameState.TitleScreen)
-            {
-                //Delta time in seconds
-                float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
-                
+            {   
                 background.Update(deltaTime); //Update the background scroll
 
                 levelGenerator.Update(deltaTime);
@@ -325,18 +354,19 @@ namespace Charge
 
 			if (currentGameState == GameState.InGame)
 			{
-				//Delta time in seconds
-				float deltaTime = (gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
-
-				background.Update(deltaTime); //Update the background scroll
 				
                 if (player.isDead)
                 {
-
+                    foreach (WorldEntity e in otherEnts)
+                    {
+                        e.Update(deltaTime);
+                    }
                 }
 
                 else
                 {
+                    background.Update(deltaTime); //Update the background scroll
+				
                     player.Update(deltaTime); //Update the player
 
                     //Play the land sound if they player has jumped or fallen
@@ -344,6 +374,7 @@ namespace Charge
                     {
                         playLandSound = true;
                     }
+                    UpdateScore(deltaTime);	//Update the player score
 
                     UpdateWorldEntities(deltaTime);	//Update all entities in the world
 
@@ -358,17 +389,20 @@ namespace Charge
                     GenerateLevelContent();	//Generate more level content
 
                     UpdateCooldown(deltaTime); //Update the global cooldown
-
-                    UpdateScore(deltaTime);	//Update the player score
                     
                     UpdateEffects(deltaTime); //Handle effects for things like Overcharge, etc
 
                     specialAbilityIcons.Update(deltaTime); //Update the UI icons
                 }
 			}
+
+            if (fullScreenPixelEffect != null)
+            {
+                fullScreenPixelEffect.Update(deltaTime);
+            }
 				
             base.Update(gameTime);
-			}
+		}
             
         /// <summary>
         /// Pauses the game
@@ -376,6 +410,11 @@ namespace Charge
         private void PauseGame()
         {
             currentGameState = GameState.Paused;
+
+            if (doPausePixelEffect)
+            {
+                CreateBasicFullScreenPixelEffect();
+            }
         }
 
         /// <summary>
@@ -385,14 +424,12 @@ namespace Charge
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
 
             if (currentGameState == GameState.TitleScreen)
             {
-
                 //Draw Background
                 background.Draw(spriteBatch);
-
 
                 //Draw Walls
                 foreach (WorldEntity wall in walls)
@@ -427,11 +464,17 @@ namespace Charge
                 //Darken background
                 spriteBatch.Draw(WhiteTex, new Rectangle(-10, -10, GameplayVars.WinWidth + 20, GameplayVars.WinHeight + 20), Color.Black * 0.3f);
 
+                //Pixel effect if turned on
+                if (doMainMenuPixelEffect)
+                {
+                    if (fullScreenPixelEffect == null) CreateUnobtrusiveFullScreenPixelEffect();
+                    fullScreenPixelEffect.Draw(spriteBatch);
+                }
+
                 //Draw Title Menu
                 String Title = "CHARGE";
                 String Options = "Options";
                 String Start = "Start Game";
-                int selection = 0;
                 int TitleDrawX = GetCenteredStringLocation(FontLarge, Title, GameplayVars.WinWidth / 2);
                 int OptionsDrawX = GetCenteredStringLocation(Font, Options, GameplayVars.WinWidth / 2);
                 int StartDrawX = GetCenteredStringLocation(Font, Start, GameplayVars.WinWidth / 2);
@@ -447,14 +490,12 @@ namespace Charge
                     spriteBatch.DrawString(Font, Start, new Vector2(StartDrawX, 250), Color.White);
                     spriteBatch.DrawString(Font, Options, new Vector2(OptionsDrawX, 325), Color.Gold);
                 }
-
-                
             }
 
 			if (currentGameState == GameState.InGame || currentGameState == GameState.Paused)
 			{
-				//Draw background
-				background.Draw(spriteBatch);
+                //Draw background
+                background.Draw(spriteBatch);
 
                 //Draw Walls
                 foreach (WorldEntity wall in walls)
@@ -493,7 +534,7 @@ namespace Charge
                 }
                 
 				//Draw the player
-				player.Draw(spriteBatch);
+				if(!playerPixelizeOnDeath || !player.isDead) player.Draw(spriteBatch);
 
 				//Draw Barriers
 				frontBarrier.Draw(spriteBatch);
@@ -505,8 +546,14 @@ namespace Charge
                 // Draw Score
                 if (player.isDead)
                 {
+                    spriteBatch.Draw(WhiteTex, new Rectangle(-10, -10, GameplayVars.WinWidth + 20, GameplayVars.WinHeight + 20), Color.Black * 0.5f);
+                    if (doHighScorePixelEffect)
+                    {
+                        if (fullScreenPixelEffect == null) CreateUnobtrusiveFullScreenPixelEffect();
+                        fullScreenPixelEffect.Draw(spriteBatch);
+                    }
                     bool hasDrawnMyScore = false;
-                    for (int i = 0; i < numScores; i++ )
+                    for (int i = 0; i < GameplayVars.NumScores; i++ )
                     {
                         String place;
                         if (i == 0)
@@ -523,12 +570,12 @@ namespace Charge
                         if (highScores[i] == score && !hasDrawnMyScore)
                         {
                             //Highlight your score in the leaderboard
-                            DrawStringWithShadow(spriteBatch, place + ": " + highScores[i], new Vector2(strDrawX, 78 + 35 * i), Color.Gold, new Color(10, 10, 10));
+                            DrawStringWithShadow(spriteBatch, toDraw, new Vector2(strDrawX, 78 + 35 * i), Color.Gold, new Color(10, 10, 10));
                             hasDrawnMyScore = true;
                         }
                         else
                         {
-                            DrawStringWithShadow(spriteBatch, place + ": " + highScores[i], new Vector2(strDrawX, 78 + 35 * i));
+                            DrawStringWithShadow(spriteBatch, toDraw, new Vector2(strDrawX, 78 + 35 * i));
                         }
                     }
                     if (hasDrawnMyScore)
@@ -551,6 +598,8 @@ namespace Charge
 				// Draw the pause screen on top of all of the game assets
 				if (currentGameState == GameState.Paused)
 				{
+                    spriteBatch.Draw(WhiteTex, new Rectangle(0, 0, GameplayVars.WinWidth, GameplayVars.WinHeight), Color.Black * 0.5f);
+                    if(doPausePixelEffect) fullScreenPixelEffect.Draw(spriteBatch);
                     DrawStringWithShadow(spriteBatch, "Paused", new Vector2(15, 15));
 				}
 			}
@@ -624,6 +673,11 @@ namespace Charge
                          InitVars();
                          SetupInitialConfiguration();
                          currentGameState = GameState.InGame;
+                         if (currentGameState == GameState.InGame)
+                         {
+                             MediaPlayer.Play(Background1);
+                             MediaPlayer.IsRepeating = true;
+                         }
                      }
                      else
                      {
@@ -698,6 +752,7 @@ namespace Charge
 				// Player has pressed the Pause command (P key or Start button)
 				if (controls.onPress(Keys.P, Buttons.Start))
 				{
+                    if(doPausePixelEffect) fullScreenPixelEffect = null;
 					currentGameState = GameState.InGame;
 				}
 			}
@@ -716,6 +771,11 @@ namespace Charge
                     sound.Play();
                 }
                 catch (Microsoft.Xna.Framework.Audio.NoAudioHardwareException)
+                {
+                    Console.WriteLine("Failed to play sound: " + sound);
+                    soundOn = false;
+                }
+                catch (System.DllNotFoundException)
                 {
                     Console.WriteLine("Failed to play sound: " + sound);
                     soundOn = false;
@@ -772,8 +832,15 @@ namespace Charge
             {
                 return;
             }
+            if (GameplayVars.DischargeMaxCost < player.GetCharge() * GameplayVars.DischargeCost)
+            {
+                player.DecCharge(GameplayVars.DischargeCost);
+            }
+            else
+                player.DecCharge(player.GetCharge() * GameplayVars.DischargeCost);
+           
 
-            player.DecCharge(GameplayVars.DischargeCost);
+            
 
             DischargeAnimation discharge = new DischargeAnimation(new Rectangle(player.position.Left, player.position.Top, player.position.Width, player.position.Width), DischargeTex);
             otherEnts.Add(discharge);
@@ -890,6 +957,20 @@ namespace Charge
                 if (entity.destroyMe)
                 {
                     enemies.Remove(entity);
+
+                    /*
+                    List<Color> destroyCols = new List<Color>() { Color.Red, Color.Black };
+                    DisintegrationEffect disEffect = new DisintegrationEffect(entity.position, EnemyTex, WhiteTex, destroyCols, 0.2f, false);
+                    otherEnts.Add(disEffect);
+                    */
+                    
+                    List<Color> destroyCols = new List<Color>() { Color.Red, Color.Black };
+                    PixelEffect pixelEffect = new PixelEffect(entity.position, WhiteTex, destroyCols);
+                    pixelEffect.yVel = -20;
+                    otherEnts.Add(pixelEffect);
+                    
+
+
                     entity = null;
                     i--;
                 }
@@ -905,6 +986,20 @@ namespace Charge
                 if (entity.destroyMe)
                 {
                     walls.Remove(entity);
+                    
+                    /*
+                    List<Color> destroyCols = new List<Color>() { Color.Red, Color.Black };
+                    DisintegrationEffect disEffect = new DisintegrationEffect(entity.position, WallTex, WhiteTex, destroyCols, 0.1f, true);
+                    otherEnts.Add(disEffect);
+                    */
+                    
+                    List<Color> destroyCols = new List<Color>() { Color.Red, Color.Black };
+                    PixelEffect pixelEffect = new PixelEffect(entity.position, WhiteTex, destroyCols);
+                    pixelEffect.xVel = playerSpeed / 4;
+                    pixelEffect.yVel = -35;
+                    pixelEffect.SetSpawnFreqAndFade(5, 0.5f);
+                    otherEnts.Add(pixelEffect);
+
                     entity = null;
                     i--;
                 }
@@ -1010,6 +1105,7 @@ namespace Charge
 				{
 					    player.IncCharge(GameplayVars.BatteryChargeReplenish);
 					battery.destroyMe = true;
+                    PlaySound(chargeCollect);
 					break;
 				}
 			}
@@ -1019,7 +1115,7 @@ namespace Charge
         {
             foreach (WorldEntity enemy in enemies)
             {
-                if (player.position.Intersects(enemy.position))
+                if (player.CheckEnemyCollision(enemy))
                 {
                     PlayerDeath();
                 }
@@ -1030,7 +1126,7 @@ namespace Charge
         {
             foreach (WorldEntity wall in walls)
             {
-                if (player.position.Intersects(wall.position))
+                if (player.CheckWallCollision(wall))
                 {
                     if (player.OverchargeActive())
                     {
@@ -1038,8 +1134,8 @@ namespace Charge
                     }
                     else
                     {
-                    PlayerDeath();
-                }
+                        PlayerDeath();
+                    }
             }
         }
         }
@@ -1056,6 +1152,7 @@ namespace Charge
                     if (effect is DischargeAnimation && effect.position.Intersects(enemy.position))
                     {
                         enemy.destroyMe = true;
+                        PlaySound(enemyDeathSound);
                     }
                 }
             }
@@ -1074,6 +1171,7 @@ namespace Charge
                     {
                         enemy.destroyMe = true;
                         projectile.destroyMe = true;
+                        PlaySound(enemyDeathSound);
                     }
                 }
             }
@@ -1087,6 +1185,17 @@ namespace Charge
         {
            // freezeWorld();
             player.isDead = true;
+
+            if (playerPixelizeOnDeath)
+            {
+                List<Color> playerDeathColors = new List<Color>() { Color.Black, Color.White };
+                PixelEffect playerDeathEffect = new PixelEffect(player.position, WhiteTex, playerDeathColors);
+                playerDeathEffect.EnableRandomPixelDirection(40);
+                playerDeathEffect.SetSpawnFreqAndFade(5, 4);
+                playerDeathEffect.followCamera = false;
+                otherEnts.Add(playerDeathEffect);
+            }
+
             updateHighScore(score);
         }
 
@@ -1109,7 +1218,6 @@ namespace Charge
 			player.DecCharge(GameplayVars.ChargeDecreaseRate * deltaTime);
             
             // Pick the background color for the charge bar
-            int chargeBackgroundIndex;
             Color backColor;
 
             backColor = ChargeBarLevelColors[GetBackgroundColorIndex()];
@@ -1282,11 +1390,44 @@ namespace Charge
             highScores.Add(finalScore);
             highScores.Sort();
             highScores.Reverse();
+            highScores.RemoveAt(GameplayVars.NumScores);
             streamWriter = new StreamWriter("HighScores.txt");
-            for (int i = 0; i < numScores - 1; i++)
+            for (int i = 0; i < GameplayVars.NumScores - 1; i++)
                 streamWriter.Write(highScores[i]+" ");
-            streamWriter.Write(highScores[numScores - 1]);
+            streamWriter.Write(highScores[GameplayVars.NumScores - 1]);
             streamWriter.Close();
         }
+
+        public void CreateBasicFullScreenPixelEffect()
+        {
+            List<Color> colors = new List<Color>();
+            for (int i = 0; i <= 255; i += 20)
+            {
+                colors.Add(new Color(i, i, i));
+            }
+            fullScreenPixelEffect = new PixelEffect(new Rectangle(0, 0, GameplayVars.WinWidth, GameplayVars.WinHeight), WhiteTex, colors);
+            fullScreenPixelEffect.spawnFadeTime = -1;
+            fullScreenPixelEffect.followCamera = false;
+            fullScreenPixelEffect.pixelFadeTime = 3;
+            fullScreenPixelEffect.spawnFrequency = 0.2f;
+            fullScreenPixelEffect.pixelYVel = 20;
+        }
+
+        public void CreateUnobtrusiveFullScreenPixelEffect()
+        {
+            List<Color> colors = new List<Color>();
+            for (int i = 0; i <= 150; i += 10)
+            {
+                colors.Add(new Color(i, i, i));
+            }
+            fullScreenPixelEffect = new PixelEffect(new Rectangle(0, 0, GameplayVars.WinWidth, GameplayVars.WinHeight), WhiteTex, colors);
+            fullScreenPixelEffect.spawnFadeTime = -1;
+            fullScreenPixelEffect.followCamera = false;
+            fullScreenPixelEffect.pixelFadeTime = 3;
+            fullScreenPixelEffect.spawnFrequency = 0.1f;
+            fullScreenPixelEffect.pixelYVel = 20;
+        }
+
+
     }
 }

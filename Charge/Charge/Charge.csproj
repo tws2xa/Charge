@@ -35,6 +35,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AnimatedWorldEntity.cs" />
     <Compile Include="Background.cs" />
     <Compile Include="Barrier.cs" />
     <Compile Include="ChargeBlast.cs" />
@@ -42,11 +43,13 @@
     <Compile Include="ChargeBar.cs" />
     <Compile Include="Controls.cs" />
     <Compile Include="DischargeAnimation.cs" />
+    <Compile Include="DisintegrationEffect.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="GameplayVars.cs" />
     <Compile Include="LevelGenerationVars.cs" />
     <Compile Include="LevelGenerator.cs" />
     <Compile Include="OverchargeEffect.cs" />
+    <Compile Include="PixelEffect.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="PlatformSection.cs" />
     <Compile Include="Player.cs" />
@@ -81,6 +84,15 @@
     <Content Include="Content\AnimatedPngs\BarrierAnimated.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\BackgroundMusic\Killing_Time.wma">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\BackgroundMusic\Killing_Time.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\BackgroundMusic\TitleLoop.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\BatteryGlow.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -96,10 +108,22 @@
     <Content Include="Content\OverchargeIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\AnimatedPngs\PlayerAnimation1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\RedWall.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\ShootIcon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\SoundFX\charge_collect.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\SoundFX\charge_collect_quiet.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\SoundFX\enemyDeath.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\SoundFX\jump.wav">
@@ -132,6 +156,15 @@
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Content\BackgroundMusic\Killing_Time.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\BackgroundMusic\TitleLoop.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\BarrierAnimated.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Fonts\Arial-24.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -166,6 +199,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Player.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\PlayerAnimation1.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Wall.xnb">
