@@ -89,7 +89,7 @@ namespace Charge
         Random rand; //Used for generating random variables
         LevelGenerator levelGenerator; //Generates the platforms
         Controls controls;
-        bool soundOn = false;
+        bool soundOn = true;
 
         //For reading and writing files
         StreamWriter streamWriter;
