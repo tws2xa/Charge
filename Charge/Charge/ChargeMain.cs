@@ -78,12 +78,13 @@ namespace Charge
         private static float playerSpeed; //Current run speed
         public static float barrierSpeed; //Speed of barriers
 
-        bool playLandSound = true;
         PixelEffect fullScreenPixelEffect;
         bool doPausePixelEffect = true;
         bool doHighScorePixelEffect = true;
         bool doMainMenuPixelEffect = true;
-        bool playerPixelizeOnDeath = true;
+        bool doPlayerPixelizeOnDeath = true;
+
+        bool playLandSound = true;
 
         //Useful Tools
         Random rand; //Used for generating random variables
@@ -460,7 +461,7 @@ namespace Charge
                 {
                     ent.Draw(spriteBatch);
                 }
-                
+
                 //Darken background
                 spriteBatch.Draw(WhiteTex, new Rectangle(-10, -10, GameplayVars.WinWidth + 20, GameplayVars.WinHeight + 20), Color.Black * 0.3f);
 
@@ -532,9 +533,12 @@ namespace Charge
                 {
                     ent.Draw(spriteBatch);
                 }
-                
+
 				//Draw the player
-				if(!playerPixelizeOnDeath || !player.isDead) player.Draw(spriteBatch);
+                if ((!doPlayerPixelizeOnDeath || !player.isDead))
+                {
+                    player.Draw(spriteBatch);
+                }
 
 				//Draw Barriers
 				frontBarrier.Draw(spriteBatch);
@@ -856,7 +860,7 @@ namespace Charge
         }
 
         public void UpdateEffects(float deltaTime)
-                {
+        {
             if (player.OverchargeActive())
             {
                 if (rand.NextDouble() < 0.4)
@@ -869,14 +873,14 @@ namespace Charge
                     if (heightRand < 0.3)
                     {
                         effectY += player.position.Height / 3;
-                }
+                    }
                     else if (heightRand > 0.7)
                     {
                         effectY -= player.position.Height / 3;
-            }
+                    }
                     OverchargeEffect effect = new OverchargeEffect(new Rectangle(effectX, effectY, effectWidth, effectHeight), ChargeBarTex, player);
                     otherEnts.Add(effect);
-        }
+                }
             }
         }
 
@@ -995,8 +999,11 @@ namespace Charge
                     
                     List<Color> destroyCols = new List<Color>() { Color.Red, Color.Black };
                     PixelEffect pixelEffect = new PixelEffect(entity.position, WhiteTex, destroyCols);
-                    pixelEffect.xVel = playerSpeed / 4;
-                    pixelEffect.yVel = -35;
+                    //pixelEffect.xVel = playerSpeed / 4;
+                    //pixelEffect.yVel = -35;
+                    pixelEffect.followCamera = false;
+                    pixelEffect.yVel = -10;
+                    pixelEffect.xVel = -80;
                     pixelEffect.SetSpawnFreqAndFade(5, 0.5f);
                     otherEnts.Add(pixelEffect);
 
@@ -1186,7 +1193,7 @@ namespace Charge
            // freezeWorld();
             player.isDead = true;
 
-            if (playerPixelizeOnDeath)
+            if (doPlayerPixelizeOnDeath)
             {
                 List<Color> playerDeathColors = new List<Color>() { Color.Black, Color.White };
                 PixelEffect playerDeathEffect = new PixelEffect(player.position, WhiteTex, playerDeathColors);
