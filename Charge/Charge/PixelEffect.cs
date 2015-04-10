@@ -16,14 +16,16 @@ namespace Charge
         public float xInc; //Used to track x velocity
         public float yInc; //Used to track y velocity
         public float opacity; //Opacity
+        public Vector2 speed;
 
-        public Pixel(Color col, int xOffset, int yOffset)
+        public Pixel(Color col, int xOffset, int yOffset, Vector2 speed)
         {
             this.col = col;
             this.xOffset = xOffset;
             this.yOffset = yOffset;
             this.xInc = 0;
             this.yInc = 0;
+            this.speed = speed;
             opacity = 1;
         }
     }
@@ -42,6 +44,9 @@ namespace Charge
         public float yVel; //Y Velocity of the effect
         float xInc; //Used to track float speeds with int positions
         float yInc; //Used to track float speeds with int positions
+
+        private bool randomizePixelDirection = false; //Send pixels in a random direction, using (xVel + yVel)/2 as the speed.
+        private float randomDirSpeed = 0; //Speed of random pixels
 
         public bool followCamera; //Follow the camera (like normal world objects)
         Random rand; //Used for random number generation
@@ -83,6 +88,18 @@ namespace Charge
 
             pixels = new List<Pixel>();
             rand = new Random();
+        }
+
+        public void EnableRandomPixelDirection(float speed)
+        {
+            randomizePixelDirection = true;
+            randomDirSpeed = speed;
+        }
+
+        public void DisableRandomPixelDirection(float XVel, float YVel)
+        {
+            pixelXVel = XVel;
+            pixelYVel = yVel;
         }
 
         /// <summary>
@@ -128,13 +145,13 @@ namespace Charge
                     pixels.RemoveAt(i); //Remove if invisible
                     i--;
                 }
-                curPix.xInc += pixelXVel * deltaTime;
+                curPix.xInc += curPix.speed.X * deltaTime;
                 if (Math.Abs(curPix.xInc) > 1)
                 {
                     curPix.xOffset += Convert.ToInt32(Math.Floor(curPix.xInc));
                     curPix.xInc %= 1;
                 }
-                curPix.yInc += pixelYVel * deltaTime;
+                curPix.yInc += curPix.speed.Y * deltaTime;
                 if (Math.Abs(curPix.yInc) > 1)
                 {
                     curPix.yOffset += Convert.ToInt32(Math.Floor(curPix.yInc));
@@ -201,7 +218,18 @@ namespace Charge
             int xOffset = rand.Next(0, position.Width - pixelSize);
             int yOffset = rand.Next(0, position.Height - pixelSize);
 
-            Pixel newPixel = new Pixel(colors[colIndex], xOffset, yOffset);
+
+            float pixXVel = pixelXVel;
+            float pixYVel = pixelYVel;
+
+            if (randomizePixelDirection)
+            {
+                pixXVel = Convert.ToSingle(-randomDirSpeed + rand.NextDouble() * randomDirSpeed * 2);
+                pixYVel = Convert.ToSingle(Math.Sqrt(randomDirSpeed * randomDirSpeed - pixXVel * pixXVel));
+                if (rand.NextDouble() < 0.5) pixYVel *= -1;
+            }
+
+            Pixel newPixel = new Pixel(colors[colIndex], xOffset, yOffset, new Vector2(pixXVel, pixYVel));
 
             pixels.Add(newPixel);
         }

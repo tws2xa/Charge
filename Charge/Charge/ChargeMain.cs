@@ -81,9 +81,9 @@ namespace Charge
         bool playLandSound = true;
         PixelEffect fullScreenPixelEffect;
         bool doPausePixelEffect = true;
-        bool doHighScorePixelEffect = false;
-        bool doMainMenuPixelEffect = false;
-        bool playerPixelizeOnDeath = false;
+        bool doHighScorePixelEffect = true;
+        bool doMainMenuPixelEffect = true;
+        bool playerPixelizeOnDeath = true;
 
         //Useful Tools
         Random rand; //Used for generating random variables
@@ -354,7 +354,6 @@ namespace Charge
 
 			if (currentGameState == GameState.InGame)
 			{
-				background.Update(deltaTime); //Update the background scroll
 				
                 if (player.isDead)
                 {
@@ -366,6 +365,8 @@ namespace Charge
 
                 else
                 {
+                    background.Update(deltaTime); //Update the background scroll
+				
                     player.Update(deltaTime); //Update the player
 
                     //Play the land sound if they player has jumped or fallen
@@ -466,7 +467,7 @@ namespace Charge
                 //Pixel effect if turned on
                 if (doMainMenuPixelEffect)
                 {
-                    if (fullScreenPixelEffect == null) CreateBasicFullScreenPixelEffect();
+                    if (fullScreenPixelEffect == null) CreateUnobtrusiveFullScreenPixelEffect();
                     fullScreenPixelEffect.Draw(spriteBatch);
                 }
 
@@ -548,7 +549,7 @@ namespace Charge
                     spriteBatch.Draw(WhiteTex, new Rectangle(-10, -10, GameplayVars.WinWidth + 20, GameplayVars.WinHeight + 20), Color.Black * 0.5f);
                     if (doHighScorePixelEffect)
                     {
-                        if (fullScreenPixelEffect == null) CreateBasicFullScreenPixelEffect();
+                        if (fullScreenPixelEffect == null) CreateUnobtrusiveFullScreenPixelEffect();
                         fullScreenPixelEffect.Draw(spriteBatch);
                     }
                     bool hasDrawnMyScore = false;
@@ -1189,8 +1190,7 @@ namespace Charge
             {
                 List<Color> playerDeathColors = new List<Color>() { Color.Black, Color.White };
                 PixelEffect playerDeathEffect = new PixelEffect(player.position, WhiteTex, playerDeathColors);
-                playerDeathEffect.pixelYVel = -20;
-                playerDeathEffect.pixelXVel = 20;
+                playerDeathEffect.EnableRandomPixelDirection(40);
                 playerDeathEffect.SetSpawnFreqAndFade(5, 4);
                 playerDeathEffect.followCamera = false;
                 otherEnts.Add(playerDeathEffect);
@@ -1412,5 +1412,22 @@ namespace Charge
             fullScreenPixelEffect.spawnFrequency = 0.2f;
             fullScreenPixelEffect.pixelYVel = 20;
         }
+
+        public void CreateUnobtrusiveFullScreenPixelEffect()
+        {
+            List<Color> colors = new List<Color>();
+            for (int i = 0; i <= 150; i += 10)
+            {
+                colors.Add(new Color(i, i, i));
+            }
+            fullScreenPixelEffect = new PixelEffect(new Rectangle(0, 0, GameplayVars.WinWidth, GameplayVars.WinHeight), WhiteTex, colors);
+            fullScreenPixelEffect.spawnFadeTime = -1;
+            fullScreenPixelEffect.followCamera = false;
+            fullScreenPixelEffect.pixelFadeTime = 3;
+            fullScreenPixelEffect.spawnFrequency = 0.1f;
+            fullScreenPixelEffect.pixelYVel = 20;
+        }
+
+
     }
 }
