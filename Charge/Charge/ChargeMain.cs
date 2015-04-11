@@ -596,7 +596,7 @@ namespace Charge
                 }
                 else
                 {
-                    DrawStringWithShadow(spriteBatch, "Score:" + score, new Vector2(750, 500));
+                    DrawStringWithShadow(spriteBatch, "Score:" + score, new Vector2(750, 525));
                 }
                 
 				// Draw the pause screen on top of all of the game assets
@@ -846,7 +846,7 @@ namespace Charge
 
             
 
-            DischargeAnimation discharge = new DischargeAnimation(new Rectangle(player.position.Left, player.position.Top, player.position.Width, player.position.Width), DischargeTex);
+            DischargeAnimation discharge = new DischargeAnimation(new Rectangle(player.position.Left, player.position.Top, player.position.Width, player.position.Width), DischargeTex, player);
             otherEnts.Add(discharge);
 
             SetGlobalCooldown(GameplayVars.DischargeCooldownTime);
