@@ -8,7 +8,7 @@ namespace Charge
     static class GameplayVars
     {
         public static int WinWidth = 950;
-        public static int WinHeight = 550;
+        public static int WinHeight = 575;
         public static int StartPlayerWidth = 44;
         public static int StartPlayerHeight = 71;
         public static int PlayerXBuffer = 15;
