@@ -105,6 +105,8 @@
     <Content Include="Content\DischargeIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\GlowLeft.png" />
+    <Content Include="Content\GlowRight.png" />
     <Content Include="Content\OverchargeIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -189,6 +191,8 @@
     <None Include="Content\Fonts\OCR-A-Extended-48.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Content\GlowLeft.xnb" />
+    <None Include="Content\GlowRight.xnb" />
     <None Include="Content\PlatformCenterPiece.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

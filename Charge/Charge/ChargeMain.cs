@@ -1137,6 +1137,7 @@ namespace Charge
                 {
                     if (player.OverchargeActive())
                     {
+                        //player.IncOverchargeCharge(-15);
                         wall.destroyMe = true;
                     }
                     else

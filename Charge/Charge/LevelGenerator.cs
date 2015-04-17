@@ -135,7 +135,7 @@ namespace Charge
             //If the row is about to exceed the maximum between distance, make a new platform
             if (rightMostInTier.position.Right <= (GameplayVars.WinWidth - LevelGenerationVars.MaxBetweenSpaces[tierNum])) return true;
 
-            if(rightMostInTier.position.Right > GameplayVars.WinWidth * 4) return false;
+            if(rightMostInTier.position.Right > GameplayVars.WinWidth * 2) return false;
 
             //Randomly spawn
             return (rand.NextDouble() < LevelGenerationVars.PlatformSpawnFreq);
