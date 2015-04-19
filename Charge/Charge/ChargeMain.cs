@@ -65,6 +65,9 @@ namespace Charge
         float tempScore; //Keeps track of fractional score increases
         private static float globalCooldown; //The cooldown on powerups
         private static float totalGlobalCooldown; //The max from which the cooldown is decreasing
+        int distanceSinceGeneration; // Distance since the last time that the charge orb spawning on each tier was decided
+        int tierWithNoChargeOrbs; // Tier that spawns no charge orbs
+        int tierWithSomeChargeOrbs; // Tier that spawns at least one charge orb per platform
 
         private SpriteFont Font; //Sprite Font to draw score
         private SpriteFont FontLarge; //Sprite Font for title screen
@@ -169,7 +172,9 @@ namespace Charge
             score = 0;
             globalCooldown = 0;
             totalGlobalCooldown = 0;
-
+            distanceSinceGeneration = 0;
+            tierWithNoChargeOrbs = 0;
+            tierWithSomeChargeOrbs = 1;
             
             //MediaPlayer.IsRepeating = true;
 
@@ -1084,6 +1089,8 @@ namespace Charge
                     i--;
         }
             }
+            // Update distance since last tier charge orb decision
+            distanceSinceGeneration += (int)(deltaTime * GetPlayerSpeed());
         }
 
         /// <summary>
@@ -1339,6 +1346,47 @@ namespace Charge
             int numEnemies = 0;
             int numBatteries = 0;
 
+            //Check whether the charge orb spawning per tier should change
+            if (distanceSinceGeneration > GameplayVars.WinWidth / 2)
+            {
+                distanceSinceGeneration = 0;
+                int orbRoll = rand.Next(0, 6);
+                switch(orbRoll)
+                {
+                    case 0:
+                        tierWithNoChargeOrbs = 0;
+                        tierWithSomeChargeOrbs = 1;
+                        break;
+                    case 1:
+                        tierWithNoChargeOrbs = 0;
+                        tierWithSomeChargeOrbs = 2;
+                        break;
+                    case 2:
+                        tierWithNoChargeOrbs = 1;
+                        tierWithSomeChargeOrbs = 0;
+                        break;
+                    case 3:
+                        tierWithNoChargeOrbs = 1;
+                        tierWithSomeChargeOrbs = 2;
+                        break;
+                    case 4:
+                        tierWithNoChargeOrbs = 2;
+                        tierWithSomeChargeOrbs = 0;
+                        break;
+                    case 5:
+                        tierWithNoChargeOrbs = 2;
+                        tierWithSomeChargeOrbs = 1;
+                        break;
+                    default:
+                        Console.WriteLine("Error in charge orb generation");
+                        break;
+                }
+            }
+            int necessaryOrbLocation = -1;
+            if (platform.getTier() == tierWithSomeChargeOrbs)
+            {
+                necessaryOrbLocation = rand.Next(0, numSections);
+            }
             //Check whether or not to add somthing to each section
             for (int i = 0; i < numSections; i++)
             {
@@ -1351,7 +1399,10 @@ namespace Charge
                 float multiplier = playerBarrierSpeedDiff / barrierSpeed;
                 batteryRollRange -= Convert.ToInt32(LevelGenerationVars.MaxBatteryVariation * multiplier);
                 
-                if (roll < batteryRollRange && numBatteries < LevelGenerationVars.MaxBatteriesPerPlatform)
+                //Either a battery is necessary or the roll results in battery spawning and a battery can spawn on that tier
+                if ((i == necessaryOrbLocation) || 
+                    ((roll < batteryRollRange && numBatteries < LevelGenerationVars.MaxBatteriesPerPlatform) &&
+                     platform.getTier() != tierWithNoChargeOrbs))
                 {
                     //Spawn Battery
                     int width = LevelGenerationVars.BatteryWidth;
