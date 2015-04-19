@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Input.Touch;
 
 #endregion
 
@@ -22,7 +23,7 @@ namespace Charge
         public const bool DEBUG = true;
 
         private static readonly Color[] ChargeBarLevelColors = { new Color(50, 50, 50), new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.Pink }; // The bar colors for each charge level
-        private static readonly Color[] PlatformLevelColors = { Color.White, new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.Pink }; // The platform colors for each charge level
+        private static readonly Color[] PlatformLevelColors = { Color.White, new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.DarkViolet }; // The platform colors for each charge level
 
 		enum GameState
 		{
@@ -92,6 +93,9 @@ namespace Charge
         Controls controls;
         bool soundOn = true;
 
+        int glowWidth = GameplayVars.WinWidth / 7;
+        int glowHeight = GameplayVars.WinHeight;
+
         //For reading and writing files
         StreamWriter streamWriter;
 
@@ -111,6 +115,8 @@ namespace Charge
         Texture2D ShootIconTex;
         Texture2D OverchargeIconTex;
         Texture2D WhiteTex;
+        Texture2D LeftGlow;
+        Texture2D RightGlow;
 
         public ChargeMain()
             : base()
@@ -293,6 +299,8 @@ namespace Charge
             ShootIconTex = this.Content.Load<Texture2D>("ShootIcon");
             OverchargeIconTex = this.Content.Load<Texture2D>("OverchargeIcon");
             WhiteTex = this.Content.Load<Texture2D>("White");
+            LeftGlow = this.Content.Load<Texture2D>("GlowLeft");
+            RightGlow = this.Content.Load<Texture2D>("GlowRight");
 
             //Fonts
             Font = this.Content.Load<SpriteFont>("Fonts/OCR-A-Extended-24");
@@ -540,6 +548,8 @@ namespace Charge
                     player.Draw(spriteBatch);
                 }
 
+                DrawBarrierWarningGlow(spriteBatch);
+
 				//Draw Barriers
 				frontBarrier.Draw(spriteBatch);
 				backBarrier.Draw(spriteBatch);
@@ -626,6 +636,39 @@ namespace Charge
             specialAbilityIcons.Draw(spriteBatch);
         }
 
+        /// <summary>
+        /// Draws the warning glow for each barrier
+        /// </summary>
+        private void DrawBarrierWarningGlow(SpriteBatch spriteBatch)
+        {
+            float distThreshold = (GameplayVars.FrontBarrierStartX - GameplayVars.BackBarrierStartX)/4.0f;
+
+            float backOpacity = ((distThreshold + backBarrier.position.Center.X) / distThreshold); //Back Barrier pos will usually be negative if barrier is off screen
+            if (backOpacity > 1)
+            {
+                backOpacity = (1.0f / backOpacity);
+            }
+            backOpacity = Math.Max(0, backOpacity);
+
+            float frontOffset = (frontBarrier.position.Center.X - GameplayVars.WinWidth);
+            float frontOpacity = ((distThreshold - frontOffset) / distThreshold);
+            if (frontOpacity > 1)
+            {
+                frontOpacity = (1.0f / frontOpacity);
+            }
+            frontOffset = Math.Max(0, frontOpacity);
+
+
+
+            if (backOpacity > 0)
+            {
+                spriteBatch.Draw(LeftGlow, new Rectangle(0, 0, glowWidth, glowHeight), Color.White * backOpacity);
+            }
+            if (frontOpacity > 0)
+            {
+                spriteBatch.Draw(RightGlow, new Rectangle(GameplayVars.WinWidth - glowWidth, 0, glowWidth, glowHeight), Color.White * frontOpacity);
+            }
+        }
 
         /// <summary>
         /// Draws a string with a slight, black shadow behind it
