@@ -603,14 +603,16 @@ namespace Charge
                         DrawStringWithShadow(spriteBatch, highScore, new Vector2(highScoreDrawX, 33), Color.Gold, new Color(10, 10, 10));
                     }
                     string finalScore = ("Final Score: " + score);
-                    string playAgain = "Press [Enter] to play again";
+                    string playAgain = controls.GetRestartString() + " to play again";
                     DrawStringWithShadow(spriteBatch, finalScore, new Vector2(GetCenteredStringLocation(Font, finalScore, GameplayVars.WinWidth / 2), 438));
                     DrawStringWithShadow(spriteBatch, playAgain, new Vector2(GetCenteredStringLocation(Font, playAgain, GameplayVars.WinWidth / 2), 488));
 
                 }
                 else
                 {
-                    DrawStringWithShadow(spriteBatch, "Score:" + score, new Vector2(750, 525));
+                    String scoreStr = ("Score: " + score);
+                    Vector2 strSize = Font.MeasureString(scoreStr);
+                    DrawStringWithShadow(spriteBatch, scoreStr, new Vector2(GameplayVars.WinWidth - strSize.X * 1.2f, GameplayVars.WinHeight - strSize.Y * 1.5f));
                 }
                 
 				// Draw the pause screen on top of all of the game assets
@@ -1217,6 +1219,22 @@ namespace Charge
                         enemy.destroyMe = true;
                         projectile.destroyMe = true;
                         PlaySound(enemyDeathSound);
+                    }
+                }
+                foreach (WorldEntity wall in walls)
+                {
+                    if (projectile.position.Intersects(wall.position))
+                    {
+                        projectile.destroyMe = true;
+                    }
+                }
+
+                foreach (Platform plat in platforms)
+                {
+                    if(plat.position.Left >= (projectile.position.Right + GameplayVars.WinWidth/2)) continue;
+                    if (projectile.position.Intersects(plat.position))
+                    {
+                        projectile.destroyMe = true;
                     }
                 }
             }

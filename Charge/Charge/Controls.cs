@@ -151,5 +151,13 @@ namespace Charge
         {
             return onPress(Keys.Enter, Buttons.Start);
         }
+
+        /// <summary>
+        /// String explaining the control to start a new game.
+        /// </summary>
+        public string GetRestartString()
+        {
+            return "Press [Enter]";
+        }
     }
 }
