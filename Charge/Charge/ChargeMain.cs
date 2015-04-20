@@ -20,7 +20,6 @@ namespace Charge
     /// </summary>
     public class ChargeMain : Game
     {
-        public const bool DEBUG = true;
 
         private static readonly Color[] ChargeBarLevelColors = { new Color(50, 50, 50), new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.Pink }; // The bar colors for each charge level
         private static readonly Color[] PlatformLevelColors = { Color.White, new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.DarkViolet }; // The platform colors for each charge level
@@ -212,8 +211,8 @@ namespace Charge
             
             //Create the initial objects
             player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 110, GameplayVars.StartPlayerWidth, GameplayVars.StartPlayerHeight), PlayerTex); //The player character
-            backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 50, GameplayVars.WinHeight + 100), BarrierTex, WhiteTex); //The death barrier behind the player
-            frontBarrier = new Barrier(new Rectangle(GameplayVars.FrontBarrierStartX, -50, 50, GameplayVars.WinHeight + 100), BarrierTex, WhiteTex); //The death barrier in front of the player
+            backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, GameplayVars.BarrierWidth, GameplayVars.WinHeight + 100), BarrierTex, WhiteTex); //The death barrier behind the player
+            frontBarrier = new Barrier(new Rectangle(GameplayVars.FrontBarrierStartX, -50, GameplayVars.BarrierWidth, GameplayVars.WinHeight + 100), BarrierTex, WhiteTex); //The death barrier in front of the player
             background = new Background(BackgroundTex);
 			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 5, graphics.GraphicsDevice.Viewport.Width / 2, 25), ChargeBarTex, ChargeBarLevelColors[0], ChargeBarLevelColors[1]);
 
@@ -710,7 +709,7 @@ namespace Charge
 			}
             if (currentGameState == GameState.TitleScreen)
             {
-                if (controls.onPress(Keys.Up, Buttons.LeftThumbstickUp) || controls.onPress(Keys.Down, Buttons.LeftThumbstickDown))
+                if (controls.MenuUpTrigger() || controls.MenuDownTrigger())
                 {
                     if (currentTitleSelection == TitleSelection.Start)
                         currentTitleSelection = TitleSelection.Options;
@@ -718,7 +717,7 @@ namespace Charge
                         currentTitleSelection = TitleSelection.Start;
                 }
 
-                 if (controls.onPress(Keys.Space, Buttons.A) || controls.onPress(Keys.Enter, Buttons.Start))
+                 if (controls.MenuSelectTrigger())
                  {
                      if (currentTitleSelection == TitleSelection.Start)
                      {
@@ -741,7 +740,7 @@ namespace Charge
 
 			if (currentGameState == GameState.InGame)
 			{
-                if (controls.onPress(Keys.Enter, Buttons.Start) && player.isDead)
+                if (controls.RestartTrigger() && player.isDead)
                 {
                     player.isDead = false;
                     InitVars();
@@ -749,60 +748,48 @@ namespace Charge
                 }
             
 				// Player has pressed the jump command (A button on controller, space bar on keyboard)
-				if (controls.onPress(Keys.Space, Buttons.A) && (player.jmpNum < GameplayVars.playerNumJmps || player.grounded))
+				if (controls.JumpTrigger() && (player.jmpNum < GameplayVars.playerNumJmps || player.grounded))
 				{
 					player.jmpNum++;
 					player.vSpeed = GameplayVars.JumpInitialVelocity;
 					player.grounded = false;
                     PlaySound(jumpSound);
-				} // Cut jump short on button release
-				else if (controls.onRelease(Keys.Space, Buttons.A) && player.vSpeed < 0)
+				} 
+				else if (controls.JumpRelease() && player.vSpeed < 0)
 				{
+                    // Cut jump short on button release
 					player.vSpeed /= 2;
 				}
 
 				// Player has pressed the Discharge command (A key or left arrow key on keyboard)
-				if (controls.isPressed(Keys.A, Buttons.X) || controls.isPressed(Keys.Left, Buttons.X))
+				if (controls.DischargeTrigger())
 				{
                     InitiateDischarge();
 				}
 
 				// Player has pressed the Shoot command (S key or down arrow key on keyboard)
-				if (controls.isPressed(Keys.S, Buttons.Y) || controls.isPressed(Keys.S, Buttons.Y))
+				if (controls.ShootTrigger())
 				{
                     InitiateShoot();
 				}
 
 				// Player has pressed the Overcharge command (D key or right arrow key on keyboard)
-				if (controls.isPressed(Keys.D, Buttons.B) || controls.isPressed(Keys.D, Buttons.B))
+				if (controls.OverchargeTrigger())
 				{
                     InitiateOvercharge();
 				}
 
 				// Player has pressed the Pause command (P key or Start button)
-				if (controls.onPress(Keys.P, Buttons.Start))
+				if (controls.PauseTrigger())
 				{
                     PauseGame();
 				}
 
-				//Commands For debugging
-				if (DEBUG)
-				{
-					//Control player speed with up and down arrows/right and left bumper.
-					if (controls.isPressed(Keys.D0, Buttons.RightShoulder))
-					{
-						player.IncCharge(5);
-					}
-					if (controls.isPressed(Keys.D9, Buttons.LeftShoulder))
-					{
-						player.DecCharge(5);
-					}
-				}
 			}
 			else if (currentGameState == GameState.Paused)
 			{
 				// Player has pressed the Pause command (P key or Start button)
-				if (controls.onPress(Keys.P, Buttons.Start))
+				if (controls.UnpauseTrigger())
 				{
                     if(doPausePixelEffect) fullScreenPixelEffect = null;
 					currentGameState = GameState.InGame;

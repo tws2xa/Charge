@@ -60,5 +60,96 @@ namespace Charge
                 (gp.IsButtonDown(button) && gpo.IsButtonDown(button));
         }
 
+
+
+
+
+        /// <summary>
+        /// Checks if the jump control has been triggered
+        /// </summary>
+        public bool JumpTrigger()
+        {
+            return onPress(Keys.Space, Buttons.A);
+        }
+
+        /// <summary>
+        /// Checks if the jump control has been released
+        /// </summary>
+        public bool JumpRelease()
+        {
+            return onRelease(Keys.Space, Buttons.A);
+        }
+
+        /// <summary>
+        /// Checks if the discharge control has been triggered
+        /// </summary>
+        public bool DischargeTrigger()
+        {
+            return (isPressed(Keys.A, Buttons.X) || isPressed(Keys.Left, Buttons.X));
+        }
+
+        /// <summary>
+        /// Checks if the overcharge control has been triggered
+        /// </summary>
+        public bool OverchargeTrigger()
+        {
+            return (isPressed(Keys.D, Buttons.B) || isPressed(Keys.D, Buttons.B));
+        }
+
+        /// <summary>
+        /// Checks if the shoot control has been triggered
+        /// </summary>
+        public bool ShootTrigger()
+        {
+            return (isPressed(Keys.S, Buttons.Y) || isPressed(Keys.S, Buttons.Y));
+        }
+
+        /// <summary>
+        /// Checks if the pause control has been triggered
+        /// </summary>
+        public bool PauseTrigger()
+        {
+            return onPress(Keys.P, Buttons.Start);
+        }
+
+        /// <summary>
+        /// Checks if the unpause control has been triggered
+        /// </summary>
+        public bool UnpauseTrigger()
+        {
+            return onPress(Keys.P, Buttons.Start);
+        }
+
+        /// <summary>
+        /// Checks if the menu up control has been triggered
+        /// </summary>
+        public bool MenuUpTrigger()
+        {
+            return onPress(Keys.Up, Buttons.LeftThumbstickUp);
+        }
+
+        /// <summary>
+        /// Checks if the menu down control has been triggered
+        /// </summary>
+        public bool MenuDownTrigger()
+        {
+            return onPress(Keys.Down, Buttons.LeftThumbstickDown);
+        }
+
+        /// <summary>
+        /// Checks if the menu select control has been triggered
+        /// </summary>
+        public bool MenuSelectTrigger()
+        {
+            return (onPress(Keys.Space, Buttons.A) || onPress(Keys.Enter, Buttons.Start));
+        }
+
+        /// <summary>
+        /// Checks if the restart control has been triggered
+        /// </summary>
+        public bool RestartTrigger()
+        {
+            return onPress(Keys.Enter, Buttons.Start);
+        }
     }
 }
