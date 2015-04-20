@@ -127,5 +127,21 @@ namespace Charge
             if (index < 0 || index > sections.Count - 1) return null;
             return sections[index];
         }
+
+        public int getTier()
+        {
+            if(this.position.Y == LevelGenerationVars.Tier1Height)
+            {
+                return 0;
+            }
+            else if (this.position.Y == LevelGenerationVars.Tier2Height)
+            {
+                return 1;
+            }
+            else
+            {
+                return 2;
+            }
+        }
     }
 }

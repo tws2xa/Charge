@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Input.Touch;
 
 #endregion
 
@@ -19,10 +20,9 @@ namespace Charge
     /// </summary>
     public class ChargeMain : Game
     {
-        public const bool DEBUG = true;
 
         private static readonly Color[] ChargeBarLevelColors = { new Color(50, 50, 50), new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.Pink }; // The bar colors for each charge level
-        private static readonly Color[] PlatformLevelColors = { Color.White, new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.Pink }; // The platform colors for each charge level
+        private static readonly Color[] PlatformLevelColors = { Color.White, new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.DarkViolet }; // The platform colors for each charge level
 
 		enum GameState
 		{
@@ -64,6 +64,9 @@ namespace Charge
         float tempScore; //Keeps track of fractional score increases
         private static float globalCooldown; //The cooldown on powerups
         private static float totalGlobalCooldown; //The max from which the cooldown is decreasing
+        int distanceSinceGeneration; // Distance since the last time that the charge orb spawning on each tier was decided
+        int tierWithNoChargeOrbs; // Tier that spawns no charge orbs
+        int tierWithSomeChargeOrbs; // Tier that spawns at least one charge orb per platform
 
         private SpriteFont Font; //Sprite Font to draw score
         private SpriteFont FontLarge; //Sprite Font for title screen
@@ -92,6 +95,9 @@ namespace Charge
         Controls controls;
         bool soundOn = true;
 
+        int glowWidth = GameplayVars.WinWidth / 7;
+        int glowHeight = GameplayVars.WinHeight;
+
         //For reading and writing files
         StreamWriter streamWriter;
 
@@ -111,6 +117,8 @@ namespace Charge
         Texture2D ShootIconTex;
         Texture2D OverchargeIconTex;
         Texture2D WhiteTex;
+        Texture2D LeftGlow;
+        Texture2D RightGlow;
 
         public ChargeMain()
             : base()
@@ -163,7 +171,9 @@ namespace Charge
             score = 0;
             globalCooldown = 0;
             totalGlobalCooldown = 0;
-
+            distanceSinceGeneration = 0;
+            tierWithNoChargeOrbs = 0;
+            tierWithSomeChargeOrbs = 1;
             
             //MediaPlayer.IsRepeating = true;
 
@@ -201,8 +211,8 @@ namespace Charge
             
             //Create the initial objects
             player = new Player(new Rectangle(GameplayVars.PlayerStartX, LevelGenerationVars.Tier2Height - 110, GameplayVars.StartPlayerWidth, GameplayVars.StartPlayerHeight), PlayerTex); //The player character
-            backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, 50, GameplayVars.WinHeight + 100), BarrierTex, WhiteTex); //The death barrier behind the player
-            frontBarrier = new Barrier(new Rectangle(GameplayVars.FrontBarrierStartX, -50, 50, GameplayVars.WinHeight + 100), BarrierTex, WhiteTex); //The death barrier in front of the player
+            backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, GameplayVars.BarrierWidth, GameplayVars.WinHeight + 100), BarrierTex, WhiteTex); //The death barrier behind the player
+            frontBarrier = new Barrier(new Rectangle(GameplayVars.FrontBarrierStartX, -50, GameplayVars.BarrierWidth, GameplayVars.WinHeight + 100), BarrierTex, WhiteTex); //The death barrier in front of the player
             background = new Background(BackgroundTex);
 			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 5, graphics.GraphicsDevice.Viewport.Width / 2, 25), ChargeBarTex, ChargeBarLevelColors[0], ChargeBarLevelColors[1]);
 
@@ -293,6 +303,8 @@ namespace Charge
             ShootIconTex = this.Content.Load<Texture2D>("ShootIcon");
             OverchargeIconTex = this.Content.Load<Texture2D>("OverchargeIcon");
             WhiteTex = this.Content.Load<Texture2D>("White");
+            LeftGlow = this.Content.Load<Texture2D>("GlowLeft");
+            RightGlow = this.Content.Load<Texture2D>("GlowRight");
 
             //Fonts
             Font = this.Content.Load<SpriteFont>("Fonts/OCR-A-Extended-24");
@@ -540,6 +552,8 @@ namespace Charge
                     player.Draw(spriteBatch);
                 }
 
+                DrawBarrierWarningGlow(spriteBatch);
+
 				//Draw Barriers
 				frontBarrier.Draw(spriteBatch);
 				backBarrier.Draw(spriteBatch);
@@ -626,6 +640,39 @@ namespace Charge
             specialAbilityIcons.Draw(spriteBatch);
         }
 
+        /// <summary>
+        /// Draws the warning glow for each barrier
+        /// </summary>
+        private void DrawBarrierWarningGlow(SpriteBatch spriteBatch)
+        {
+            float distThreshold = (GameplayVars.FrontBarrierStartX - GameplayVars.BackBarrierStartX)/4.0f;
+
+            float backOpacity = ((distThreshold + backBarrier.position.Center.X) / distThreshold); //Back Barrier pos will usually be negative if barrier is off screen
+            if (backOpacity > 1)
+            {
+                backOpacity = (1.0f / backOpacity);
+            }
+            backOpacity = Math.Max(0, backOpacity);
+
+            float frontOffset = (frontBarrier.position.Center.X - GameplayVars.WinWidth);
+            float frontOpacity = ((distThreshold - frontOffset) / distThreshold);
+            if (frontOpacity > 1)
+            {
+                frontOpacity = (1.0f / frontOpacity);
+            }
+            frontOffset = Math.Max(0, frontOpacity);
+
+
+
+            if (backOpacity > 0)
+            {
+                spriteBatch.Draw(LeftGlow, new Rectangle(0, 0, glowWidth, glowHeight), Color.White * backOpacity);
+            }
+            if (frontOpacity > 0)
+            {
+                spriteBatch.Draw(RightGlow, new Rectangle(GameplayVars.WinWidth - glowWidth, 0, glowWidth, glowHeight), Color.White * frontOpacity);
+            }
+        }
 
         /// <summary>
         /// Draws a string with a slight, black shadow behind it
@@ -662,7 +709,7 @@ namespace Charge
 			}
             if (currentGameState == GameState.TitleScreen)
             {
-                if (controls.onPress(Keys.Up, Buttons.LeftThumbstickUp) || controls.onPress(Keys.Down, Buttons.LeftThumbstickDown))
+                if (controls.MenuUpTrigger() || controls.MenuDownTrigger())
                 {
                     if (currentTitleSelection == TitleSelection.Start)
                         currentTitleSelection = TitleSelection.Options;
@@ -670,7 +717,7 @@ namespace Charge
                         currentTitleSelection = TitleSelection.Start;
                 }
 
-                 if (controls.onPress(Keys.Space, Buttons.A) || controls.onPress(Keys.Enter, Buttons.Start))
+                 if (controls.MenuSelectTrigger())
                  {
                      if (currentTitleSelection == TitleSelection.Start)
                      {
@@ -693,7 +740,7 @@ namespace Charge
 
 			if (currentGameState == GameState.InGame)
 			{
-                if (controls.onPress(Keys.Enter, Buttons.Start) && player.isDead)
+                if (controls.RestartTrigger() && player.isDead)
                 {
                     player.isDead = false;
                     InitVars();
@@ -701,60 +748,48 @@ namespace Charge
                 }
             
 				// Player has pressed the jump command (A button on controller, space bar on keyboard)
-				if (controls.onPress(Keys.Space, Buttons.A) && (player.jmpNum < GameplayVars.playerNumJmps || player.grounded))
+				if (controls.JumpTrigger() && (player.jmpNum < GameplayVars.playerNumJmps || player.grounded))
 				{
 					player.jmpNum++;
 					player.vSpeed = GameplayVars.JumpInitialVelocity;
 					player.grounded = false;
                     PlaySound(jumpSound);
-				} // Cut jump short on button release
-				else if (controls.onRelease(Keys.Space, Buttons.A) && player.vSpeed < 0)
+				} 
+				else if (controls.JumpRelease() && player.vSpeed < 0)
 				{
+                    // Cut jump short on button release
 					player.vSpeed /= 2;
 				}
 
 				// Player has pressed the Discharge command (A key or left arrow key on keyboard)
-				if (controls.isPressed(Keys.A, Buttons.X) || controls.isPressed(Keys.Left, Buttons.X))
+				if (controls.DischargeTrigger())
 				{
                     InitiateDischarge();
 				}
 
 				// Player has pressed the Shoot command (S key or down arrow key on keyboard)
-				if (controls.isPressed(Keys.S, Buttons.Y) || controls.isPressed(Keys.S, Buttons.Y))
+				if (controls.ShootTrigger())
 				{
                     InitiateShoot();
 				}
 
 				// Player has pressed the Overcharge command (D key or right arrow key on keyboard)
-				if (controls.isPressed(Keys.D, Buttons.B) || controls.isPressed(Keys.D, Buttons.B))
+				if (controls.OverchargeTrigger())
 				{
                     InitiateOvercharge();
 				}
 
 				// Player has pressed the Pause command (P key or Start button)
-				if (controls.onPress(Keys.P, Buttons.Start))
+				if (controls.PauseTrigger())
 				{
                     PauseGame();
 				}
 
-				//Commands For debugging
-				if (DEBUG)
-				{
-					//Control player speed with up and down arrows/right and left bumper.
-					if (controls.isPressed(Keys.D0, Buttons.RightShoulder))
-					{
-						player.IncCharge(5);
-					}
-					if (controls.isPressed(Keys.D9, Buttons.LeftShoulder))
-					{
-						player.DecCharge(5);
-					}
-				}
 			}
 			else if (currentGameState == GameState.Paused)
 			{
 				// Player has pressed the Pause command (P key or Start button)
-				if (controls.onPress(Keys.P, Buttons.Start))
+				if (controls.UnpauseTrigger())
 				{
                     if(doPausePixelEffect) fullScreenPixelEffect = null;
 					currentGameState = GameState.InGame;
@@ -1041,6 +1076,8 @@ namespace Charge
                     i--;
         }
             }
+            // Update distance since last tier charge orb decision
+            distanceSinceGeneration += (int)(deltaTime * GetPlayerSpeed());
         }
 
         /// <summary>
@@ -1137,6 +1174,7 @@ namespace Charge
                 {
                     if (player.OverchargeActive())
                     {
+                        //player.IncOverchargeCharge(-15);
                         wall.destroyMe = true;
                     }
                     else
@@ -1295,6 +1333,47 @@ namespace Charge
             int numEnemies = 0;
             int numBatteries = 0;
 
+            //Check whether the charge orb spawning per tier should change
+            if (distanceSinceGeneration > GameplayVars.WinWidth / 2)
+            {
+                distanceSinceGeneration = 0;
+                int orbRoll = rand.Next(0, 6);
+                switch(orbRoll)
+                {
+                    case 0:
+                        tierWithNoChargeOrbs = 0;
+                        tierWithSomeChargeOrbs = 1;
+                        break;
+                    case 1:
+                        tierWithNoChargeOrbs = 0;
+                        tierWithSomeChargeOrbs = 2;
+                        break;
+                    case 2:
+                        tierWithNoChargeOrbs = 1;
+                        tierWithSomeChargeOrbs = 0;
+                        break;
+                    case 3:
+                        tierWithNoChargeOrbs = 1;
+                        tierWithSomeChargeOrbs = 2;
+                        break;
+                    case 4:
+                        tierWithNoChargeOrbs = 2;
+                        tierWithSomeChargeOrbs = 0;
+                        break;
+                    case 5:
+                        tierWithNoChargeOrbs = 2;
+                        tierWithSomeChargeOrbs = 1;
+                        break;
+                    default:
+                        Console.WriteLine("Error in charge orb generation");
+                        break;
+                }
+            }
+            int necessaryOrbLocation = -1;
+            if (platform.getTier() == tierWithSomeChargeOrbs)
+            {
+                necessaryOrbLocation = rand.Next(0, numSections);
+            }
             //Check whether or not to add somthing to each section
             for (int i = 0; i < numSections; i++)
             {
@@ -1307,7 +1386,10 @@ namespace Charge
                 float multiplier = playerBarrierSpeedDiff / barrierSpeed;
                 batteryRollRange -= Convert.ToInt32(LevelGenerationVars.MaxBatteryVariation * multiplier);
                 
-                if (roll < batteryRollRange && numBatteries < LevelGenerationVars.MaxBatteriesPerPlatform)
+                //Either a battery is necessary or the roll results in battery spawning and a battery can spawn on that tier
+                if ((i == necessaryOrbLocation) || 
+                    ((roll < batteryRollRange && numBatteries < LevelGenerationVars.MaxBatteriesPerPlatform) &&
+                     platform.getTier() != tierWithNoChargeOrbs))
                 {
                     //Spawn Battery
                     int width = LevelGenerationVars.BatteryWidth;

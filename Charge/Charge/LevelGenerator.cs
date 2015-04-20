@@ -93,7 +93,7 @@ namespace Charge
             for (int i = 0; i < rightMostInTiers.Length; i++)
             {
                 Platform rightMost = rightMostInTiers[i];
-                if (ShouldSpawnPlatform(rightMost, curNumPlatforms))
+                if (ShouldSpawnPlatform(rightMost, curNumPlatforms, i))
                 {
                     //Find the new platforms's spawn height
                     int height = LevelGenerationVars.Tier1Height;
@@ -101,7 +101,7 @@ namespace Charge
                     if (i == 2) height = LevelGenerationVars.Tier3Height;
 
                     //Make the new platform
-                    Platform nextPlat = GenerateNewPlatform(rightMost, height, PlatformLeftTex, PlatformCenterTex, PlatformRightTex, platColor);
+                    Platform nextPlat = GenerateNewPlatform(rightMost, i, height, PlatformLeftTex, PlatformCenterTex, PlatformRightTex, platColor);
 
                     //Update the right most platform in the tier
                     //(Which is now the just created platform)
@@ -124,7 +124,7 @@ namespace Charge
         /// </summary>
         /// <param name="rightMostInTier">The current, right most platform in the tier</param>
         /// <returns>True if a new platform should be created</returns>
-        private bool ShouldSpawnPlatform(Platform rightMostInTier, int curNumPlatforms)
+        private bool ShouldSpawnPlatform(Platform rightMostInTier, int curNumPlatforms, int tierNum)
         {
             //Do not exceeed the maximum number of ground pieces
             if (curNumPlatforms > LevelGenerationVars.MaxGroundPieces) return false;
@@ -133,7 +133,9 @@ namespace Charge
             if (rightMostInTier == null) return true;
 
             //If the row is about to exceed the maximum between distance, make a new platform
-            if (rightMostInTier.position.Right <= (GameplayVars.WinWidth - LevelGenerationVars.MaxBetweenSpace)) return true;
+            if (rightMostInTier.position.Right <= (GameplayVars.WinWidth - LevelGenerationVars.MaxBetweenSpaces[tierNum])) return true;
+
+            if(rightMostInTier.position.Right > GameplayVars.WinWidth * 2) return false;
 
             //Randomly spawn
             return (rand.NextDouble() < LevelGenerationVars.PlatformSpawnFreq);
@@ -146,23 +148,23 @@ namespace Charge
         /// <param name="rightMost">Right most platform of the tier in which to add the platform</param>
         /// <param name="tierHeight">The height of the tier</param>
         /// <returns>The newly generated platform</returns>
-        private Platform GenerateNewPlatform(Platform rightMost, int tierHeight, Texture2D PlatformLeftTex, Texture2D PlatformCenterTex, Texture2D PlatformRightTex, Color platColor)
+        private Platform GenerateNewPlatform(Platform rightMost, int tierNum, int tierHeight, Texture2D PlatformLeftTex, Texture2D PlatformCenterTex, Texture2D PlatformRightTex, Color platColor)
         {
             //Must spawn off the right side of the screen (at a minimum)
             int minX = GameplayVars.WinWidth;
 
             //Make sure it's at least the minimum distance from the previous platform in the tier
             if (rightMost != null &&
-                minX < (rightMost.position.Right + LevelGenerationVars.MinBetweenSpace))
+                minX < (rightMost.position.Right + LevelGenerationVars.MinBetweenSpaces[tierNum]))
             {
-                minX = rightMost.position.Right + LevelGenerationVars.MinBetweenSpace;
+                minX = rightMost.position.Right + LevelGenerationVars.MinBetweenSpaces[tierNum];
             }
 
             //Can't go over the maximum space between platforms
-            int maxX = minX + LevelGenerationVars.MaxBetweenSpace;
+            int maxX = minX + LevelGenerationVars.MaxBetweenSpaces[tierNum];
             if (rightMost != null)
             {
-                maxX = rightMost.position.Right + LevelGenerationVars.MaxBetweenSpace;
+                maxX = rightMost.position.Right + LevelGenerationVars.MaxBetweenSpaces[tierNum];
             }
 
             int spawnX = -1;

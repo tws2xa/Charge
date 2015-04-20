@@ -217,6 +217,14 @@ namespace Charge
             overchargeState = OverchargeState.INCREASING;
         }
 
+        /// <summary>
+        /// Change the overcharge charge
+        /// </summary>
+        public void IncOverchargeCharge(int amt)
+        {
+            overcharge += amt;
+        }
+
         public bool OverchargeActive()
         {
             return !(overchargeState == OverchargeState.OFF);

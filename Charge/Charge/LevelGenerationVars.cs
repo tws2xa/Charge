@@ -20,22 +20,22 @@ namespace Charge
         public static int EnemyWidth = 40;
         public static int EnemyHeight = 40;
 
-        public static int MaxGroundPieces = 10;
+        public static int MaxGroundPieces = 30;
         public static int MinGroundPieces = 3;
 
         public static int MaxNumSegments = 10;
         public static int MinNumSegments = 2;
         
-        public static int MaxBetweenSpace = 300;
-        public static int MinBetweenSpace = 75;
+        public static int[] MaxBetweenSpaces = {300, 300, 100};
+        public static int[] MinBetweenSpaces = {75, 75, 45};
         
         public static int MaxNumEnemiesTotal = 3;
         public static int MaxBatteriesPerPlatform = 4;
         public static int MaxEnemiesPerPlatform = 2;
         public static int MaxWallsPerPlatform = 1;
         
-        public static float SpeedToMinSpaceMultipler = (float)MinBetweenSpace / (float)GameplayVars.PlayerStartSpeed;
-        public static float SpeedToMaxSpaceMultipler = (float)MaxBetweenSpace / (float)GameplayVars.PlayerStartSpeed;
+        public static float SpeedToMinSpaceMultipler = (float)MinBetweenSpaces[0] / (float)GameplayVars.PlayerStartSpeed;
+        public static float SpeedToMaxSpaceMultipler = (float)MaxBetweenSpaces[0] / (float)GameplayVars.PlayerStartSpeed;
         public static float PlatformSpawnFreq = 0.05f;
 
         /*
