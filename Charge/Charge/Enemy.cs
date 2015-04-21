@@ -16,6 +16,7 @@ namespace Charge
         float moveSpeed; //Movement speed
         Platform myPlatform;
         SpriteEffects mirror;
+        bool rotatedLastFrame;
 
         /// <summary>
         /// Create the enemy with position and sprite
@@ -28,6 +29,8 @@ namespace Charge
             
             if (moveSpeed > 0) mirror = SpriteEffects.FlipHorizontally;
             else mirror = SpriteEffects.None;
+
+            rotatedLastFrame = true;
 
             base.init(position, tex);
         }
@@ -48,12 +51,17 @@ namespace Charge
             if (isValidMoveSection(destSection))
             {
                 this.position.X = Convert.ToInt32(nextPos);
+                rotatedLastFrame = false;
             }
             else
             {
                 moveSpeed *= -1;
-                if (moveSpeed > 0) mirror = SpriteEffects.FlipHorizontally;
-                else mirror = SpriteEffects.None;
+                if (!rotatedLastFrame)
+                {
+                    if (moveSpeed > 0) mirror = SpriteEffects.FlipHorizontally;
+                    else mirror = SpriteEffects.None;
+                    rotatedLastFrame = true;
+                }
             }
 
             base.Update(deltaTime);

@@ -603,14 +603,16 @@ namespace Charge
                         DrawStringWithShadow(spriteBatch, highScore, new Vector2(highScoreDrawX, 33), Color.Gold, new Color(10, 10, 10));
                     }
                     string finalScore = ("Final Score: " + score);
-                    string playAgain = "Press [Enter] to play again";
+                    string playAgain = controls.GetRestartString() + " to play again";
                     DrawStringWithShadow(spriteBatch, finalScore, new Vector2(GetCenteredStringLocation(Font, finalScore, GameplayVars.WinWidth / 2), 438));
                     DrawStringWithShadow(spriteBatch, playAgain, new Vector2(GetCenteredStringLocation(Font, playAgain, GameplayVars.WinWidth / 2), 488));
 
                 }
                 else
                 {
-                    DrawStringWithShadow(spriteBatch, "Score:" + score, new Vector2(750, 525));
+                    String scoreStr = ("Score: " + score);
+                    Vector2 strSize = Font.MeasureString(scoreStr);
+                    DrawStringWithShadow(spriteBatch, scoreStr, new Vector2(GameplayVars.WinWidth - strSize.X * 1.2f, GameplayVars.WinHeight - strSize.Y * 1.5f));
                 }
                 
 				// Draw the pause screen on top of all of the game assets
@@ -1194,7 +1196,7 @@ namespace Charge
             {
                 foreach (WorldEntity effect in otherEnts)
                 {
-                    if (effect is DischargeAnimation && effect.position.Intersects(enemy.position))
+                    if (effect is DischargeAnimation && ((DischargeAnimation)effect).circle.Intersects(enemy.position))
                     {
                         enemy.destroyMe = true;
                         PlaySound(enemyDeathSound);
@@ -1217,6 +1219,22 @@ namespace Charge
                         enemy.destroyMe = true;
                         projectile.destroyMe = true;
                         PlaySound(enemyDeathSound);
+                    }
+                }
+                foreach (WorldEntity wall in walls)
+                {
+                    if (projectile.position.Intersects(wall.position))
+                    {
+                        projectile.destroyMe = true;
+                    }
+                }
+
+                foreach (Platform plat in platforms)
+                {
+                    if(plat.position.Left >= (projectile.position.Right + GameplayVars.WinWidth/2)) continue;
+                    if (projectile.position.Intersects(plat.position))
+                    {
+                        projectile.destroyMe = true;
                     }
                 }
             }
@@ -1387,42 +1405,41 @@ namespace Charge
                 batteryRollRange -= Convert.ToInt32(LevelGenerationVars.MaxBatteryVariation * multiplier);
                 
                 //Either a battery is necessary or the roll results in battery spawning and a battery can spawn on that tier
-                if ((i == necessaryOrbLocation) || 
-                    ((roll < batteryRollRange && numBatteries < LevelGenerationVars.MaxBatteriesPerPlatform) &&
-                     platform.getTier() != tierWithNoChargeOrbs))
-                {
-                    //Spawn Battery
-                    int width = LevelGenerationVars.BatteryWidth;
-                    int height = LevelGenerationVars.BatteryHeight;
-                    WorldEntity battery = new WorldEntity(new Rectangle(sectionCenter - width / 2, platform.position.Top - height / 2 - GameplayVars.StartPlayerHeight / 3, width, height), BatteryTex);
-                    batteries.Add(battery);
-                    platform.sections[i].containedObj = PlatformSection.BATTERYSTR;
-                    numBatteries++;
-                }
-                else if (roll < batteryRollRange + LevelGenerationVars.WallSpawnFrequency && numWalls < LevelGenerationVars.MaxWallsPerPlatform)
-                {
-                    //Spawn Wall (takes up two platform spaces)
-                    if (i >= numSections - 1) continue; //Need two sections
+                if ((i == necessaryOrbLocation) || (roll < batteryRollRange && numBatteries < LevelGenerationVars.MaxBatteriesPerPlatform))
+                    if (platform.getTier() != tierWithNoChargeOrbs)
+                    {
+                        //Spawn Battery
+                        int width = LevelGenerationVars.BatteryWidth;
+                        int height = LevelGenerationVars.BatteryHeight;
+                        WorldEntity battery = new WorldEntity(new Rectangle(sectionCenter - width / 2, platform.position.Top - height / 2 - GameplayVars.StartPlayerHeight / 3, width, height), BatteryTex);
+                        batteries.Add(battery);
+                        platform.sections[i].containedObj = PlatformSection.BATTERYSTR;
+                        numBatteries++;
+                    }
+                    else if (roll < batteryRollRange + LevelGenerationVars.WallSpawnFrequency && numWalls < LevelGenerationVars.MaxWallsPerPlatform)
+                    {
+                        //Spawn Wall (takes up two platform spaces)
+                        if (i >= numSections - 1) continue; //Need two sections
 
-                    int width = LevelGenerationVars.WallWidth;
-                    int height = LevelGenerationVars.WallHeight;
-                    WorldEntity wall = new WorldEntity(new Rectangle(platform.sections[i].position.Right - width / 2, platform.position.Top - height + 3, width, height), WallTex);
-                    walls.Add(wall);
-                    platform.sections[i].containedObj = PlatformSection.WALLSTR;
-                    platform.sections[i+1].containedObj = PlatformSection.WALLSTR;
-                    numWalls++;
-                    i++; //Took up an extra section
-                }
-                else if (roll < batteryRollRange + LevelGenerationVars.WallSpawnFrequency + LevelGenerationVars.EnemySpawnFrequency
-                    && numEnemies < LevelGenerationVars.MaxEnemiesPerPlatform && enemies.Count < LevelGenerationVars.MaxNumEnemiesTotal)
-                {
-                    //Spawn Enemy
-                    int width = LevelGenerationVars.EnemyWidth;
-                    int height = LevelGenerationVars.EnemyHeight;
-                    Enemy enemy = new Enemy(new Rectangle(sectionCenter - width / 2, platform.position.Top - height, width, height), EnemyTex, platform);
-                    enemies.Add(enemy);
-                    numEnemies++;
-                }
+                        int width = LevelGenerationVars.WallWidth;
+                        int height = LevelGenerationVars.WallHeight;
+                        WorldEntity wall = new WorldEntity(new Rectangle(platform.sections[i].position.Right - width / 2, platform.position.Top - height + 3, width, height), WallTex);
+                        walls.Add(wall);
+                        platform.sections[i].containedObj = PlatformSection.WALLSTR;
+                        platform.sections[i + 1].containedObj = PlatformSection.WALLSTR;
+                        numWalls++;
+                        i++; //Took up an extra section
+                    }
+                    else if (roll < batteryRollRange + LevelGenerationVars.WallSpawnFrequency + LevelGenerationVars.EnemySpawnFrequency
+                        && numEnemies < LevelGenerationVars.MaxEnemiesPerPlatform && enemies.Count < LevelGenerationVars.MaxNumEnemiesTotal)
+                    {
+                        //Spawn Enemy
+                        int width = LevelGenerationVars.EnemyWidth;
+                        int height = LevelGenerationVars.EnemyHeight;
+                        Enemy enemy = new Enemy(new Rectangle(sectionCenter - width / 2, platform.position.Top - height, width, height), EnemyTex, platform);
+                        enemies.Add(enemy);
+                        numEnemies++;
+                    }
             }
 
         }

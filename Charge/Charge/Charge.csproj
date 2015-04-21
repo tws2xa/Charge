@@ -41,6 +41,7 @@
     <Compile Include="ChargeBlast.cs" />
     <Compile Include="ChargeMain.cs" />
     <Compile Include="ChargeBar.cs" />
+    <Compile Include="Circle.cs" />
     <Compile Include="Controls.cs" />
     <Compile Include="DischargeAnimation.cs" />
     <Compile Include="DisintegrationEffect.cs" />
