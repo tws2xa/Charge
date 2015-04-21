@@ -7,10 +7,14 @@ namespace Charge
 {
     static class GameplayVars
     {
+        public static int ChargeBarHeight = 15; //25 on Android.
         public static int WinWidth = 1022;
         public static int WinHeight = 575;
         public static int StartPlayerWidth = 44;
         public static int StartPlayerHeight = 71;
+        public static int FrontBarrierStartX = WinWidth + 350;
+        public static int FrontBarrierStartY = WinHeight + 50;
+        public static float GlowThreshold = (FrontBarrierStartX - BackBarrierStartX) / 7.0f; // Div 4 works well for Android. 7 for PC.
         public static int BarrierWidth = 50;
         public static int PlayerXBuffer = 15;
         public static int PlayerYBuffer = 15;
@@ -20,10 +24,8 @@ namespace Charge
         public static int wallYBuffer = 30;
         public static int enemyXBuffer = 5;
         public static int enemyYBuffer = 5;
-        public static float maxPlayerVSpeed = 50;
         public static int BackBarrierStartX = -150;
-        public static int FrontBarrierStartX = WinWidth + 350;
-        public static int FrontBarrierStartY = WinHeight + 50;
+        public static float maxPlayerVSpeed = 50;
         public static float Gravity = 40; // The y-axis starts at 0 at the top of the screen, so gravity should increase Y
         public static float JumpInitialVelocity = -16; // The y-axis starts at 0 at the top of the screen, so jump should decrease Y
         public static float PlayerStartSpeed = 150;

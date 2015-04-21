@@ -214,7 +214,7 @@ namespace Charge
             backBarrier = new Barrier(new Rectangle(GameplayVars.BackBarrierStartX, -50, GameplayVars.BarrierWidth, GameplayVars.WinHeight + 100), BarrierTex, WhiteTex); //The death barrier behind the player
             frontBarrier = new Barrier(new Rectangle(GameplayVars.FrontBarrierStartX, -50, GameplayVars.BarrierWidth, GameplayVars.WinHeight + 100), BarrierTex, WhiteTex); //The death barrier in front of the player
             background = new Background(BackgroundTex);
-			chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 5, graphics.GraphicsDevice.Viewport.Width / 2, 25), ChargeBarTex, ChargeBarLevelColors[0], ChargeBarLevelColors[1]);
+            chargeBar = new ChargeBar(new Rectangle(graphics.GraphicsDevice.Viewport.Width / 4, 5, graphics.GraphicsDevice.Viewport.Width / 2, GameplayVars.ChargeBarHeight), ChargeBarTex, ChargeBarLevelColors[0], ChargeBarLevelColors[1]);
 
             //Create UI Icons
             int iconSpacer = 10;
@@ -298,7 +298,7 @@ namespace Charge
             PlayerTex = this.Content.Load<Texture2D>("PlayerAnimation1");
             WallTex = this.Content.Load<Texture2D>("RedWall");
             ChargeBarTex= this.Content.Load<Texture2D>("ChargeBar");
-            DischargeTex = this.Content.Load<Texture2D>("Discharge");
+            DischargeTex = this.Content.Load<Texture2D>("DischargeAnimated3");
             DischargeIconTex = this.Content.Load<Texture2D>("DischargeIcon");
             ShootIconTex = this.Content.Load<Texture2D>("ShootIcon");
             OverchargeIconTex = this.Content.Load<Texture2D>("OverchargeIcon");
@@ -647,7 +647,7 @@ namespace Charge
         /// </summary>
         private void DrawBarrierWarningGlow(SpriteBatch spriteBatch)
         {
-            float distThreshold = (GameplayVars.FrontBarrierStartX - GameplayVars.BackBarrierStartX)/4.0f;
+            float distThreshold = GameplayVars.GlowThreshold;
 
             float backOpacity = ((distThreshold + backBarrier.position.Center.X) / distThreshold); //Back Barrier pos will usually be negative if barrier is off screen
             if (backOpacity > 1)
