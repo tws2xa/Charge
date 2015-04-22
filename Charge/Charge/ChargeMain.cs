@@ -608,6 +608,9 @@ namespace Charge
                         if (fullScreenPixelEffect == null) CreateUnobtrusiveFullScreenPixelEffect();
                         fullScreenPixelEffect.Draw(spriteBatch);
                     }
+
+                    int rowHeight = Convert.ToInt32(Math.Round(Font.MeasureString("[1st: 999]").Y * 1.15));
+                    int initOffset = Convert.ToInt32(Math.Round(GameplayVars.WinHeight / 7.5));
                     bool hasDrawnMyScore = false;
                     for (int i = 0; i < GameplayVars.NumScores; i++ )
                     {
@@ -626,24 +629,25 @@ namespace Charge
                         if (highScoreManager.getHighScore(i) == score && !hasDrawnMyScore)
                         {
                             //Highlight your score in the leaderboard
-                            DrawStringWithShadow(spriteBatch, toDraw, new Vector2(strDrawX, 78 + 35 * i), Color.Gold, new Color(10, 10, 10));
+                            DrawStringWithShadow(spriteBatch, toDraw, new Vector2(strDrawX, initOffset + rowHeight * i), Color.Gold, new Color(10, 10, 10));
                             hasDrawnMyScore = true;
                         }
                         else
                         {
-                            DrawStringWithShadow(spriteBatch, toDraw, new Vector2(strDrawX, 78 + 35 * i));
+                            DrawStringWithShadow(spriteBatch, toDraw, new Vector2(strDrawX, initOffset + rowHeight * i));
                         }
                     }
                     if (hasDrawnMyScore)
                     {
                         string highScore = "New High Score!";
                         int highScoreDrawX = GetCenteredStringLocation(Font, highScore, GameplayVars.WinWidth / 2);
-                        DrawStringWithShadow(spriteBatch, highScore, new Vector2(highScoreDrawX, 33), Color.Gold, new Color(10, 10, 10));
+                        DrawStringWithShadow(spriteBatch, highScore, new Vector2(highScoreDrawX, initOffset - rowHeight), Color.Gold, new Color(10, 10, 10));
                     }
                     string finalScore = ("Final Score: " + score);
                     string playAgain = controls.GetRestartString() + " to play again";
-                    DrawStringWithShadow(spriteBatch, finalScore, new Vector2(GetCenteredStringLocation(Font, finalScore, GameplayVars.WinWidth / 2), 438));
-                    DrawStringWithShadow(spriteBatch, playAgain, new Vector2(GetCenteredStringLocation(Font, playAgain, GameplayVars.WinWidth / 2), 488));
+                    int scoreYPos = initOffset + rowHeight * GameplayVars.NumScores + 1;
+                    DrawStringWithShadow(spriteBatch, finalScore, new Vector2(GetCenteredStringLocation(Font, finalScore, GameplayVars.WinWidth / 2), scoreYPos));
+                    DrawStringWithShadow(spriteBatch, playAgain, new Vector2(GetCenteredStringLocation(Font, playAgain, GameplayVars.WinWidth / 2), scoreYPos + rowHeight));
 
                 }
                 else
@@ -1309,7 +1313,7 @@ namespace Charge
                 playerDeathEffect.followCamera = false;
                 otherEnts.Add(playerDeathEffect);
             }
-
+            
             highScoreManager.updateHighScore(score);
         }
 
