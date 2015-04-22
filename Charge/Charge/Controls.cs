@@ -153,6 +153,22 @@ namespace Charge
         }
 
         /// <summary>
+        /// Checks if the menu increase control has been triggered
+        /// </summary>
+        public bool MenuIncreaseTrigger()
+        {
+            return onPress(Keys.Right, Buttons.LeftThumbstickRight);
+        }
+
+        /// <summary>
+        /// Checks if the menu decrease control has been triggered
+        /// </summary>
+        public bool MenuDecreaseTrigger()
+        {
+            return onPress(Keys.Left, Buttons.LeftThumbstickLeft);
+        }
+
+        /// <summary>
         /// String explaining the control to start a new game.
         /// </summary>
         public string GetRestartString()

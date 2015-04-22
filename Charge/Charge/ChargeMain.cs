@@ -20,6 +20,9 @@ namespace Charge
     /// </summary>
     public class ChargeMain : Game
     {
+        private static readonly String UserSettingsFile = "UserSettings.txt";
+
+        private static readonly float VolumeChangeAmount = 0.05f;
 
         private static readonly Color[] ChargeBarLevelColors = { new Color(50, 50, 50), new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.Pink }; // The bar colors for each charge level
         private static readonly Color[] PlatformLevelColors = { Color.White, new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.DarkViolet }; // The platform colors for each charge level
@@ -41,8 +44,15 @@ namespace Charge
 			Credits
         };
 
+        enum OptionSelection
+        {
+            Volume,
+            Back
+        }
+
 		GameState currentGameState;
         TitleSelection currentTitleSelection;
+        OptionSelection currentOptionSelection;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -72,6 +82,9 @@ namespace Charge
 
         private SpriteFont Font; //Sprite Font to draw score
         private SpriteFont FontLarge; //Sprite Font for title screen
+
+        private float masterVolume;
+
         private SoundEffect shootSound;
         private SoundEffect jumpSound;
         private SoundEffect overchargeSound;
@@ -80,6 +93,7 @@ namespace Charge
         private SoundEffect chargeCollect;
         private Song Background1;
         private Song TitleMusic;
+
         private static float playerSpeed; //Current run speed
         public static float barrierSpeed; //Speed of barriers
 
@@ -177,15 +191,25 @@ namespace Charge
             tierWithNoChargeOrbs = 0;
             tierWithSomeChargeOrbs = 1;
             
-            //MediaPlayer.IsRepeating = true;
+            // Load user volume settings
+            if (File.Exists(UserSettingsFile))
+            {
+                StreamReader settingsReader = new StreamReader(UserSettingsFile);
+                String volumeAsText = settingsReader.ReadLine();
+                settingsReader.Close();
 
-			//UpdatePlayerSpeed(); // Use the current charge level to set the player speed
+                masterVolume = (float)Convert.ToDouble(volumeAsText);
+            }
+            else
+            {
+                masterVolume = 0.5f;
+                SaveUserSettings();
+            }
+            
+            // Sets the volume for the MediaPlayer. This controls the volume for the Songs used for the title screen and background music
+            MediaPlayer.Volume = masterVolume;
 
 			barrierSpeed = GameplayVars.BarrierStartSpeed;
-
-			// Initalize the gamestate
-			// TODO: Should probably initialize this to TitleScreen once that is implemented
-       
         }
 
         /// <summary>
@@ -319,6 +343,7 @@ namespace Charge
             landSound = Content.Load<SoundEffect>("SoundFX/land");
             enemyDeathSound = Content.Load<SoundEffect>("SoundFX/enemyDeath.wav");
             chargeCollect = Content.Load<SoundEffect>("SoundFX/charge_collect_quiet.wav");
+
             //BackgroundMusic
             Background1 = Content.Load<Song>("BackgroundMusic/Killing_Time.wav");
             TitleMusic = Content.Load<Song>("BackgroundMusic/TitleLoop.wav");
@@ -370,9 +395,17 @@ namespace Charge
 				
                 if (player.isDead)
                 {
-                    foreach (WorldEntity e in otherEnts)
+                    for (int i = 0; i < otherEnts.Count; i++)
                     {
+                        WorldEntity e = otherEnts[i];
+
                         e.Update(deltaTime);
+
+                        if (e.destroyMe)
+                        {
+                            otherEnts.Remove(e);
+                            i--;
+                        }
                     }
                 }
 
@@ -518,8 +551,38 @@ namespace Charge
 				}
 				else if (currentGameState == GameState.OptionsScreen)
 				{
+                    String Title = "Options";
+                    int TitleDrawX = GetCenteredStringLocation(Font, Title, GameplayVars.WinWidth / 2);
+                    spriteBatch.DrawString(Font, Title, new Vector2(TitleDrawX, 25), Color.White);
 
-				}
+                    // Set the color for the selected and unselected menu items
+                    Color volumeColor;
+                    Color backColor;
+
+                    if (currentOptionSelection == OptionSelection.Volume)
+                    {
+                        volumeColor = Color.Gold;
+                        backColor = Color.White;
+                    }
+                    else
+                    {
+                        volumeColor = Color.White;
+                        backColor = Color.Gold;
+                    }
+
+                    String Volume = "Master Volume: ";
+                    int VolumeDrawX = GetCenteredStringLocation(Font, Volume, GameplayVars.WinWidth / 4);
+                    spriteBatch.DrawString(Font, Volume, new Vector2(VolumeDrawX, 150), volumeColor);
+
+                    // Draw the volume slider bar
+                    int volumeBarLeft = Convert.ToInt32(Math.Round(3 * GameplayVars.WinWidth / 4.0f - ((GameplayVars.WinWidth / 3.0f + 5) / 2.0f)));
+
+                    spriteBatch.Draw(WhiteTex, new Rectangle(volumeBarLeft, 162, Convert.ToInt32(masterVolume * GameplayVars.WinWidth / 3) + 5, 20), volumeColor);
+
+                    String Back = "Back";
+                    int BackDrawX = GetCenteredStringLocation(Font, Back, GameplayVars.WinWidth / 2);
+                    spriteBatch.DrawString(Font, Back, new Vector2(BackDrawX, 300), backColor);
+                }
 				else if (currentGameState == GameState.CreditsScreen)
 				{
 					String Title = "CHARGE";
@@ -772,49 +835,94 @@ namespace Charge
 			{
                 Exit();
 			}
+
             if (currentGameState == GameState.TitleScreen)
             {
-				if (controls.MenuUpTrigger())
-				{
-					if (currentTitleSelection > 0)
-					{
-						currentTitleSelection--;
-					}
-				}
-				else if (controls.MenuDownTrigger())
-				{
-					if (currentTitleSelection < TitleSelection.Credits)
-					{
-						currentTitleSelection++;
-					}
-				}
+                if (controls.MenuUpTrigger())
+                {
+                    if (currentTitleSelection > 0)
+                    {
+                        currentTitleSelection--;
+                    }
+                }
+                else if (controls.MenuDownTrigger())
+                {
+                    if (currentTitleSelection < TitleSelection.Credits)
+                    {
+                        currentTitleSelection++;
+                    }
+                }
 
-				 if (controls.MenuSelectTrigger())
-                 {
-					if (currentTitleSelection == TitleSelection.Start)
-					{
-						InitVars();
-						SetupInitialConfiguration();
-						currentGameState = GameState.InGame;
-						if (currentGameState == GameState.InGame)
-						{
-							MediaPlayer.Play(Background1);
-							MediaPlayer.IsRepeating = true;
-						}
-					}
-					else if (currentTitleSelection == TitleSelection.Options)
-					{
-						currentGameState = GameState.OptionsScreen;
-					}
-					else if (currentTitleSelection == TitleSelection.Credits)
-					{
-						currentGameState = GameState.CreditsScreen;
-					}
-                 }
+                if (controls.MenuSelectTrigger())
+                {
+                    if (currentTitleSelection == TitleSelection.Start)
+                    {
+                        InitVars();
+                        SetupInitialConfiguration();
+                        currentGameState = GameState.InGame;
+                        if (currentGameState == GameState.InGame)
+                        {
+                            MediaPlayer.Play(Background1);
+                            MediaPlayer.IsRepeating = true;
+                        }
+                    }
+                    else if (currentTitleSelection == TitleSelection.Options)
+                    {
+                        currentGameState = GameState.OptionsScreen;
+                    }
+                    else if (currentTitleSelection == TitleSelection.Credits)
+                    {
+                        currentGameState = GameState.CreditsScreen;
+                    }
+                }
             }
-			else if (currentGameState == GameState.CreditsScreen && controls.MenuSelectTrigger())
-			{
-				currentGameState = GameState.TitleScreen;
+            else if (currentGameState == GameState.CreditsScreen && controls.MenuSelectTrigger())
+            {
+                currentGameState = GameState.TitleScreen;
+            }
+            else if (currentGameState == GameState.OptionsScreen)
+            {
+                if (controls.MenuUpTrigger() || controls.MenuDownTrigger())
+                {
+                    if (currentOptionSelection == OptionSelection.Volume)
+                    {
+                        currentOptionSelection = OptionSelection.Back;
+                    }
+                    else
+                    {
+                        currentOptionSelection = OptionSelection.Volume;
+                    }
+                }
+
+                if (controls.MenuSelectTrigger() && currentOptionSelection == OptionSelection.Back)
+                {
+                    SaveUserSettings();
+                    currentGameState = GameState.TitleScreen;
+                }
+
+                if (controls.MenuDecreaseTrigger() && currentOptionSelection == OptionSelection.Volume)
+                {
+                    masterVolume -= VolumeChangeAmount;
+
+                    if (masterVolume < 0)
+                    {
+                        masterVolume = 0;
+                    }
+
+                    MediaPlayer.Volume = masterVolume;
+                }
+
+                if (controls.MenuIncreaseTrigger() && currentOptionSelection == OptionSelection.Volume)
+                {
+                    masterVolume += VolumeChangeAmount;
+
+                    if (masterVolume > 1)
+                    {
+                        masterVolume = 1;
+                    }
+
+                    MediaPlayer.Volume = masterVolume;
+                }
             }
 			else if (currentGameState == GameState.InGame)
 			{
@@ -885,7 +993,10 @@ namespace Charge
             {
                 try
                 {
-                    sound.Play();
+                    SoundEffectInstance soundInstance = sound.CreateInstance();
+                    soundInstance.Volume = masterVolume;
+
+                    soundInstance.Play();
                 }
                 catch (Microsoft.Xna.Framework.Audio.NoAudioHardwareException)
                 {
@@ -954,11 +1065,10 @@ namespace Charge
                 player.DecCharge(GameplayVars.DischargeCost);
             }
             else
+            {
                 player.DecCharge(player.GetCharge() * GameplayVars.DischargeCost);
-           
-
+            }           
             
-
             DischargeAnimation discharge = new DischargeAnimation(new Rectangle(player.position.Left, player.position.Top, player.position.Width, player.position.Width), DischargeTex, player);
             otherEnts.Add(discharge);
 
@@ -1152,7 +1262,7 @@ namespace Charge
                     otherEnts.Remove(entity);
                     entity = null;
                     i--;
-        }
+                }
             }
             // Update distance since last tier charge orb decision
             distanceSinceGeneration += (int)(deltaTime * GetPlayerSpeed());
@@ -1610,6 +1720,13 @@ namespace Charge
             fullScreenPixelEffect.pixelYVel = 20;
         }
 
+        private void SaveUserSettings()
+        {
+            StreamWriter settingsWriter = new StreamWriter(UserSettingsFile);
 
+            settingsWriter.Write(masterVolume);
+
+            settingsWriter.Close();
+        }
     }
 }
