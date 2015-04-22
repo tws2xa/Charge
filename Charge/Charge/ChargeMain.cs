@@ -298,7 +298,7 @@ namespace Charge
             PlayerTex = this.Content.Load<Texture2D>("PlayerAnimation1");
             WallTex = this.Content.Load<Texture2D>("RedWall");
             ChargeBarTex= this.Content.Load<Texture2D>("ChargeBar");
-            DischargeTex = this.Content.Load<Texture2D>("DischargeAnimated3");
+            DischargeTex = this.Content.Load<Texture2D>("DischargeAnimated");
             DischargeIconTex = this.Content.Load<Texture2D>("DischargeIcon");
             ShootIconTex = this.Content.Load<Texture2D>("ShootIcon");
             OverchargeIconTex = this.Content.Load<Texture2D>("OverchargeIcon");
@@ -837,7 +837,7 @@ namespace Charge
             player.Overcharge();
             PlaySound(overchargeSound);
 
-            SetGlobalCooldown(GameplayVars.OverchargeCooldownTime);
+            SetGlobalCooldown(GameplayVars.OverchargeCooldownTime[GetCurrentLevel() - 1]);
 		}
 
 
@@ -860,7 +860,7 @@ namespace Charge
             Projectile bullet = new Projectile(new Rectangle(bulletX, bulletY, bulletWidth, bulletHeight), ChargeBarTex, GameplayVars.BulletMoveSpeed);
             projectiles.Add(bullet);
 
-            SetGlobalCooldown(GameplayVars.ShootCooldownTime);
+            SetGlobalCooldown(GameplayVars.ShootCooldownTime[GetCurrentLevel() - 1]);
             PlaySound(shootSound);
         }
 
@@ -886,7 +886,7 @@ namespace Charge
             DischargeAnimation discharge = new DischargeAnimation(new Rectangle(player.position.Left, player.position.Top, player.position.Width, player.position.Width), DischargeTex, player);
             otherEnts.Add(discharge);
 
-            SetGlobalCooldown(GameplayVars.DischargeCooldownTime);
+            SetGlobalCooldown(GameplayVars.DischargeCooldownTime[GetCurrentLevel() - 1]);
         }
 
 

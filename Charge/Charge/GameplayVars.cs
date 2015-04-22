@@ -37,9 +37,10 @@ namespace Charge
         public static float BarrierSpeedUpRate = 3.0f;
         public static float ChargeToSpeedCoefficient = 5.0f;
         public static float TimeToScoreCoefficient = 4.5f;
-        public static float DischargeCooldownTime = 20; //Seconds
-        public static float OverchargeCooldownTime = 20; //Seconds
-        public static float ShootCooldownTime = 5; //Seconds
+
+        public static float[] DischargeCooldownTime = { 20, 17, 14, 11, 10, 10 }; //By level. In Seconds.
+        public static float[] OverchargeCooldownTime = { 20, 17, 14, 11, 10, 10 }; //By level. In Seconds
+        public static float[] ShootCooldownTime = {5, 4.5f, 4, 3.5f, 3, 2.5f}; //By level. In Seconds
        
 
 		public static int ChargeBarCapacity = 75;
