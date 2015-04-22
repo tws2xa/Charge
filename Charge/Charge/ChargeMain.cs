@@ -904,15 +904,9 @@ namespace Charge
                     MediaPlayer.Volume = masterVolume;
                 }
             }
-			else if (currentGameState == GameState.InGame)
+			else if (currentGameState == GameState.InGame && !player.isDead)
 			{
-                if (controls.RestartTrigger() && player.isDead)
-                {
-                    player.isDead = false;
-                    InitVars();
-                    SetupInitialConfiguration();
-                }
-            
+               
 				// Player has pressed the jump command (A button on controller, space bar on keyboard)
 				if (controls.JumpTrigger() && (player.jmpNum < GameplayVars.playerNumJmps || player.grounded))
 				{
@@ -951,7 +945,16 @@ namespace Charge
                     PauseGame();
 				}
 
-			}
+            }
+            else if (currentGameState == GameState.InGame && player.isDead)
+            {
+                if (controls.RestartTrigger())
+                {
+                    player.isDead = false;
+                    InitVars();
+                    SetupInitialConfiguration();
+                }
+            }
 			else if (currentGameState == GameState.Paused)
 			{
 				// Player has pressed the Pause command (P key or Start button)
