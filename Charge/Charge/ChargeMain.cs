@@ -174,6 +174,7 @@ namespace Charge
             distanceSinceGeneration = 0;
             tierWithNoChargeOrbs = 0;
             tierWithSomeChargeOrbs = 1;
+            controls.Reset();
             
             //MediaPlayer.IsRepeating = true;
 
