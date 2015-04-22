@@ -29,6 +29,15 @@ namespace Charge
 
         }
 
+        /// <summary>
+        /// Resets all controls to clear for a new game
+        /// Mainly useful in Android version for clearing swipes, etc
+        /// </summary>
+        public void Reset()
+        {
+            //Nothing to reset
+        }
+
         public void Update()
         {
             kbo = kb;

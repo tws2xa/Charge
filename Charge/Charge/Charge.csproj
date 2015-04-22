@@ -47,6 +47,7 @@
     <Compile Include="DisintegrationEffect.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="GameplayVars.cs" />
+    <Compile Include="HighScoreManager.cs" />
     <Compile Include="LevelGenerationVars.cs" />
     <Compile Include="LevelGenerator.cs" />
     <Compile Include="OverchargeEffect.cs" />

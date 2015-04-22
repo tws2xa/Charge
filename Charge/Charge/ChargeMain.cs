@@ -1,7 +1,6 @@
 ﻿#region Using Statements
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -72,7 +71,6 @@ namespace Charge
         
 
         int score; //Player score
-        List<Int32> highScores; //Top 10 scores
         float tempScore; //Keeps track of fractional score increases
         private static float globalCooldown; //The cooldown on powerups
         private static float totalGlobalCooldown; //The max from which the cooldown is decreasing
@@ -114,9 +112,6 @@ namespace Charge
         int glowWidth = GameplayVars.WinWidth / 7;
         int glowHeight = GameplayVars.WinHeight;
 
-        //For reading and writing files
-        StreamWriter streamWriter;
-
         //Textures
         Texture2D BackgroundTex;
         Texture2D BarrierTex;
@@ -135,6 +130,8 @@ namespace Charge
         Texture2D WhiteTex;
         Texture2D LeftGlow;
         Texture2D RightGlow;
+
+        HighScoreManager highScoreManager;
 
         public ChargeMain()
             : base()
@@ -167,6 +164,7 @@ namespace Charge
             rand = new Random();
             levelGenerator = new LevelGenerator();
             controls = new Controls();
+            highScoreManager = new HighScoreManager();
 
             //Initialize starting values for all numeric variables
             InitVars();
@@ -190,6 +188,7 @@ namespace Charge
             distanceSinceGeneration = 0;
             tierWithNoChargeOrbs = 0;
             tierWithSomeChargeOrbs = 1;
+            controls.Reset();
             
             // Load user volume settings
             if (File.Exists(UserSettingsFile))
@@ -278,30 +277,6 @@ namespace Charge
             platforms.Add(tier1);
             platforms.Add(tier2);
             platforms.Add(startPlat);
-
-            //Reading the list of high scores
-            String fileName = "HighScores.txt";
-
-            //Create new text file for high scores
-            if (!File.Exists(fileName))
-            {
-                streamWriter = new StreamWriter("HighScores.txt");
-                for (int i = 0; i < 9; i++)
-                    streamWriter.Write("0 ");
-                streamWriter.Write("0");
-                streamWriter.Close();
-            }
-
-            //Processing data in the list of scores
-            highScores = new List<Int32>();
-            StreamReader file = new StreamReader("HighScores.txt");
-            String line = file.ReadLine();
-            String[] data = line.Split(' ');
-            foreach (String str in data)
-            {
-                highScores.Add(Convert.ToInt32(str));
-            }
-            file.Close();
         }
 
         /// <summary>
@@ -696,6 +671,9 @@ namespace Charge
                         if (fullScreenPixelEffect == null) CreateUnobtrusiveFullScreenPixelEffect();
                         fullScreenPixelEffect.Draw(spriteBatch);
                     }
+
+                    int rowHeight = Convert.ToInt32(Math.Round(Font.MeasureString("[1st: 999]").Y * 1.15));
+                    int initOffset = Convert.ToInt32(Math.Round(GameplayVars.WinHeight / 7.5));
                     bool hasDrawnMyScore = false;
                     for (int i = 0; i < GameplayVars.NumScores; i++ )
                     {
@@ -709,29 +687,30 @@ namespace Charge
                         else
                             place = (i + 1) + "th";
                         
-                        string toDraw = place + ": " + highScores[i];
+                        string toDraw = place + ": " + highScoreManager.getHighScore(i);
                         int strDrawX = GetCenteredStringLocation(Font, toDraw, GameplayVars.WinWidth / 2);
-                        if (highScores[i] == score && !hasDrawnMyScore)
+                        if (highScoreManager.getHighScore(i) == score && !hasDrawnMyScore)
                         {
                             //Highlight your score in the leaderboard
-                            DrawStringWithShadow(spriteBatch, toDraw, new Vector2(strDrawX, 78 + 35 * i), Color.Gold, new Color(10, 10, 10));
+                            DrawStringWithShadow(spriteBatch, toDraw, new Vector2(strDrawX, initOffset + rowHeight * i), Color.Gold, new Color(10, 10, 10));
                             hasDrawnMyScore = true;
                         }
                         else
                         {
-                            DrawStringWithShadow(spriteBatch, toDraw, new Vector2(strDrawX, 78 + 35 * i));
+                            DrawStringWithShadow(spriteBatch, toDraw, new Vector2(strDrawX, initOffset + rowHeight * i));
                         }
                     }
                     if (hasDrawnMyScore)
                     {
                         string highScore = "New High Score!";
                         int highScoreDrawX = GetCenteredStringLocation(Font, highScore, GameplayVars.WinWidth / 2);
-                        DrawStringWithShadow(spriteBatch, highScore, new Vector2(highScoreDrawX, 33), Color.Gold, new Color(10, 10, 10));
+                        DrawStringWithShadow(spriteBatch, highScore, new Vector2(highScoreDrawX, initOffset - rowHeight), Color.Gold, new Color(10, 10, 10));
                     }
                     string finalScore = ("Final Score: " + score);
                     string playAgain = controls.GetRestartString() + " to play again";
-                    DrawStringWithShadow(spriteBatch, finalScore, new Vector2(GetCenteredStringLocation(Font, finalScore, GameplayVars.WinWidth / 2), 438));
-                    DrawStringWithShadow(spriteBatch, playAgain, new Vector2(GetCenteredStringLocation(Font, playAgain, GameplayVars.WinWidth / 2), 488));
+                    int scoreYPos = initOffset + rowHeight * GameplayVars.NumScores + 1;
+                    DrawStringWithShadow(spriteBatch, finalScore, new Vector2(GetCenteredStringLocation(Font, finalScore, GameplayVars.WinWidth / 2), scoreYPos));
+                    DrawStringWithShadow(spriteBatch, playAgain, new Vector2(GetCenteredStringLocation(Font, playAgain, GameplayVars.WinWidth / 2), scoreYPos + rowHeight));
 
                 }
                 else
@@ -1444,8 +1423,8 @@ namespace Charge
                 playerDeathEffect.followCamera = false;
                 otherEnts.Add(playerDeathEffect);
             }
-
-            updateHighScore(score);
+            
+            highScoreManager.updateHighScore(score);
         }
 
         /// <summary>
@@ -1675,19 +1654,6 @@ namespace Charge
             curCharge %= GameplayVars.ChargeBarCapacity;
 
             return (curCharge / (float)GameplayVars.ChargeBarCapacity);
-        }
-
-        public void updateHighScore(int finalScore)
-        {
-            highScores.Add(finalScore);
-            highScores.Sort();
-            highScores.Reverse();
-            highScores.RemoveAt(GameplayVars.NumScores);
-            streamWriter = new StreamWriter("HighScores.txt");
-            for (int i = 0; i < GameplayVars.NumScores - 1; i++)
-                streamWriter.Write(highScores[i]+" ");
-            streamWriter.Write(highScores[GameplayVars.NumScores - 1]);
-            streamWriter.Close();
         }
 
         public void CreateBasicFullScreenPixelEffect()
