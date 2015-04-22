@@ -1,7 +1,6 @@
 ﻿#region Using Statements
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -62,7 +61,6 @@ namespace Charge
         
 
         int score; //Player score
-        List<Int32> highScores; //Top 10 scores
         float tempScore; //Keeps track of fractional score increases
         private static float globalCooldown; //The cooldown on powerups
         private static float totalGlobalCooldown; //The max from which the cooldown is decreasing
@@ -100,9 +98,6 @@ namespace Charge
         int glowWidth = GameplayVars.WinWidth / 7;
         int glowHeight = GameplayVars.WinHeight;
 
-        //For reading and writing files
-        StreamWriter streamWriter;
-
         //Textures
         Texture2D BackgroundTex;
         Texture2D BarrierTex;
@@ -121,6 +116,8 @@ namespace Charge
         Texture2D WhiteTex;
         Texture2D LeftGlow;
         Texture2D RightGlow;
+
+        HighScoreManager highScoreManager;
 
         public ChargeMain()
             : base()
@@ -153,6 +150,7 @@ namespace Charge
             rand = new Random();
             levelGenerator = new LevelGenerator();
             controls = new Controls();
+            highScoreManager = new HighScoreManager();
 
             //Initialize starting values for all numeric variables
             InitVars();
@@ -255,30 +253,6 @@ namespace Charge
             platforms.Add(tier1);
             platforms.Add(tier2);
             platforms.Add(startPlat);
-
-            //Reading the list of high scores
-            String fileName = "HighScores.txt";
-
-            //Create new text file for high scores
-            if (!File.Exists(fileName))
-            {
-                streamWriter = new StreamWriter("HighScores.txt");
-                for (int i = 0; i < 9; i++)
-                    streamWriter.Write("0 ");
-                streamWriter.Write("0");
-                streamWriter.Close();
-            }
-
-            //Processing data in the list of scores
-            highScores = new List<Int32>();
-            StreamReader file = new StreamReader("HighScores.txt");
-            String line = file.ReadLine();
-            String[] data = line.Split(' ');
-            foreach (String str in data)
-            {
-                highScores.Add(Convert.ToInt32(str));
-            }
-            file.Close();
         }
 
         /// <summary>
@@ -647,9 +621,9 @@ namespace Charge
                         else
                             place = (i + 1) + "th";
                         
-                        string toDraw = place + ": " + highScores[i];
+                        string toDraw = place + ": " + highScoreManager.getHighScore(i);
                         int strDrawX = GetCenteredStringLocation(Font, toDraw, GameplayVars.WinWidth / 2);
-                        if (highScores[i] == score && !hasDrawnMyScore)
+                        if (highScoreManager.getHighScore(i) == score && !hasDrawnMyScore)
                         {
                             //Highlight your score in the leaderboard
                             DrawStringWithShadow(spriteBatch, toDraw, new Vector2(strDrawX, 78 + 35 * i), Color.Gold, new Color(10, 10, 10));
@@ -1336,7 +1310,7 @@ namespace Charge
                 otherEnts.Add(playerDeathEffect);
             }
 
-            updateHighScore(score);
+            highScoreManager.updateHighScore(score);
         }
 
         /// <summary>
@@ -1566,19 +1540,6 @@ namespace Charge
             curCharge %= GameplayVars.ChargeBarCapacity;
 
             return (curCharge / (float)GameplayVars.ChargeBarCapacity);
-        }
-
-        public void updateHighScore(int finalScore)
-        {
-            highScores.Add(finalScore);
-            highScores.Sort();
-            highScores.Reverse();
-            highScores.RemoveAt(GameplayVars.NumScores);
-            streamWriter = new StreamWriter("HighScores.txt");
-            for (int i = 0; i < GameplayVars.NumScores - 1; i++)
-                streamWriter.Write(highScores[i]+" ");
-            streamWriter.Write(highScores[GameplayVars.NumScores - 1]);
-            streamWriter.Close();
         }
 
         public void CreateBasicFullScreenPixelEffect()
