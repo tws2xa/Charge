@@ -28,6 +28,7 @@ namespace Charge
 		{
 			TitleScreen,
             OptionsScreen,
+			CreditsScreen,
 			InGame,
 			Paused,
 			GameOver
@@ -36,7 +37,8 @@ namespace Charge
         enum TitleSelection
         {
             Start,
-            Options
+            Options,
+			Credits
         };
 
 		GameState currentGameState;
@@ -354,8 +356,7 @@ namespace Charge
             {
                 PauseGame();
             }
-
-            if(currentGameState == GameState.TitleScreen)
+            else if(currentGameState == GameState.TitleScreen || currentGameState == GameState.OptionsScreen || currentGameState == GameState.CreditsScreen)
             {   
                 background.Update(deltaTime); //Update the background scroll
 
@@ -364,8 +365,7 @@ namespace Charge
 
                 UpdateWorldEntities(deltaTime);
             }
-
-			if (currentGameState == GameState.InGame)
+			else if (currentGameState == GameState.InGame)
 			{
 				
                 if (player.isDead)
@@ -439,7 +439,7 @@ namespace Charge
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
 
-            if (currentGameState == GameState.TitleScreen)
+            if (currentGameState == GameState.TitleScreen || currentGameState == GameState.OptionsScreen || currentGameState == GameState.CreditsScreen)
             {
                 //Draw Background
                 background.Draw(spriteBatch);
@@ -484,26 +484,89 @@ namespace Charge
                     fullScreenPixelEffect.Draw(spriteBatch);
                 }
 
-                //Draw Title Menu
-                String Title = "CHARGE";
-                String Options = "Options";
-                String Start = "Start Game";
-                int TitleDrawX = GetCenteredStringLocation(FontLarge, Title, GameplayVars.WinWidth / 2);
-                int OptionsDrawX = GetCenteredStringLocation(Font, Options, GameplayVars.WinWidth / 2);
-                int StartDrawX = GetCenteredStringLocation(Font, Start, GameplayVars.WinWidth / 2);
-                spriteBatch.DrawString(FontLarge, Title, new Vector2(TitleDrawX, 100), Color.White);
+				if (currentGameState == GameState.TitleScreen)
+				{
+					//Draw Title Menu
+					String Title = "CHARGE";
+					String Options = "Options";
+					String Start = "Start Game";
+					String Credits = "Credits";
+					int TitleDrawX = GetCenteredStringLocation(FontLarge, Title, GameplayVars.WinWidth / 2);
+					int OptionsDrawX = GetCenteredStringLocation(Font, Options, GameplayVars.WinWidth / 2);
+					int CreditsDrawX = GetCenteredStringLocation(Font, Credits, GameplayVars.WinWidth / 2);
+					int StartDrawX = GetCenteredStringLocation(Font, Start, GameplayVars.WinWidth / 2);
+					spriteBatch.DrawString(FontLarge, Title, new Vector2(TitleDrawX, 100), Color.White);
 
-                if (currentTitleSelection == TitleSelection.Start)
-                {
-                    spriteBatch.DrawString(Font, Start, new Vector2(StartDrawX, 250), Color.Gold);
-                    spriteBatch.DrawString(Font, Options, new Vector2(OptionsDrawX, 325), Color.White);
-                }
-                else
-                {
-                    spriteBatch.DrawString(Font, Start, new Vector2(StartDrawX, 250), Color.White);
-                    spriteBatch.DrawString(Font, Options, new Vector2(OptionsDrawX, 325), Color.Gold);
-                }
-            }
+					if (currentTitleSelection == TitleSelection.Start)
+					{
+						spriteBatch.DrawString(Font, Start, new Vector2(StartDrawX, 250), Color.Gold);
+						spriteBatch.DrawString(Font, Options, new Vector2(OptionsDrawX, 325), Color.White);
+						spriteBatch.DrawString(Font, Credits, new Vector2(CreditsDrawX, 400), Color.White);
+					}
+					else if (currentTitleSelection == TitleSelection.Options)
+					{
+						spriteBatch.DrawString(Font, Start, new Vector2(StartDrawX, 250), Color.White);
+						spriteBatch.DrawString(Font, Options, new Vector2(OptionsDrawX, 325), Color.Gold);
+						spriteBatch.DrawString(Font, Credits, new Vector2(CreditsDrawX, 400), Color.White);
+					}
+					else if (currentTitleSelection == TitleSelection.Credits)
+					{
+						spriteBatch.DrawString(Font, Start, new Vector2(StartDrawX, 250), Color.White);
+						spriteBatch.DrawString(Font, Options, new Vector2(OptionsDrawX, 325), Color.White);
+						spriteBatch.DrawString(Font, Credits, new Vector2(CreditsDrawX, 400), Color.Gold);
+					}
+				}
+				else if (currentGameState == GameState.OptionsScreen)
+				{
+
+				}
+				else if (currentGameState == GameState.CreditsScreen)
+				{
+					String Title = "CHARGE";
+					int TitleDrawX = GetCenteredStringLocation(Font, Title, GameplayVars.WinWidth / 2);
+					spriteBatch.DrawString(Font, Title, new Vector2(TitleDrawX, 25), Color.White);
+
+					String Developers = "Developers";
+					int DevDrawX = GetCenteredStringLocation(Font, Developers, GameplayVars.WinWidth / 2);
+					spriteBatch.DrawString(Font, Developers, new Vector2(DevDrawX, 100), Color.White);
+
+					String Sam = "Sam Leonard";
+					int SamDrawX = GetCenteredStringLocation(Font, Sam, GameplayVars.WinWidth / 2);
+					spriteBatch.DrawString(Font, Sam, new Vector2(SamDrawX, 150), Color.White);
+
+					String Dan = "Dan O'Connor";
+					int DanDrawX = GetCenteredStringLocation(Font, Dan, GameplayVars.WinWidth / 2);
+					spriteBatch.DrawString(Font, Dan, new Vector2(DanDrawX, 175), Color.White);
+
+					String Adam = "Adam Rosenburg";
+					int AdamDrawX = GetCenteredStringLocation(Font, Adam, GameplayVars.WinWidth / 2);
+					spriteBatch.DrawString(Font, Adam, new Vector2(AdamDrawX, 200), Color.White);
+
+					String Thomas = "Thomas Sparks";
+					int ThomasDrawX = GetCenteredStringLocation(Font, Thomas, GameplayVars.WinWidth / 2);
+					spriteBatch.DrawString(Font, Thomas, new Vector2(ThomasDrawX, 225), Color.White);
+
+					String Music = "Music";
+					int MusicDrawX = GetCenteredStringLocation(Font, Music, GameplayVars.WinWidth / 2);
+					spriteBatch.DrawString(Font, Music, new Vector2(MusicDrawX, 300), Color.White);
+
+					String KillingTime = "Title Music - Killing Time";
+					int KillingTimeDrawX = GetCenteredStringLocation(Font, KillingTime, GameplayVars.WinWidth / 2);
+					spriteBatch.DrawString(Font, KillingTime, new Vector2(KillingTimeDrawX, 350), Color.White);
+
+					String SpaceFighter = "Gameplay Music - Space Fighter Loop";
+					int SpaceFighterDrawX = GetCenteredStringLocation(Font, SpaceFighter, GameplayVars.WinWidth / 2);
+					spriteBatch.DrawString(Font, SpaceFighter, new Vector2(SpaceFighterDrawX, 375), Color.White);
+
+					String Acknowledgement = "All music retrieved from Incompetech.com";
+					int AcknowledgementDrawX = GetCenteredStringLocation(Font, Acknowledgement, GameplayVars.WinWidth / 2);
+					spriteBatch.DrawString(Font, Acknowledgement, new Vector2(AcknowledgementDrawX, 400), Color.White);
+
+					String Back = "Back";
+					int BackDrawX = GetCenteredStringLocation(Font, Back, GameplayVars.WinWidth / 2);
+					spriteBatch.DrawString(Font, Back, new Vector2(BackDrawX, 450), Color.Gold);
+				}
+			}
 
 			if (currentGameState == GameState.InGame || currentGameState == GameState.Paused)
 			{
@@ -711,36 +774,49 @@ namespace Charge
 			}
             if (currentGameState == GameState.TitleScreen)
             {
-                if (controls.MenuUpTrigger() || controls.MenuDownTrigger())
-                {
-                    if (currentTitleSelection == TitleSelection.Start)
-                        currentTitleSelection = TitleSelection.Options;
-                    else
-                        currentTitleSelection = TitleSelection.Start;
-                }
+				if (controls.MenuUpTrigger())
+				{
+					if (currentTitleSelection > 0)
+					{
+						currentTitleSelection--;
+					}
+				}
+				else if (controls.MenuDownTrigger())
+				{
+					if (currentTitleSelection < TitleSelection.Credits)
+					{
+						currentTitleSelection++;
+					}
+				}
 
-                 if (controls.MenuSelectTrigger())
+				 if (controls.MenuSelectTrigger())
                  {
-                     if (currentTitleSelection == TitleSelection.Start)
-                     {
-                         InitVars();
-                         SetupInitialConfiguration();
-                         currentGameState = GameState.InGame;
-                         if (currentGameState == GameState.InGame)
-                         {
-                             MediaPlayer.Play(Background1);
-                             MediaPlayer.IsRepeating = true;
-                         }
-                     }
-                     else
-                     {
-
-                     }
+					if (currentTitleSelection == TitleSelection.Start)
+					{
+						InitVars();
+						SetupInitialConfiguration();
+						currentGameState = GameState.InGame;
+						if (currentGameState == GameState.InGame)
+						{
+							MediaPlayer.Play(Background1);
+							MediaPlayer.IsRepeating = true;
+						}
+					}
+					else if (currentTitleSelection == TitleSelection.Options)
+					{
+						currentGameState = GameState.OptionsScreen;
+					}
+					else if (currentTitleSelection == TitleSelection.Credits)
+					{
+						currentGameState = GameState.CreditsScreen;
+					}
                  }
-
             }
-
-			if (currentGameState == GameState.InGame)
+			else if (currentGameState == GameState.CreditsScreen && controls.MenuSelectTrigger())
+			{
+				currentGameState = GameState.TitleScreen;
+            }
+			else if (currentGameState == GameState.InGame)
 			{
                 if (controls.RestartTrigger() && player.isDead)
                 {
