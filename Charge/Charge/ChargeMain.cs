@@ -91,7 +91,7 @@ namespace Charge
         int tierWithNoChargeOrbs; // Tier that spawns no charge orbs
         int tierWithSomeChargeOrbs; // Tier that spawns at least one charge orb per platform
 
-        private SpriteFont Font; //Sprite Font to draw score
+        private SpriteFont FontSmall; //Sprite Font to draw score
         private SpriteFont FontLarge; //Sprite Font for title screen
 
         private float masterVolume;
@@ -325,7 +325,7 @@ namespace Charge
             RightGlow = this.Content.Load<Texture2D>("GlowRight");
 
             //Fonts
-            Font = this.Content.Load<SpriteFont>("Fonts/OCR-A-Extended-24");
+            FontSmall = this.Content.Load<SpriteFont>("Fonts/OCR-A-Extended-24");
             FontLarge = this.Content.Load <SpriteFont>("Fonts/OCR-A-Extended-48");
 
             //Sound Effects
@@ -517,35 +517,35 @@ namespace Charge
 					String Start = "Start Game";
 					String Credits = "Credits";
 					int TitleDrawX = GetCenteredStringLocation(FontLarge, Title, GameplayVars.WinWidth / 2);
-					int OptionsDrawX = GetCenteredStringLocation(Font, Options, GameplayVars.WinWidth / 2);
-					int CreditsDrawX = GetCenteredStringLocation(Font, Credits, GameplayVars.WinWidth / 2);
-					int StartDrawX = GetCenteredStringLocation(Font, Start, GameplayVars.WinWidth / 2);
-					spriteBatch.DrawString(FontLarge, Title, new Vector2(TitleDrawX, 100), Color.White);
+					int OptionsDrawX = GetCenteredStringLocation(FontSmall, Options, GameplayVars.WinWidth / 2);
+					int CreditsDrawX = GetCenteredStringLocation(FontSmall, Credits, GameplayVars.WinWidth / 2);
+					int StartDrawX = GetCenteredStringLocation(FontSmall, Start, GameplayVars.WinWidth / 2);
+					DrawStringWithShadow(spriteBatch, Title, new Vector2(TitleDrawX, 100), Color.WhiteSmoke, Color.Black, FontLarge);
 
 					if (currentTitleSelection == TitleSelection.Start)
 					{
-						spriteBatch.DrawString(Font, Start, new Vector2(StartDrawX, 250), Color.Gold);
-						spriteBatch.DrawString(Font, Options, new Vector2(OptionsDrawX, 325), Color.White);
-						spriteBatch.DrawString(Font, Credits, new Vector2(CreditsDrawX, 400), Color.White);
+                        DrawStringWithShadow(spriteBatch, Start, new Vector2(StartDrawX, 250), Color.Gold, Color.Black);
+                        DrawStringWithShadow(spriteBatch, Options, new Vector2(OptionsDrawX, 325));
+                        DrawStringWithShadow(spriteBatch, Credits, new Vector2(CreditsDrawX, 400));
 					}
 					else if (currentTitleSelection == TitleSelection.Options)
 					{
-						spriteBatch.DrawString(Font, Start, new Vector2(StartDrawX, 250), Color.White);
-						spriteBatch.DrawString(Font, Options, new Vector2(OptionsDrawX, 325), Color.Gold);
-						spriteBatch.DrawString(Font, Credits, new Vector2(CreditsDrawX, 400), Color.White);
+                        DrawStringWithShadow(spriteBatch, Start, new Vector2(StartDrawX, 250));
+                        DrawStringWithShadow(spriteBatch, Options, new Vector2(OptionsDrawX, 325), Color.Gold, Color.Black);
+                        DrawStringWithShadow(spriteBatch, Credits, new Vector2(CreditsDrawX, 400));
 					}
 					else if (currentTitleSelection == TitleSelection.Credits)
-					{
-						spriteBatch.DrawString(Font, Start, new Vector2(StartDrawX, 250), Color.White);
-						spriteBatch.DrawString(Font, Options, new Vector2(OptionsDrawX, 325), Color.White);
-						spriteBatch.DrawString(Font, Credits, new Vector2(CreditsDrawX, 400), Color.Gold);
+                    {
+                        DrawStringWithShadow(spriteBatch, Start, new Vector2(StartDrawX, 250));
+                        DrawStringWithShadow(spriteBatch, Options, new Vector2(OptionsDrawX, 325));
+                        DrawStringWithShadow(spriteBatch, Credits, new Vector2(CreditsDrawX, 400), Color.Gold, Color.Black);
 					}
 				}
 				else if (currentGameState == GameState.OptionsScreen)
 				{
                     String Title = "Options";
-                    int TitleDrawX = GetCenteredStringLocation(Font, Title, GameplayVars.WinWidth / 2);
-                    spriteBatch.DrawString(Font, Title, new Vector2(TitleDrawX, 25), Color.White);
+                    int TitleDrawX = GetCenteredStringLocation(FontSmall, Title, GameplayVars.WinWidth / 2);
+                    spriteBatch.DrawString(FontSmall, Title, new Vector2(TitleDrawX, 25), Color.White);
 
                     // Set the color for the selected and unselected menu items
                     Color volumeColor = Color.White;
@@ -566,61 +566,63 @@ namespace Charge
                     }
 
                     String Volume = "Master Volume: ";
-                    int VolumeDrawX = GetCenteredStringLocation(Font, Volume, GameplayVars.WinWidth / 4);
-                    spriteBatch.DrawString(Font, Volume, new Vector2(VolumeDrawX, 150), volumeColor);
+                    int VolumeDrawX = GetCenteredStringLocation(FontSmall, Volume, GameplayVars.WinWidth / 4);
+                    spriteBatch.DrawString(FontSmall, Volume, new Vector2(VolumeDrawX, 150), volumeColor);
 
                     // Draw the volume slider bar
                     int volumeBarLeft = Convert.ToInt32(Math.Round(3 * GameplayVars.WinWidth / 4.0f - ((GameplayVars.WinWidth / 3.0f + 5) / 2.0f)));
+                    int maxWidth = Convert.ToInt32(GameplayVars.WinWidth / 3) + 5;
+                    spriteBatch.Draw(WhiteTex, new Rectangle(volumeBarLeft, 162, maxWidth, 20), new Color(100, 100, 100));
                     spriteBatch.Draw(WhiteTex, new Rectangle(volumeBarLeft, 162, Convert.ToInt32(masterVolume * GameplayVars.WinWidth / 3) + 5, 20), volumeColor);
                     
-                    int ClearDrawX = GetCenteredStringLocation(Font, ClearHighScoresText, GameplayVars.WinWidth / 2);
-                    spriteBatch.DrawString(Font, ClearHighScoresText, new Vector2(ClearDrawX, 300), clearColor);
+                    int ClearDrawX = GetCenteredStringLocation(FontSmall, ClearHighScoresText, GameplayVars.WinWidth / 2);
+                    spriteBatch.DrawString(FontSmall, ClearHighScoresText, new Vector2(ClearDrawX, 300), clearColor);
 
                     String Back = "Back";
-                    int BackDrawX = GetCenteredStringLocation(Font, Back, GameplayVars.WinWidth / 2);
-                    spriteBatch.DrawString(Font, Back, new Vector2(BackDrawX, 350), backColor);
+                    int BackDrawX = GetCenteredStringLocation(FontSmall, Back, GameplayVars.WinWidth / 2);
+                    spriteBatch.DrawString(FontSmall, Back, new Vector2(BackDrawX, 350), backColor);
                 }
 				else if (currentGameState == GameState.CreditsScreen)
 				{
                     int startY = GameplayVars.WinHeight / 23;
                     int largeGapSize = GameplayVars.WinHeight/7;
                     int medGapSize = GameplayVars.WinHeight/12;
-                    int smallGapSize = Convert.ToInt32(Font.MeasureString("[]").Y);
+                    int smallGapSize = Convert.ToInt32(FontSmall.MeasureString("[]").Y);
 
                     int yPos = startY;
 
 					String Title = "CHARGE";
-					int TitleDrawX = GetCenteredStringLocation(Font, Title, GameplayVars.WinWidth / 2);
+					int TitleDrawX = GetCenteredStringLocation(FontSmall, Title, GameplayVars.WinWidth / 2);
                     DrawStringWithShadow(spriteBatch, Title, new Vector2(TitleDrawX, yPos));
                     yPos += largeGapSize;
 
 					String Developers = "Developers";
-					int DevDrawX = GetCenteredStringLocation(Font, Developers, GameplayVars.WinWidth / 2);
+					int DevDrawX = GetCenteredStringLocation(FontSmall, Developers, GameplayVars.WinWidth / 2);
                     DrawStringWithShadow(spriteBatch, Developers, new Vector2(DevDrawX, yPos)); //100
                     yPos += medGapSize;
 
 					String Sam = "Sam Leonard";
-					int SamDrawX = GetCenteredStringLocation(Font, Sam, GameplayVars.WinWidth / 2);
+					int SamDrawX = GetCenteredStringLocation(FontSmall, Sam, GameplayVars.WinWidth / 2);
                     DrawStringWithShadow(spriteBatch, Sam, new Vector2(SamDrawX, yPos)); //150
                     yPos += smallGapSize;
 
 					String Dan = "Dan O'Connor";
-					int DanDrawX = GetCenteredStringLocation(Font, Dan, GameplayVars.WinWidth / 2);
+					int DanDrawX = GetCenteredStringLocation(FontSmall, Dan, GameplayVars.WinWidth / 2);
                     DrawStringWithShadow(spriteBatch, Dan, new Vector2(DanDrawX, yPos)); //175
                     yPos += smallGapSize;
 
 					String Adam = "Adam Rosenburg";
-					int AdamDrawX = GetCenteredStringLocation(Font, Adam, GameplayVars.WinWidth / 2);
+					int AdamDrawX = GetCenteredStringLocation(FontSmall, Adam, GameplayVars.WinWidth / 2);
                     DrawStringWithShadow(spriteBatch, Adam, new Vector2(AdamDrawX, yPos)); //200
                     yPos += smallGapSize;
 
 					String Thomas = "Thomas Sparks";
-					int ThomasDrawX = GetCenteredStringLocation(Font, Thomas, GameplayVars.WinWidth / 2);
+					int ThomasDrawX = GetCenteredStringLocation(FontSmall, Thomas, GameplayVars.WinWidth / 2);
                     DrawStringWithShadow(spriteBatch, Thomas, new Vector2(ThomasDrawX, yPos)); //225
                     yPos += largeGapSize;
 
 					String Music = "Music";
-					int MusicDrawX = GetCenteredStringLocation(Font, Music, GameplayVars.WinWidth / 2);
+					int MusicDrawX = GetCenteredStringLocation(FontSmall, Music, GameplayVars.WinWidth / 2);
                     DrawStringWithShadow(spriteBatch, Music, new Vector2(MusicDrawX, yPos)); //300
                     yPos += medGapSize;
 
@@ -632,27 +634,27 @@ namespace Charge
                      */
 
 					String line1 = "\"Killing Time\", \"Space Fighter Loop\"";
-                    int KillingTimeDrawX = GetCenteredStringLocation(Font, line1, GameplayVars.WinWidth / 2);
+                    int KillingTimeDrawX = GetCenteredStringLocation(FontSmall, line1, GameplayVars.WinWidth / 2);
                     DrawStringWithShadow(spriteBatch, line1, new Vector2(KillingTimeDrawX, yPos)); //350
                     yPos += smallGapSize;
 
                     String line2 = "Kevin MacLeod (incompetech.com)";
-                    int SpaceFighterDrawX = GetCenteredStringLocation(Font, line2, GameplayVars.WinWidth / 2);
+                    int SpaceFighterDrawX = GetCenteredStringLocation(FontSmall, line2, GameplayVars.WinWidth / 2);
                     DrawStringWithShadow(spriteBatch, line2, new Vector2(SpaceFighterDrawX, yPos)); //375
                     yPos += smallGapSize;
 
                     String ccAttr = "Licensed under Creative Commons: By Attribution 3.0";
-                    int AcknowledgementDrawX = GetCenteredStringLocation(Font, ccAttr, GameplayVars.WinWidth / 2);
+                    int AcknowledgementDrawX = GetCenteredStringLocation(FontSmall, ccAttr, GameplayVars.WinWidth / 2);
                     DrawStringWithShadow(spriteBatch, ccAttr, new Vector2(AcknowledgementDrawX, yPos)); //400
                     yPos += smallGapSize;
 
                     String url = "http://creativecommons.org/licenses/by/3.0/";
-                    int urlDrawX = GetCenteredStringLocation(Font, url, GameplayVars.WinWidth / 2);
+                    int urlDrawX = GetCenteredStringLocation(FontSmall, url, GameplayVars.WinWidth / 2);
                     DrawStringWithShadow(spriteBatch, url, new Vector2(urlDrawX, yPos)); //400
                     yPos += medGapSize;
 
 					String Back = "Back";
-					int BackDrawX = GetCenteredStringLocation(Font, Back, GameplayVars.WinWidth / 2);
+					int BackDrawX = GetCenteredStringLocation(FontSmall, Back, GameplayVars.WinWidth / 2);
                     DrawStringWithShadow(spriteBatch, Back, new Vector2(BackDrawX, yPos), Color.Yellow, Color.Black); //450
 				}
 			}
@@ -723,7 +725,7 @@ namespace Charge
                         fullScreenPixelEffect.Draw(spriteBatch);
                     }
 
-                    int rowHeight = Convert.ToInt32(Math.Round(Font.MeasureString("[1st: 999]").Y * 1.15));
+                    int rowHeight = Convert.ToInt32(Math.Round(FontSmall.MeasureString("[1st: 999]").Y * 1.15));
                     int initOffset = Convert.ToInt32(Math.Round(GameplayVars.WinHeight / 8.0));
                     bool hasDrawnMyScore = false;
                     for (int i = 0; i < GameplayVars.NumScores; i++ )
@@ -739,7 +741,7 @@ namespace Charge
                             place = (i + 1) + "th";
                         
                         string toDraw = place + ": " + highScoreManager.getHighScore(i);
-                        int strDrawX = GetCenteredStringLocation(Font, toDraw, GameplayVars.WinWidth / 2);
+                        int strDrawX = GetCenteredStringLocation(FontSmall, toDraw, GameplayVars.WinWidth / 2);
                         if (highScoreManager.getHighScore(i) == score && !hasDrawnMyScore)
                         {
                             //Highlight your score in the leaderboard
@@ -754,23 +756,23 @@ namespace Charge
                     if (hasDrawnMyScore)
                     {
                         string highScore = "New High Score!";
-                        int highScoreDrawX = GetCenteredStringLocation(Font, highScore, GameplayVars.WinWidth / 2);
+                        int highScoreDrawX = GetCenteredStringLocation(FontSmall, highScore, GameplayVars.WinWidth / 2);
                         DrawStringWithShadow(spriteBatch, highScore, new Vector2(highScoreDrawX, initOffset - rowHeight), Color.Gold, new Color(10, 10, 10));
                     }
                     string finalScore = ("Final Score: " + score);
                     string playAgain = controls.GetRestartString() + " to play again!";
                     string returnToTitle = controls.GetReturnToTitleString() + " to return to the title screen";
                     int scoreYPos = initOffset + rowHeight * GameplayVars.NumScores + 1;
-                    DrawStringWithShadow(spriteBatch, finalScore, new Vector2(GetCenteredStringLocation(Font, finalScore, GameplayVars.WinWidth / 2), scoreYPos));
-                    DrawStringWithShadow(spriteBatch, playAgain, new Vector2(GetCenteredStringLocation(Font, playAgain, GameplayVars.WinWidth / 2), scoreYPos + rowHeight));
-                    DrawStringWithShadow(spriteBatch, returnToTitle, new Vector2(GetCenteredStringLocation(Font, returnToTitle, GameplayVars.WinWidth / 2), scoreYPos + rowHeight*2));
+                    DrawStringWithShadow(spriteBatch, finalScore, new Vector2(GetCenteredStringLocation(FontSmall, finalScore, GameplayVars.WinWidth / 2), scoreYPos));
+                    DrawStringWithShadow(spriteBatch, playAgain, new Vector2(GetCenteredStringLocation(FontSmall, playAgain, GameplayVars.WinWidth / 2), scoreYPos + rowHeight));
+                    DrawStringWithShadow(spriteBatch, returnToTitle, new Vector2(GetCenteredStringLocation(FontSmall, returnToTitle, GameplayVars.WinWidth / 2), scoreYPos + rowHeight*2));
                     
                     
                 }
                 else
                 {
                     String scoreStr = ("Score: " + score);
-                    Vector2 strSize = Font.MeasureString(scoreStr);
+                    Vector2 strSize = FontSmall.MeasureString(scoreStr);
                     DrawStringWithShadow(spriteBatch, scoreStr, new Vector2(GameplayVars.WinWidth - strSize.X * 1.2f, GameplayVars.WinHeight - strSize.Y * 1.5f));
                 }
                 
@@ -779,7 +781,9 @@ namespace Charge
 				{
                     spriteBatch.Draw(WhiteTex, new Rectangle(0, 0, GameplayVars.WinWidth, GameplayVars.WinHeight), Color.Black * 0.5f);
                     if(doPausePixelEffect) fullScreenPixelEffect.Draw(spriteBatch);
+                    int lineHeight = Convert.ToInt32(Math.Ceiling(FontSmall.MeasureString("Paused").Y));
                     DrawStringWithShadow(spriteBatch, "Paused", new Vector2(15, 15));
+                    DrawStringWithShadow(spriteBatch, controls.GetUnpauseText() + " to resume.", new Vector2(15, 15 + lineHeight));
 				}
 			}
 
@@ -854,8 +858,21 @@ namespace Charge
         /// <param name="textColor">Main text Color</param>
         void DrawStringWithShadow(SpriteBatch spriteBatch, String text, Vector2 location, Color textColor, Color backColor)
         {
-            spriteBatch.DrawString(Font, text, new Vector2(location.X + 2, location.Y + 2), backColor);
-            spriteBatch.DrawString(Font, text, location, textColor);
+            DrawStringWithShadow(spriteBatch, text, location, textColor, backColor, FontSmall);
+        }
+
+        /// <summary>
+        /// Draws a string with a slight, black shadow behind it
+        /// </summary>
+        /// <param name="text">Text to draw</param>
+        /// <param name="location">Upper left corner of string</param>
+        /// <param name="backColor">Shadow Color</param>
+        /// <param name="textColor">Main text Color</param>
+        /// <param name="font">The font to use</param>
+        void DrawStringWithShadow(SpriteBatch spriteBatch, String text, Vector2 location, Color textColor, Color backColor, SpriteFont font)
+        {
+            spriteBatch.DrawString(font, text, new Vector2(location.X + 2, location.Y + 2), backColor);
+            spriteBatch.DrawString(font, text, location, textColor);
         }
 
         /// <summary>
@@ -1034,9 +1051,9 @@ namespace Charge
                 {
                     player.isDead = false;
                     InitVars();
-                    SetupInitialConfiguration();
                     playerSpeed = GameplayVars.titleScrollSpeed;
                     currentGameState = GameState.TitleScreen;
+                    SetupInitialConfiguration();
                 }
             }
 			else if (currentGameState == GameState.Paused)

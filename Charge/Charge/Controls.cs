@@ -202,5 +202,12 @@ namespace Charge
             return "Press [Backspace]";
         }
 
+        /// <summary>
+        /// String explaining the control to unpause the game.
+        /// </summary>
+        public string GetUnpauseText()
+        {
+            return "Press [P]";
+        }
     }
 }
