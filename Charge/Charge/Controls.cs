@@ -152,15 +152,7 @@ namespace Charge
         {
             return (onPress(Keys.Space, Buttons.A) || onPress(Keys.Enter, Buttons.Start));
         }
-
-        /// <summary>
-        /// Checks if the restart control has been triggered
-        /// </summary>
-        public bool RestartTrigger()
-        {
-            return onPress(Keys.Enter, Buttons.Start);
-        }
-
+        
         /// <summary>
         /// Checks if the menu increase control has been triggered
         /// </summary>
@@ -178,11 +170,37 @@ namespace Charge
         }
 
         /// <summary>
+        /// Checks if the return to title screen control has been triggered
+        /// </summary>
+        /// <returns></returns>
+        public bool TitleScreenTrigger()
+        {
+            return onPress(Keys.Back, Buttons.B);
+        }
+
+        /// <summary>
+        /// Checks if the restart control has been triggered
+        /// </summary>
+        public bool RestartTrigger()
+        {
+            return onPress(Keys.Enter, Buttons.Start);
+        }
+
+        /// <summary>
         /// String explaining the control to start a new game.
         /// </summary>
         public string GetRestartString()
         {
             return "Press [Enter]";
         }
+
+        /// <summary>
+        /// String explaining the control to return to title.
+        /// </summary>
+        public string GetReturnToTitleString()
+        {
+            return "Press [Backspace]";
+        }
+
     }
 }

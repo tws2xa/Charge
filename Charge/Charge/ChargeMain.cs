@@ -582,49 +582,78 @@ namespace Charge
                 }
 				else if (currentGameState == GameState.CreditsScreen)
 				{
+                    int startY = GameplayVars.WinHeight / 23;
+                    int largeGapSize = GameplayVars.WinHeight/7;
+                    int medGapSize = GameplayVars.WinHeight/12;
+                    int smallGapSize = Convert.ToInt32(Font.MeasureString("[]").Y);
+
+                    int yPos = startY;
+
 					String Title = "CHARGE";
 					int TitleDrawX = GetCenteredStringLocation(Font, Title, GameplayVars.WinWidth / 2);
-					spriteBatch.DrawString(Font, Title, new Vector2(TitleDrawX, 25), Color.White);
+                    DrawStringWithShadow(spriteBatch, Title, new Vector2(TitleDrawX, yPos));
+                    yPos += largeGapSize;
 
 					String Developers = "Developers";
 					int DevDrawX = GetCenteredStringLocation(Font, Developers, GameplayVars.WinWidth / 2);
-					spriteBatch.DrawString(Font, Developers, new Vector2(DevDrawX, 100), Color.White);
+                    DrawStringWithShadow(spriteBatch, Developers, new Vector2(DevDrawX, yPos)); //100
+                    yPos += medGapSize;
 
 					String Sam = "Sam Leonard";
 					int SamDrawX = GetCenteredStringLocation(Font, Sam, GameplayVars.WinWidth / 2);
-					spriteBatch.DrawString(Font, Sam, new Vector2(SamDrawX, 150), Color.White);
+                    DrawStringWithShadow(spriteBatch, Sam, new Vector2(SamDrawX, yPos)); //150
+                    yPos += smallGapSize;
 
 					String Dan = "Dan O'Connor";
 					int DanDrawX = GetCenteredStringLocation(Font, Dan, GameplayVars.WinWidth / 2);
-					spriteBatch.DrawString(Font, Dan, new Vector2(DanDrawX, 175), Color.White);
+                    DrawStringWithShadow(spriteBatch, Dan, new Vector2(DanDrawX, yPos)); //175
+                    yPos += smallGapSize;
 
 					String Adam = "Adam Rosenburg";
 					int AdamDrawX = GetCenteredStringLocation(Font, Adam, GameplayVars.WinWidth / 2);
-					spriteBatch.DrawString(Font, Adam, new Vector2(AdamDrawX, 200), Color.White);
+                    DrawStringWithShadow(spriteBatch, Adam, new Vector2(AdamDrawX, yPos)); //200
+                    yPos += smallGapSize;
 
 					String Thomas = "Thomas Sparks";
 					int ThomasDrawX = GetCenteredStringLocation(Font, Thomas, GameplayVars.WinWidth / 2);
-					spriteBatch.DrawString(Font, Thomas, new Vector2(ThomasDrawX, 225), Color.White);
+                    DrawStringWithShadow(spriteBatch, Thomas, new Vector2(ThomasDrawX, yPos)); //225
+                    yPos += largeGapSize;
 
 					String Music = "Music";
 					int MusicDrawX = GetCenteredStringLocation(Font, Music, GameplayVars.WinWidth / 2);
-					spriteBatch.DrawString(Font, Music, new Vector2(MusicDrawX, 300), Color.White);
+                    DrawStringWithShadow(spriteBatch, Music, new Vector2(MusicDrawX, yPos)); //300
+                    yPos += medGapSize;
 
-					String KillingTime = "Title Music - Killing Time";
-					int KillingTimeDrawX = GetCenteredStringLocation(Font, KillingTime, GameplayVars.WinWidth / 2);
-					spriteBatch.DrawString(Font, KillingTime, new Vector2(KillingTimeDrawX, 350), Color.White);
+                    /* License:
+                     * "Killing Time", "Space Fighter Loop"
+                     * Kevin MacLeod (incompetech.com)
+                     * Licensed under Creative Commons: By Attribution 3.0
+                     * http://creativecommons.org/licenses/by/3.0/
+                     */
 
-					String SpaceFighter = "Gameplay Music - Space Fighter Loop";
-					int SpaceFighterDrawX = GetCenteredStringLocation(Font, SpaceFighter, GameplayVars.WinWidth / 2);
-					spriteBatch.DrawString(Font, SpaceFighter, new Vector2(SpaceFighterDrawX, 375), Color.White);
+					String line1 = "\"Killing Time\", \"Space Fighter Loop\"";
+                    int KillingTimeDrawX = GetCenteredStringLocation(Font, line1, GameplayVars.WinWidth / 2);
+                    DrawStringWithShadow(spriteBatch, line1, new Vector2(KillingTimeDrawX, yPos)); //350
+                    yPos += smallGapSize;
 
-					String Acknowledgement = "All music retrieved from Incompetech.com";
-					int AcknowledgementDrawX = GetCenteredStringLocation(Font, Acknowledgement, GameplayVars.WinWidth / 2);
-					spriteBatch.DrawString(Font, Acknowledgement, new Vector2(AcknowledgementDrawX, 400), Color.White);
+                    String line2 = "Kevin MacLeod (incompetech.com)";
+                    int SpaceFighterDrawX = GetCenteredStringLocation(Font, line2, GameplayVars.WinWidth / 2);
+                    DrawStringWithShadow(spriteBatch, line2, new Vector2(SpaceFighterDrawX, yPos)); //375
+                    yPos += smallGapSize;
+
+                    String ccAttr = "Licensed under Creative Commons: By Attribution 3.0";
+                    int AcknowledgementDrawX = GetCenteredStringLocation(Font, ccAttr, GameplayVars.WinWidth / 2);
+                    DrawStringWithShadow(spriteBatch, ccAttr, new Vector2(AcknowledgementDrawX, yPos)); //400
+                    yPos += smallGapSize;
+
+                    String url = "http://creativecommons.org/licenses/by/3.0/";
+                    int urlDrawX = GetCenteredStringLocation(Font, url, GameplayVars.WinWidth / 2);
+                    DrawStringWithShadow(spriteBatch, url, new Vector2(urlDrawX, yPos)); //400
+                    yPos += medGapSize;
 
 					String Back = "Back";
 					int BackDrawX = GetCenteredStringLocation(Font, Back, GameplayVars.WinWidth / 2);
-					spriteBatch.DrawString(Font, Back, new Vector2(BackDrawX, 450), Color.Gold);
+                    DrawStringWithShadow(spriteBatch, Back, new Vector2(BackDrawX, yPos), Color.Yellow, Color.Black); //450
 				}
 			}
 
@@ -695,7 +724,7 @@ namespace Charge
                     }
 
                     int rowHeight = Convert.ToInt32(Math.Round(Font.MeasureString("[1st: 999]").Y * 1.15));
-                    int initOffset = Convert.ToInt32(Math.Round(GameplayVars.WinHeight / 7.5));
+                    int initOffset = Convert.ToInt32(Math.Round(GameplayVars.WinHeight / 8.0));
                     bool hasDrawnMyScore = false;
                     for (int i = 0; i < GameplayVars.NumScores; i++ )
                     {
@@ -729,11 +758,14 @@ namespace Charge
                         DrawStringWithShadow(spriteBatch, highScore, new Vector2(highScoreDrawX, initOffset - rowHeight), Color.Gold, new Color(10, 10, 10));
                     }
                     string finalScore = ("Final Score: " + score);
-                    string playAgain = controls.GetRestartString() + " to play again";
+                    string playAgain = controls.GetRestartString() + " to play again!";
+                    string returnToTitle = controls.GetReturnToTitleString() + " to return to the title screen";
                     int scoreYPos = initOffset + rowHeight * GameplayVars.NumScores + 1;
                     DrawStringWithShadow(spriteBatch, finalScore, new Vector2(GetCenteredStringLocation(Font, finalScore, GameplayVars.WinWidth / 2), scoreYPos));
                     DrawStringWithShadow(spriteBatch, playAgain, new Vector2(GetCenteredStringLocation(Font, playAgain, GameplayVars.WinWidth / 2), scoreYPos + rowHeight));
-
+                    DrawStringWithShadow(spriteBatch, returnToTitle, new Vector2(GetCenteredStringLocation(Font, returnToTitle, GameplayVars.WinWidth / 2), scoreYPos + rowHeight*2));
+                    
+                    
                 }
                 else
                 {
@@ -998,6 +1030,14 @@ namespace Charge
                     InitVars();
                     SetupInitialConfiguration();
                 }
+                else if (controls.TitleScreenTrigger())
+                {
+                    player.isDead = false;
+                    InitVars();
+                    SetupInitialConfiguration();
+                    playerSpeed = GameplayVars.titleScrollSpeed;
+                    currentGameState = GameState.TitleScreen;
+                }
             }
 			else if (currentGameState == GameState.Paused)
 			{
@@ -1217,7 +1257,7 @@ namespace Charge
                     DisintegrationEffect disEffect = new DisintegrationEffect(entity.position, EnemyTex, WhiteTex, destroyCols, 0.2f, false);
                     otherEnts.Add(disEffect);
                     */
-                    
+
                     List<Color> destroyCols = new List<Color>() { Color.Red, Color.Black };
                     PixelEffect pixelEffect = new PixelEffect(entity.position, WhiteTex, destroyCols);
                     pixelEffect.yVel = -20;
