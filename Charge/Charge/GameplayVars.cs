@@ -34,8 +34,23 @@ namespace Charge
         public static float BulletMoveSpeed = 10;
         public static float ChargeDecreaseRate = 2;
         public static float BatteryChargeReplenish = 5;
+
+        //Level coefficients, determine speed changes on levels
+        public static float Level1Speed = 1.0f;
+        public static float Level2Speed = 0.65f;
+        public static float Level3Speed = 0.45f;
+        public static float Level4Speed = 0.30f;
+        public static float[] LevelSpeeds = { Level1Speed, Level2Speed, Level3Speed, Level4Speed };
+
+        //Barrier Speed up break points. Used to cause decreased rate of acceleration upon each level switch.
         public static float BarrierSpeedUpRate = 3.0f;
+        public static float BarrierLevel2Rate = BarrierSpeedUpRate * Level2Speed;
+        public static float BarrierLevel3Rate = BarrierSpeedUpRate * Level3Speed;
+        public static float BarrierLevel4Rate = BarrierSpeedUpRate * Level4Speed;
+
         public static float ChargeToSpeedCoefficient = 5.0f;
+
+
         public static float TimeToScoreCoefficient = 4.5f;
 
         public static float[] DischargeCooldownTime = { 20, 17, 14, 11, 10, 10 }; //By level. In Seconds.

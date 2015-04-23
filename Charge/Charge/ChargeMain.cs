@@ -51,7 +51,16 @@ namespace Charge
             Volume,
             ClearHighScores,
             Back
-        }
+        };
+
+        enum PlayerLevel
+        {
+            Level1,
+            Level2,
+            Level3,
+            Level4,
+            Level5
+        };
 
 		GameState currentGameState;
         TitleSelection currentTitleSelection;
@@ -1516,10 +1525,25 @@ namespace Charge
 
 		/// <summary>
 		/// Updates the player speed based on the current charge level
+        /// Every 75 charge (One full charge bar) causes the rate of increase for subsequent charge to decrease. 
 		/// </summary>
 		public void UpdatePlayerSpeed()
 		{
-			playerSpeed = GameplayVars.ChargeToSpeedCoefficient * player.GetCharge();
+			
+            int Level = ((int)player.GetCharge() / 75) + 1; //Gives the current level that the player is on
+            float NextLevelCharge = 75 - (player.GetCharge() % 75); //Gives charge needed to levelup
+            float newSpeed = 0; //Temp speed to be set after update
+
+            for (int i = 0; i < Level; i++)
+            {
+                newSpeed += GameplayVars.LevelSpeeds[i] * 75;
+            }
+            newSpeed = newSpeed - GameplayVars.LevelSpeeds[Level - 1] * NextLevelCharge;
+            Console.WriteLine((newSpeed* GameplayVars.ChargeToSpeedCoefficient) - GetPlayerSpeed());
+            playerSpeed = newSpeed * GameplayVars.ChargeToSpeedCoefficient;
+            //playerSpeed = GameplayVars.ChargeToSpeedCoefficient * player.GetCharge();
+            
+            
 		}
 
 		/// <summary>
@@ -1676,9 +1700,20 @@ namespace Charge
 
         public int GetCurrentLevel()
         {
+            
+            int level = 0;
+            int n = 0;
             float barrierChargeEquivalent = barrierSpeed / GameplayVars.ChargeToSpeedCoefficient;
-            int level = Convert.ToInt32(Math.Floor(barrierChargeEquivalent / GameplayVars.ChargeBarCapacity));
-            level += 1;
+            
+            while (barrierChargeEquivalent > 0)
+            {
+                barrierChargeEquivalent -= GameplayVars.ChargeBarCapacity * GameplayVars.LevelSpeeds[n];
+                level++;
+                n++;
+            }
+
+            //int level = Convert.ToInt32(Math.Floor(barrierChargeEquivalent / GameplayVars.ChargeBarCapacity));
+            
             return level;
         }
 
