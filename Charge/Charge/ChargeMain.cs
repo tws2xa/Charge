@@ -25,7 +25,7 @@ namespace Charge
         private static readonly float VolumeChangeAmount = 0.05f;
 
         private static readonly Color[] ChargeBarLevelColors = { new Color(50, 50, 50), new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.Pink }; // The bar colors for each charge level
-        private static readonly Color[] PlatformLevelColors = { Color.White, new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.DarkViolet }; // The platform colors for each charge level
+        private static readonly Color[] PlatformLevelColors = { Color.White, new Color(0, 234, 6), Color.Yellow, Color.Tomato, Color.Blue, Color.DarkViolet }; // The platform colors for each charge level
 
         private static readonly String DefaultClearHighScoresText = "Clear High Scores";
 
@@ -1539,7 +1539,7 @@ namespace Charge
                 newSpeed += GameplayVars.LevelSpeeds[i] * 75;
             }
             newSpeed = newSpeed - GameplayVars.LevelSpeeds[Level - 1] * NextLevelCharge;
-            Console.WriteLine((newSpeed* GameplayVars.ChargeToSpeedCoefficient) - GetPlayerSpeed());
+            //Console.WriteLine((newSpeed* GameplayVars.ChargeToSpeedCoefficient) - GetPlayerSpeed());
             playerSpeed = newSpeed * GameplayVars.ChargeToSpeedCoefficient;
             //playerSpeed = GameplayVars.ChargeToSpeedCoefficient * player.GetCharge();
             
