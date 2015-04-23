@@ -30,23 +30,14 @@ namespace Charge
         {
             if (!File.Exists(fileName))
             {
-                streamWriter = new StreamWriter("HighScores.txt");
+                streamWriter = new StreamWriter(fileName);
                 for (int i = 0; i < 9; i++)
                     streamWriter.Write("0 ");
                 streamWriter.Write("0");
                 streamWriter.Close();
             }
 
-            //Processing data in the list of scores
-            highScores = new List<Int32>();
-            StreamReader file = new StreamReader("HighScores.txt");
-            String line = file.ReadLine();
-            String[] data = line.Split(' ');
-            foreach (String str in data)
-            {
-                highScores.Add(Convert.ToInt32(str));
-            }
-            file.Close();
+            LoadHighScores();
         }
 
         /// <summary>
@@ -62,7 +53,7 @@ namespace Charge
             {
                 highScores.RemoveAt(GameplayVars.NumScores);
             }
-            streamWriter = new StreamWriter("HighScores.txt");
+            streamWriter = new StreamWriter(fileName);
             for (int i = 0; i < highScores.Count() - 1; i++)
                 streamWriter.Write(highScores[i] + " ");
             streamWriter.Write(highScores[GameplayVars.NumScores - 1]);
@@ -82,7 +73,40 @@ namespace Charge
         {
             if (rank >= highScores.Count()) return 0;
             else return highScores[rank];
-        } 
+        }
 
+        /// <summary>
+        /// Clears the high score file and clears the high score data
+        /// </summary>
+        public void ClearHighScores()
+        {
+            highScores.Clear();
+            
+            // Opens the high score file with append set to false so that the existing data is overwritten.
+            streamWriter = new StreamWriter(fileName, false);
+            for (int i = 0; i < 9; i++)
+                streamWriter.Write("0 ");
+            streamWriter.Write("0");
+            streamWriter.Close();
+
+            LoadHighScores();
+        }
+
+        /// <summary>
+        /// Loads the high score data from the high score file
+        /// </summary>
+        private void LoadHighScores()
+        {
+            //Processing data in the list of scores
+            highScores = new List<Int32>();
+            StreamReader file = new StreamReader(fileName);
+            String line = file.ReadLine();
+            String[] data = line.Split(' ');
+            foreach (String str in data)
+            {
+                highScores.Add(Convert.ToInt32(str));
+            }
+            file.Close();
+        }
     }
 }

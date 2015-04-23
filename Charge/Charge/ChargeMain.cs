@@ -27,6 +27,8 @@ namespace Charge
         private static readonly Color[] ChargeBarLevelColors = { new Color(50, 50, 50), new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.Pink }; // The bar colors for each charge level
         private static readonly Color[] PlatformLevelColors = { Color.White, new Color(0, 234, 6), Color.Yellow, Color.Red, Color.Blue, Color.DarkViolet }; // The platform colors for each charge level
 
+        private static readonly String DefaultClearHighScoresText = "Clear High Scores";
+
 		enum GameState
 		{
 			TitleScreen,
@@ -47,6 +49,7 @@ namespace Charge
         enum OptionSelection
         {
             Volume,
+            ClearHighScores,
             Back
         }
 
@@ -112,6 +115,8 @@ namespace Charge
 
         int glowWidth = GameplayVars.WinWidth / 7;
         int glowHeight = GameplayVars.WinHeight;
+
+        String ClearHighScoresText;
 
         //Textures
         Texture2D BackgroundTex;
@@ -190,7 +195,9 @@ namespace Charge
             tierWithNoChargeOrbs = 0;
             tierWithSomeChargeOrbs = 1;
             controls.Reset();
-            
+
+            ClearHighScoresText = DefaultClearHighScoresText;
+
             // Load user volume settings
             if (File.Exists(UserSettingsFile))
             {
@@ -532,18 +539,21 @@ namespace Charge
                     spriteBatch.DrawString(Font, Title, new Vector2(TitleDrawX, 25), Color.White);
 
                     // Set the color for the selected and unselected menu items
-                    Color volumeColor;
-                    Color backColor;
+                    Color volumeColor = Color.White;
+                    Color backColor = Color.White;
+                    Color clearColor = Color.White;
 
                     if (currentOptionSelection == OptionSelection.Volume)
                     {
                         volumeColor = Color.Gold;
-                        backColor = Color.White;
                     }
-                    else
+                    else if (currentOptionSelection == OptionSelection.Back)
                     {
-                        volumeColor = Color.White;
                         backColor = Color.Gold;
+                    }
+                    else if (currentOptionSelection == OptionSelection.ClearHighScores)
+                    {
+                        clearColor = Color.Gold;
                     }
 
                     String Volume = "Master Volume: ";
@@ -552,12 +562,14 @@ namespace Charge
 
                     // Draw the volume slider bar
                     int volumeBarLeft = Convert.ToInt32(Math.Round(3 * GameplayVars.WinWidth / 4.0f - ((GameplayVars.WinWidth / 3.0f + 5) / 2.0f)));
-
                     spriteBatch.Draw(WhiteTex, new Rectangle(volumeBarLeft, 162, Convert.ToInt32(masterVolume * GameplayVars.WinWidth / 3) + 5, 20), volumeColor);
+                    
+                    int ClearDrawX = GetCenteredStringLocation(Font, ClearHighScoresText, GameplayVars.WinWidth / 2);
+                    spriteBatch.DrawString(Font, ClearHighScoresText, new Vector2(ClearDrawX, 300), clearColor);
 
                     String Back = "Back";
                     int BackDrawX = GetCenteredStringLocation(Font, Back, GameplayVars.WinWidth / 2);
-                    spriteBatch.DrawString(Font, Back, new Vector2(BackDrawX, 300), backColor);
+                    spriteBatch.DrawString(Font, Back, new Vector2(BackDrawX, 350), backColor);
                 }
 				else if (currentGameState == GameState.CreditsScreen)
 				{
@@ -862,22 +874,45 @@ namespace Charge
             }
             else if (currentGameState == GameState.OptionsScreen)
             {
-                if (controls.MenuUpTrigger() || controls.MenuDownTrigger())
+                if (controls.MenuUpTrigger())
                 {
-                    if (currentOptionSelection == OptionSelection.Volume)
+                    if (currentOptionSelection > 0)
                     {
-                        currentOptionSelection = OptionSelection.Back;
+                        currentOptionSelection--;
                     }
-                    else
+
+                    // Once the user clears the high scores, we don't want that option to be selectable any more.
+                    if (currentOptionSelection == OptionSelection.ClearHighScores && ClearHighScoresText != DefaultClearHighScoresText)
                     {
                         currentOptionSelection = OptionSelection.Volume;
+                    }
+                }
+                else if (controls.MenuDownTrigger())
+                {
+                    if (currentOptionSelection < OptionSelection.Back)
+                    {
+                        currentOptionSelection++;
+                    }
+
+                    // Once the user clears the high scores, we don't want that option to be selectable any more.
+                    if (currentOptionSelection == OptionSelection.ClearHighScores && ClearHighScoresText != DefaultClearHighScoresText)
+                    {
+                        currentOptionSelection = OptionSelection.Back;
                     }
                 }
 
                 if (controls.MenuSelectTrigger() && currentOptionSelection == OptionSelection.Back)
                 {
+                    ClearHighScoresText = DefaultClearHighScoresText;
                     SaveUserSettings();
                     currentGameState = GameState.TitleScreen;
+                }
+
+                if (controls.MenuSelectTrigger() && currentOptionSelection == OptionSelection.ClearHighScores)
+                {
+                    highScoreManager.ClearHighScores();
+                    ClearHighScoresText = "High Scores Cleared";
+                    currentOptionSelection++;
                 }
 
                 if (controls.MenuDecreaseTrigger() && currentOptionSelection == OptionSelection.Volume)
