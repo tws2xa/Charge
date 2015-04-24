@@ -1721,7 +1721,11 @@ namespace Charge
                     else if (roll < batteryRollRange + LevelGenerationVars.WallSpawnFrequency + LevelGenerationVars.EnemySpawnFrequency
                         && numEnemies < LevelGenerationVars.MaxEnemiesPerPlatform && enemies.Count < LevelGenerationVars.MaxNumEnemiesTotal)
                     {
-                        //Spawn Enemy
+                        //Spawn Enemy only if it has at least two blocks (on either side)
+                        bool hasRoom = false;
+                        if ((i > 0) && (platform.sections[i - 1].containedObj == null || platform.sections[i - 1].containedObj == PlatformSection.BATTERYSTR)) hasRoom = true;
+                        else if ((i < numSections - 1) && (platform.sections[i + 1].containedObj == null || platform.sections[i + 1].containedObj == PlatformSection.BATTERYSTR)) hasRoom = true;
+                        if (!hasRoom) continue;
                         int width = LevelGenerationVars.EnemyWidth;
                         int height = LevelGenerationVars.EnemyHeight;
                         Enemy enemy = new Enemy(new Rectangle(sectionCenter - width / 2, platform.position.Top - height, width, height), EnemyTex, platform);
