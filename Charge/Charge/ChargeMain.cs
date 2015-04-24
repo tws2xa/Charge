@@ -103,6 +103,7 @@ namespace Charge
         private SoundEffect enemyDeathSound;
         private SoundEffect chargeCollect;
         private SoundEffect dischargeSound;
+        private SoundEffect rearmSound;
         private Song Background1;
         private Song TitleMusic;
 
@@ -337,6 +338,7 @@ namespace Charge
             enemyDeathSound = Content.Load<SoundEffect>("SoundFX/enemyDeath.wav");
             chargeCollect = Content.Load<SoundEffect>("SoundFX/charge_collect_quiet.wav");
             dischargeSound = Content.Load<SoundEffect>("SoundFX/DischargeSound.wav");
+            rearmSound = Content.Load<SoundEffect>("SoundFX/Rearm.wav");
 
             //BackgroundMusic
             Background1 = Content.Load<Song>("BackgroundMusic/Killing_Time.wav");
@@ -1200,9 +1202,16 @@ namespace Charge
         public void UpdateCooldown(float deltaTime)
         {
             globalCooldown = Math.Max(0, globalCooldown - deltaTime);
-            if (globalCooldown == 0) totalGlobalCooldown = 0;
+            if (globalCooldown < 0 + deltaTime*2 && globalCooldown > 0)
+            {
+                PlaySound(rearmSound);
+            }
+            if (globalCooldown == 0)
+            {
+                 totalGlobalCooldown = 0;
+            }
         }
-
+            
         /// <summary>
         /// Update the score
         /// </summary>
