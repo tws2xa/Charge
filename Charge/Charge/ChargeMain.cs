@@ -729,7 +729,7 @@ namespace Charge
                         fullScreenPixelEffect.Draw(spriteBatch);
                     }
 
-                    int rowHeight = Convert.ToInt32(Math.Round(FontSmall.MeasureString("[1st: 999]").Y * 1.15));
+                    int rowHeight = Convert.ToInt32(Math.Round(FontSmall.MeasureString("[1st: 999]").Y * 1.05));
                     int initOffset = Convert.ToInt32(Math.Round(GameplayVars.WinHeight / 8.0));
                     bool hasDrawnMyScore = false;
                     for (int i = 0; i < GameplayVars.NumScores; i++ )
