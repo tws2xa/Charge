@@ -83,7 +83,7 @@ namespace Charge
             {
                 vSpeed += GameplayVars.Gravity * deltaTime;
                 //Cap speed
-                vSpeed = Math.Min(GameplayVars.maxPlayerVSpeed, Math.Max(-1 * GameplayVars.maxPlayerVSpeed, vSpeed));
+                vSpeed = Math.Min(GameplayVars.MaxPlayerVSpeed, Math.Max(-1 * GameplayVars.MaxPlayerVSpeed, vSpeed));
                 position.Y += Convert.ToInt32(Math.Round(vSpeed));
             }
             else

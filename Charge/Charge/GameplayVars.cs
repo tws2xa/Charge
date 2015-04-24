@@ -25,7 +25,7 @@ namespace Charge
         public static int enemyXBuffer = 5;
         public static int enemyYBuffer = 5;
         public static int BackBarrierStartX = -150;
-        public static float maxPlayerVSpeed = 50;
+        public static float MaxPlayerVSpeed = 50;
         public static float Gravity = 40; // The y-axis starts at 0 at the top of the screen, so gravity should increase Y
         public static float JumpInitialVelocity = -16; // The y-axis starts at 0 at the top of the screen, so jump should decrease Y
         public static float PlayerStartSpeed = 150;
