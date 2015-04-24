@@ -102,6 +102,7 @@ namespace Charge
         private SoundEffect landSound;
         private SoundEffect enemyDeathSound;
         private SoundEffect chargeCollect;
+        private SoundEffect dischargeSound;
         private Song Background1;
         private Song TitleMusic;
 
@@ -335,6 +336,7 @@ namespace Charge
             landSound = Content.Load<SoundEffect>("SoundFX/land");
             enemyDeathSound = Content.Load<SoundEffect>("SoundFX/enemyDeath.wav");
             chargeCollect = Content.Load<SoundEffect>("SoundFX/charge_collect_quiet.wav");
+            dischargeSound = Content.Load<SoundEffect>("SoundFX/DischargeSound.wav");
 
             //BackgroundMusic
             Background1 = Content.Load<Song>("BackgroundMusic/Killing_Time.wav");
@@ -1157,6 +1159,7 @@ namespace Charge
             otherEnts.Add(discharge);
 
             SetGlobalCooldown(GameplayVars.DischargeCooldownTime[GetCurrentLevel() - 1]);
+            PlaySound(dischargeSound);
         }
 
 
